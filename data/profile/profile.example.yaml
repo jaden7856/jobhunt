@@ -1,0 +1,10 @@
+name: 홍길동
+role: Backend Developer
+email: gildong@example.com
+phone: 010-0000-0000
+education:            # 렌더링하지 않음. 지원서 양식에 적을 때 참고
+  school: 한국대학교
+  major: 컴퓨터공학과
+  degree: 학사 졸업
+  period: "2014.03 ~ 2020.02"
+  note: ""

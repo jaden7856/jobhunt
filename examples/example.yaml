@@ -1,0 +1,84 @@
+# 가상의 인물로 만든 예시. 형식 확인과 디자인 비교용.
+#   python3 scripts/render.py examples/example.yaml --profile data/profile/profile.example.yaml --out examples/out --offline
+meta:
+  job: Backend
+  version: 예시_v1
+  position: 서비스 백엔드
+  design: B
+  target_pages: [1, 2]
+
+header:
+  role: Backend Developer
+
+portfolio:
+  items:
+    - { label: github.com/gildong, url: "https://github.com/gildong" }
+  desc: "주문 서비스 부하 테스트 스크립트와 정산 배치 예제 코드 공개"
+
+summary:
+  lead: "Kotlin 백엔드 개발자 4년차입니다. 커머스 주문·정산 서버에서 트래픽이 몰릴 때도 주문이 빠지지 않게 하는 일을 맡고 있습니다."
+  bullets:
+    - "주문 API p99 **820ms → 240ms**. 재고 조회 N+1 제거와 캐시 키 재설계"
+    - "정산 배치 실패율을 월 6회에서 0회로 줄임 — 재시작 가능한 청크 단위로 나눔"
+    - "결제 대행사 3곳 연동 모듈을 하나의 인터페이스로 묶어 신규 연동 기간 3주 → 1주"
+
+skills:
+  - { name: Backend, items: "Kotlin · Spring Boot · JPA · MySQL · Redis · Kafka" }
+  - { name: Infra, items: "AWS (ECS, RDS) · Docker · GitHub Actions · Datadog" }
+
+experience:
+  - company: 가나다커머스
+    title: 백엔드 개발자
+    period: "2022.03 ~ 재직 중"
+    tenure: 4년차
+    intro: "월 거래액 300억 규모 오픈마켓. 주문과 정산 도메인 담당, 백엔드 8명 팀."
+    timeline:
+      - { period: "2025 ~", desc: "주문 API 성능 개선, 결제 연동 모듈 통합" }
+      - { period: "2023 ~ 2024", desc: "정산 배치 재작성, Kafka 주문 이벤트 도입" }
+      - { period: "2022", desc: "레거시 PHP 주문 API를 Kotlin으로 이관" }
+
+projects:
+  - title: "주문 API p99 820ms → 240ms : 재고 조회와 캐시 구조 변경"
+    period: "2025.02 ~ 05"
+    role: 원인 분석·구현 단독
+    techs: [Kotlin, Spring Boot, MySQL, Redis]
+    summary: "타임세일마다 주문 API가 느려져 결제 이탈이 생기던 문제를 조회 쿼리와 캐시 키를 바꿔 해결"
+    rows:
+      - label: 문제
+        text: "타임세일 시작 5분 동안 주문 API p99가 820ms까지 올라 결제 페이지 이탈이 평소의 2배."
+      - label: 원인 규명
+        text: "APM 트레이스로 주문 1건에 재고 조회 쿼리가 상품 수만큼 나가는 것을 확인. 캐시는 상품 단위 키라 세일 상품 몇 개에 요청이 몰려 Redis 한 샤드만 바빴음."
+      - label: 선택지
+        options:
+          - { title: "① DB 읽기 복제본 추가", adopted: false, body: "바로 적용 가능. 그러나 쿼리 수는 그대로라 다음 세일에 또 부족" }
+          - { title: "② 조회 묶기 + 캐시 키 분산", adopted: true, body: "코드 수정 범위가 크지만 쿼리 수 자체가 줄어듦. 캐시 불일치 위험은 재고 차감 시 키 삭제와 짧은 TTL로 막음" }
+      - label: 실행
+        bullets:
+          - "상품별 재고 조회를 IN 절 한 번으로 묶음"
+          - "캐시 키에 상품 ID 해시 접미사를 붙여 샤드 4개로 나눔"
+          - "세일 전 인기 상품 재고를 미리 캐시에 올리는 스케줄러 추가"
+      - label: 결과
+        kpis:
+          - { value: "820ms → 240ms", label: "주문 API p99 (세일 시작 5분)" }
+          - { value: "N → 1회", label: "주문 1건당 재고 쿼리" }
+
+  - title: "정산 배치 실패 월 6회 → 0회 : 청크 단위 재시작"
+    period: "2023.08 ~ 12"
+    role: 설계·구현 주도
+    techs: [Kotlin, Spring Batch, MySQL]
+    summary: "새벽 정산 배치가 중간에 멈추면 처음부터 다시 돌려야 해서 오전 정산이 늦던 문제를 청크 단위 재시작 구조로 바꿈"
+    rows:
+      - label: 문제
+        text: "정산 배치가 월 6회 정도 중간에 실패. 처음부터 다시 돌리면 4시간이 걸려 판매자 정산 알림이 오전 10시를 넘김."
+      - label: 실행
+        bullets:
+          - "판매자 1,000명 단위 청크로 나누고 청크마다 처리 결과를 기록"
+          - "실패한 청크만 다시 돌리는 재시작 명령 추가"
+          - "외부 은행 API 타임아웃은 청크 안에서 3회까지 다시 시도"
+      - label: 결과
+        kpis:
+          - { value: "월 6회 → 0회", label: "배치 전체 재실행" }
+          - { value: "4시간 → 20분", label: "실패 시 복구 시간" }
+
+other:
+  - "**사내 스터디 운영** (2024) — Kotlin 코루틴 스터디 12회 진행"

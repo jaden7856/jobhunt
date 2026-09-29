@@ -1,0 +1,4 @@
+PyYAML>=6.0
+playwright>=1.40
+pdf2image>=1.16
+pdfplumber>=0.10

@@ -1,0 +1,9 @@
+- id: cache
+  title: 주문 조회 응답시간 80% 단축 (캐시 도입)
+  period: "2024.03 ~ 2024.06"
+  role: 설계·개발 단독
+  fit: [인프라, 서비스]            # 어느 포지션에 맞는지
+  numbers: ["p95 응답시간 500ms → 100ms"]
+  evidence: ["경험정리.md §1", "git: order-api 2024-03~06"]
+  status: confirmed               # confirmed / needs_check
+  notes: ""

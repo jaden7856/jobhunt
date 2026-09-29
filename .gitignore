@@ -1,0 +1,8 @@
+# 개인 자료는 올리지 않는다. 폴더 구조·README·예시만 올라간다.
+data/*/*
+!data/*/README.md
+!data/*/.gitkeep
+!data/*/*.example.*
+__pycache__/
+*.pyc
+.DS_Store

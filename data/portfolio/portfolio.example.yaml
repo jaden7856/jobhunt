@@ -1,0 +1,6 @@
+sites:
+  - { kind: blog, label: myblog.dev, url: "https://myblog.dev", desc: "기술 블로그. 트러블슈팅, DB 동시성 정리" }
+posts:
+  - { title: "단일 SQL CAS로 여러 Pod 동시성 제어", url: "https://myblog.dev/3", topics: [동시성, DB], checked: "2026-09-29 ok" }
+chosen:                # 프로젝트 id → 사용자가 고른 글 (1~2개)
+  cas: ["https://myblog.dev/3"]
