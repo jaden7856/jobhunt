@@ -2,7 +2,7 @@
 
 사이트 공통 사실만 적는다(엔드포인트, 본문 위치, 마감 판정). 개인 검색 조건은 `data/search/sources.yaml`.
 실측 날짜를 붙인다. 형식이 바뀌면 여기를 고치고 날짜를 갱신한다.
-`scripts/providers/`가 자동으로 다루는 곳: 원티드, 점핏, Greenhouse, 토스, NHN, 카카오, greetinghr(`__NEXT_DATA__` 있는 곳). 나머지는 Claude가 이 문서대로 직접 수집한다.
+`scripts/providers/`가 자동으로 다루는 곳: 원티드, 점핏, LinkedIn, Greenhouse, 토스, NHN, 카카오, greetinghr(`__NEXT_DATA__` 있는 곳). 나머지는 Claude가 이 문서대로 직접 수집한다.
 
 ## 공통 규칙
 
@@ -20,7 +20,7 @@
 | 점핏 | `https://jumpit-api.saramin.co.kr/api/positions?keyword=..&page=N` (`jobCategory=1` 서버/백엔드) | `/api/position/{id}` → `qualifications`. 마감일 필드로 지난 공고를 거른다 | 2026-09-29 |
 | 사람인 | 검색 페이지 `/zf_user/search/recruit?searchword=..` (HTML) | `relay/view`가 아니라 `/zf_user/jobs/relay/view-detail?rec_idx={id}&rec_seq=0` 을 받아야 본문이 나온다 | 2026-09-23 |
 | 잡코리아 | 검색 페이지 `/Search/?stext=..` (HTML, 목록일 뿐 공고 아님) | `/Recruit/GI_Read/{id}`. 페이지에서 마감일을 정규식으로 뽑으면 엉뚱한 문구가 잡힌다(2026-09-01) → 본문의 접수 기간을 직접 읽는다 | 2026-09-23 |
-| LinkedIn | `linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=..&location=Seoul, South Korea&f_TPR=r2592000&start=N` | `/jobs-guest/jobs/api/jobPosting/{id}`. 숫자 ID만으로 `jobs/view/{id}` URL을 다시 만들면 전부 마감처럼 보인다(2026-09-01) → 검색 결과의 전체 URL을 그대로 쓴다. 한국어 JD만 채택 | 2026-09-23 |
+| LinkedIn | `linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=..&location=Seoul, South Korea&f_TPR=r2592000&start=N` | `/jobs-guest/jobs/api/jobPosting/{id}`. 숫자 ID만으로 `jobs/view/{id}` URL을 다시 만들면 전부 마감처럼 보인다(2026-09-01) → 검색 결과의 전체 URL을 그대로 쓴다. 한국어 JD만 채택(본문 한글 비율로 판정). 수집 직후엔 429가 잦아 10초 쉬고 재시도. 마감은 상세가 404이거나 "No longer accepting applications" | 2026-09-29 |
 | 리멤버 | `https://career.rememberapp.co.kr/job/postings?search=..` (브라우저로 열어 읽음, 검색엔진 색인 없음) | 브라우저 | 2026-09-01 |
 | 프로그래머스 커리어 | 도메인 없음 | — | 2026-09-29 |
 

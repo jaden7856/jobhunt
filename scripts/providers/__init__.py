@@ -8,10 +8,10 @@
 
 방법과 실측 날짜는 references/sources.md. 형식이 바뀌면 ShapeError 를 올려 "응답 형식 변경"으로 보고한다.
 """
-from . import greenhouse, greetinghr, jumpit, kakao, nhn, toss, wanted
+from . import greenhouse, greetinghr, jumpit, kakao, linkedin, nhn, toss, wanted
 
-BOARDS = {"wanted": wanted, "jumpit": jumpit}
-ALL = [wanted, jumpit, greenhouse, toss, nhn, kakao, greetinghr]
+BOARDS = {"wanted": wanted, "jumpit": jumpit, "linkedin": linkedin}
+ALL = [wanted, jumpit, linkedin, greenhouse, toss, nhn, kakao, greetinghr]
 
 
 def for_company(c: dict):

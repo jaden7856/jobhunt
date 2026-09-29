@@ -32,7 +32,7 @@
 
 ### Highlights
 
-- 🔎 **Find postings:** Collects from Wanted, Jumpit, Greenhouse boards (Daangn, Coupang, KRAFTON …), Toss, NHN, Kakao and greetinghr companies in one run. It filters by title, required years, location, already-seen postings, blocked companies and re-apply cooldowns.
+- 🔎 **Find postings:** Collects from Wanted, Jumpit, LinkedIn, Greenhouse boards (Daangn, Coupang, KRAFTON …), Toss, NHN, Kakao and greetinghr companies in one run. It filters by title, required years, location, duplicates across sites (company aliases unify Korean and English names), blocked companies and re-apply cooldowns.
 - 📊 **Score the fit:** Checks your location, English and tech-stack rules against quoted posting text, maps every requirement to your own experience, and scores 1–5. Required vs. preferred is told apart by Korean sentence endings ("~필요해요" vs. "~좋아요").
 - 📝 **Tailor the resume:** Turns the evaluation's plan (projects to lead with, skill overlap, wording) into a per-posting YAML, then builds it in one of three designs as an A4 PDF. Every build is checked automatically.
 - 📋 **Track applications:** Shows evaluated and triage-passed postings in a single table with "applied?" and "still open?" columns.
@@ -139,11 +139,12 @@ python3 scripts/render.py examples/example.yaml \
 | Source | Method | Automated by |
 |---|---|---|
 | Wanted, Jumpit | Public JSON list and detail | `scan.py` |
+| LinkedIn | Public guest API, Korean-language postings only (English-only JDs excluded) | `scan.py` |
 | Greenhouse companies (Daangn, Coupang, KRAFTON …) | Official public API | `scan.py` |
 | Toss (all affiliates), NHN, Kakao, greetinghr companies | Career-site JSON | `scan.py` |
-| Saramin, JobKorea, LinkedIn, Remember, other career sites | HTML / browser | Claude, following [`references/sources.md`](references/sources.md) |
+| Saramin, JobKorea, Remember, other career sites | HTML / browser | Claude, following [`references/sources.md`](references/sources.md) |
 
-- **What gets filtered out:** title keywords, required years (when the posting states them), location, postings you've already seen, blocked companies, and companies you applied to recently (6-month cooldown by default).
+- **What gets filtered out:** title keywords, required years (when the posting states them), location, postings you've already seen (including the same posting on another site), blocked companies, companies you applied to recently (6-month cooldown by default), and English-only JDs (when enabled).
 - **What doesn't:** the tech stack is never used as a filter at collection time. Narrowing the search to one language drops good postings that accept any language. The script only attaches a required/preferred hint, and the stack is judged during triage.
 - **Open or closed:** `scripts/alive.py` checks each site's detail API. A posting missing from a public list is not treated as closed.
 
@@ -247,7 +248,7 @@ data/                        Your data (git-ignored; only structure and examples
 
 - Real files under `data/` are excluded by `.gitignore`; only folder READMEs, `.gitkeep` and `*.example.*` files are committed.
 - Your name and contact info are never hard-coded. They're read from `data/profile/profile.yaml` at build time.
-- The Wanted, Jumpit and career-site JSON endpoints are unofficial; they're used for personal purposes with a delay between requests.
+- The Wanted, Jumpit, LinkedIn guest and career-site JSON endpoints are unofficial; they're used for personal purposes with a delay between requests.
 
 ## 🙏 Acknowledgements
 

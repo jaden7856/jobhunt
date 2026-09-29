@@ -96,9 +96,35 @@ class Job:
     extra: dict = field(default_factory=dict)
 
 
+def _norm_raw(s: str) -> str:
+    return re.sub(r"\(.*?\)|㈜|주식회사|\s+", "", s or "").lower()
+
+
+_ALIAS: Optional[Dict[str, str]] = None
+
+
+def _aliases() -> Dict[str, str]:
+    """sources.yaml company_aliases: {대표 이름: [다른 표기, …]} → 정규화 이름 → 대표 이름."""
+    global _ALIAS
+    if _ALIAS is None:
+        _ALIAS = {}
+        for canon, names in (load_yaml(P["sources"]).get("company_aliases") or {}).items():
+            for n in [canon] + list(names or []):
+                _ALIAS[_norm_raw(n)] = _norm_raw(canon)
+    return _ALIAS
+
+
 def norm_company(s: str) -> str:
-    s = re.sub(r"\(.*?\)|㈜|주식회사|\s+", "", s or "").lower()
-    return s
+    """회사 이름 비교용. 별칭 → 괄호 안 이름 → 공백으로 나눈 조각 순서로 대표 이름을 찾는다.
+    예: "Ganada" → 가나다, "Toss Payments(토스페이먼츠)" → 토스페이먼츠, "TVING 티빙" → 티빙"""
+    a = _aliases()
+    raw = _norm_raw(s)
+    if raw in a:
+        return a[raw]
+    for part in re.findall(r"\((.*?)\)", s or "") + (s or "").split():
+        if _norm_raw(part) in a:
+            return a[_norm_raw(part)]
+    return raw
 
 
 def load_yaml(path: str) -> dict:
@@ -218,6 +244,17 @@ URL_RE = re.compile(r"https?://[^\s|)>\];,]+")
 
 def pipeline_urls() -> set:
     return set(URL_RE.findall(read_text(P["pipeline"])))
+
+
+def pipeline_keys() -> set:
+    """pipeline.md 체크리스트 줄의 (회사, 포지션). 다른 사이트에 같은 공고가 올라온 경우를 거른다."""
+    keys = set()
+    for line in read_text(P["pipeline"]).split("\n"):
+        if line.lstrip().startswith("- ["):
+            c = [x.strip() for x in line.split(" | ")]
+            if len(c) > 2:
+                keys.add((norm_company(c[1]), c[2].lower()))
+    return keys
 
 
 def insert_under(md: str, header: str, lines: List[str], before: Optional[str] = None) -> str:

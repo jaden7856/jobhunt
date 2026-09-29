@@ -11,8 +11,8 @@
 
 ## 순서
 
-1. **수집.** `python3 scripts/scan.py`를 먼저 실행한다. 원티드·점핏·Greenhouse·토스·NHN·카카오·greetinghr을 받아 2·3단계와 기록까지 끝내고, 새 공고를 `pipeline.md`의 "새로 수집 (선별 전)"에, 본문을 `data/search/inbox/`에 둔다.
-   - 출력의 "스크립트 미지원" 채널(사람인·잡코리아·LinkedIn·리멤버, 브라우저 대상 기업)만 `references/sources.md` 방법으로 직접 수집하고, 결과를 같은 형식으로 "새로 수집 (선별 전)"에 넣고 `scan-history.tsv`에 적는다.
+1. **수집.** `python3 scripts/scan.py`를 먼저 실행한다. 원티드·점핏·LinkedIn·Greenhouse·토스·NHN·카카오·greetinghr을 받아 2·3단계와 기록까지 끝내고, 새 공고를 `pipeline.md`의 "새로 수집 (선별 전)"에, 본문을 `data/search/inbox/`에 둔다.
+   - 출력의 "스크립트 미지원" 채널(사람인·잡코리아·리멤버, 브라우저 대상 기업)만 `references/sources.md` 방법으로 직접 수집하고, 결과를 같은 형식으로 "새로 수집 (선별 전)"에 넣고 `scan-history.tsv`에 적는다.
    - `✗` 로 표시된 채널은 응답 형식이 바뀐 것이다. 0건으로 넘기지 말고 보고하고, 확인되면 `scripts/providers/`와 `references/sources.md`를 고친다.
    - 처음 실행이라 쌓인 공고가 너무 많으면 사용자에게 `--seed`(지금 공고는 본 것으로만 기록) 여부를 묻는다.
    - 우선 기업(`priority: true`)은 매번 전부 돈다.

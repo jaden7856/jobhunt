@@ -2,7 +2,7 @@
 """공고 수집 (LLM 호출 없음). modes/scan.md 의 1~3단계와 5단계 기록을 자동으로 한다.
 
   python3 scripts/scan.py                 켜진 채널 전부
-  python3 scripts/scan.py --only wanted,toss
+  python3 scripts/scan.py --only wanted,linkedin,toss
   python3 scripts/scan.py --dry-run       파일을 쓰지 않고 결과만 출력
   python3 scripts/scan.py --no-detail     본문을 받지 않음 (빠름, 1차 선별 불가)
   python3 scripts/scan.py --seed          지금 열린 공고를 "본 것"으로만 기록 (대기함에 넣지 않음, 다음 실행부터 새 공고만)
@@ -65,7 +65,7 @@ def main(argv=None):
     cf = sources.get("career_filter") or {}
 
     seen = {r["url"] for r in K.read_history()} | K.pipeline_urls()
-    tracked = {(K.norm_company(r["company"]), r["role"].lower()) for r in K.read_tracker()}
+    tracked = {(K.norm_company(r["company"]), r["role"].lower()) for r in K.read_tracker()} | K.pipeline_keys()
     cool = K.cooldown_companies(int(targets.get("reapply_days", 183)))
     black = K.blacklist_companies()
 
@@ -119,15 +119,17 @@ def main(argv=None):
             j.text = mod.detail(j)
         except Exception as e:
             j.text = f"[본문 받기 실패: {type(e).__name__}: {e}]"
-        # 본문을 받은 뒤 근무지가 구체화되면 다시 본다
-        if K.location_check(j.location, lf) == "block":
-            j.extra["blocked_late"] = True
+        # 본문을 받은 뒤 근무지가 구체화되면 다시 본다. 공급원이 본문을 보고 뺄 수도 있다 (예: LinkedIn 영어 전용 JD)
+        if not j.extra.get("skip") and K.location_check(j.location, lf) == "block":
+            j.extra["skip"] = "skipped_location"
 
-    fresh_ok = [(m, j) for m, j in fresh if not j.extra.get("blocked_late")]
-    reasons["skipped_location"] += len(fresh) - len(fresh_ok)
+    fresh_ok = [(m, j) for m, j in fresh if not j.extra.get("skip")]
+    late = {j.url: j.extra["skip"] for _, j in fresh if j.extra.get("skip")}
+    for why in late.values():
+        reasons[why] += 1
     for h in hist:
-        if any(j.url == h["url"] and j.extra.get("blocked_late") for _, j in fresh):
-            h["status"] = "skipped_location"
+        if h["url"] in late:
+            h["status"] = late[h["url"]]
 
     lines = []
     for _, j in fresh_ok:

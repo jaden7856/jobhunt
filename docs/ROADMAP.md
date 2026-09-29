@@ -78,8 +78,8 @@ scan ──► search/pipeline.md ──► 1차 선별(brief.md) ──► eval
 | 단계 | 내용 | 상태 |
 |---|---|---|
 | 1 | 데이터 계약, 모드 문서(`modes/`), 수집 방법 문서, `SKILL.md` 라우터, 기존 career-ops 개인 설정 이전 | 완료 (2026-09-29) |
-| 2 | `scripts/scan.py` + `scripts/providers/`(원티드·점핏·Greenhouse·토스·NHN·카카오·greetinghr). 제목·연차·근무지 필터, 중복·제외 회사·쿨다운, `pipeline.md`·`scan-history.tsv`·`inbox/` 기록, `alive.py` 마감 확인, `weekly.sh` | 완료 (2026-09-29) |
-| 2b | 사람인·잡코리아·LinkedIn·네이버·리멤버 공급원 (HTML·브라우저 필요, 지금은 `references/sources.md`대로 수동) | 예정 |
+| 2 | `scripts/scan.py` + `scripts/providers/`(원티드·점핏·LinkedIn·Greenhouse·토스·NHN·카카오·greetinghr). 회사 별칭(`company_aliases`)으로 사이트 간 중복 제거. 제목·연차·근무지 필터, 중복·제외 회사·쿨다운, `pipeline.md`·`scan-history.tsv`·`inbox/` 기록, `alive.py` 마감 확인, `weekly.sh` | 완료 (2026-09-29) |
+| 2b | 사람인·잡코리아·네이버·리멤버 공급원 (HTML·브라우저 필요, 지금은 `references/sources.md`대로 수동) | 예정 |
 | 3 | 평가 리포트 형식 고정, `tracker.py`(상태값 검증, 재지원 쿨다운 연동, 통합 보고표) | 지원 현황 부분 완료 (2026-09-29) |
 | 4 | 평가의 요구사항 대응표 → 맞춤 yaml 자동 초안 (프로젝트 순서, SKILLS 교집합, 용어 치환) | 예정 |
 | 5 | 학습 루프: 결과(서류 합격·탈락)와 피드백을 모아 선별 기준·강조점 조정 제안 | 예정 |

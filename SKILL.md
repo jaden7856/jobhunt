@@ -1,6 +1,6 @@
 ---
 name: resume-pdf-builder
-description: 한국 개발자 채용 공고를 찾고(원티드·점핏·사람인·잡코리아·기업 채용 사이트), 사용자 경력·조건으로 평가하고, 공고마다 맞춘 이력서 A4 PDF를 만든다. 공고 찾기, 공고 평가, 회사별 맞춤 이력서, 이력서 수정·재빌드, 지원 현황 기록 요청에 쓴다.
+description: 한국 개발자 채용 공고를 찾고(원티드·점핏·LinkedIn·사람인·잡코리아·기업 채용 사이트), 사용자 경력·조건으로 평가하고, 공고마다 맞춘 이력서 A4 PDF를 만든다. 공고 찾기, 공고 평가, 회사별 맞춤 이력서, 이력서 수정·재빌드, 지원 현황 기록 요청에 쓴다.
 ---
 
 # 공고 찾기 → 평가 → 맞춤 이력서
@@ -26,7 +26,7 @@ scripts/check.py            페이지 수 · 제목 홀로 남음 · 링크 · �
 scripts/check_links.py      링크 접속 확인 (표준 라이브러리만, 어디서나 실행)
 scripts/git_log.sh          로컬 git 저장소에서 작성자 기준 커밋 로그 추출
 scripts/setup.sh            스킬 연결(~/.claude/skills 링크) + Playwright Chromium, 폰트(Pretendard, Noto Sans/Serif CJK KR), poppler 설치
-scripts/scan.py             공고 수집 (원티드·점핏·Greenhouse·토스·NHN·카카오·greetinghr) → 거르기 → pipeline.md
+scripts/scan.py             공고 수집 (원티드·점핏·LinkedIn·Greenhouse·토스·NHN·카카오·greetinghr) → 거르기 → pipeline.md
 scripts/alive.py            추적 공고 마감 확인
 scripts/tracker.py          지원 현황 기록(add/set)과 통합 보고표(report)
 scripts/weekly.sh           주간 스캔의 LLM 없는 부분 (scan → alive → report)

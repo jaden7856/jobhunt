@@ -17,13 +17,17 @@ location_filter:
   allow: [경기, Gyeonggi, 대한민국, Korea]
   block: [부산, 대구, 대전, 광주, 울산, 세종, 제주, United States, Japan]
 
+# 회사 별칭: 사이트마다 다른 표기를 하나로 (중복·쿨다운·제외 회사 판정)
+company_aliases:
+  가나다커머스: [Ganada Commerce, 가나다]
+
 # 채용 플랫폼
 boards:
   wanted:   { enabled: true, job_group_id: 518, job_ids: [872, 674], years: 4 }
   jumpit:   { enabled: true, keywords: [백엔드, 서버, 플랫폼] }
   saramin:  { enabled: true, keywords: [백엔드 개발자, 서버 개발자] }
   jobkorea: { enabled: true, keywords: [백엔드 개발자, 서버 개발자] }
-  linkedin: { enabled: false, keywords: [백엔드 개발자, backend engineer], location: "Seoul, South Korea" }
+  linkedin: { enabled: true, keywords: [백엔드 개발자, backend engineer], location: "Seoul, South Korea", korean_only: true, period_days: 30 }
   remember: { enabled: false, keywords: [백엔드] }
 
 # 자체 채용 사이트로 뽑는 기업. priority: true 는 매 스캔마다 전부 돈다.
