@@ -20,15 +20,7 @@
 
 ## 📖 Overview
 
-```
- Find                    Evaluate                     Tailor                        Track & learn
- ──────────             ──────────                   ──────────                    ──────────
- Wanted · Jumpit ·       Rule checks (location,        Per-posting YAML from          Applications, outcomes
- Greenhouse · company    language, stack, years, pay)  the evaluation's plan          and corrections in data/
- career sites                 Requirement ↔ experience      │                             │
-      │                  match table, 1–5 score             ▼                             ▼
- Filter & dedupe  ──►    Tailoring plan          ──►   A4 PDF build + checks   ──►    Sharper triage next time
-```
+<p align="center"><img src="assets/flow.en.png" alt="Find → Evaluate → Tailor → Track &amp; learn workflow" width="820"/></p>
 
 **resume-builder** is a [Claude](https://claude.com) skill plus Python scripts.
 
@@ -63,24 +55,7 @@ Fictional companies. Translated here; the actual output is in Korean.
 
 ### Fit evaluation (`data/job_postings/*.eval.md`, translated)
 
-```markdown
-# Evaluation: Ganada Commerce — Backend Developer
-
-**4.3/5 — Apply.** Payment/settlement consistency requirements overlap directly with the lead project; remaining gaps are preferred items only.
-
-- Location: pass "Teheran-ro, Gangnam, Seoul"
-- Language/stack: pass "Proficient in at least one main language" (Kotlin/Spring is "nice to have" → preferred)
-- Salary: undisclosed
-
-## C) Requirement match table
-| Posting text | Type | My experience | Evidence file | Met |
-|---|---|---|---|---|
-| "Has solved concurrency issues from the root cause" | Required | Order API p99 820ms → 240ms | project_index.yaml#cache | Yes |
-| "Event design with Kafka" | Preferred | Settlement events | project_index.yaml#kafka | Partly |
-
-## E) Tailoring plan
-- Base: base_service.yaml · Project order: cache → settle → kafka · SKILLS: Kotlin, Spring Boot, MySQL, Redis, Kafka …
-```
+<p align="center"><img src="assets/eval.en.png" alt="Fit evaluation report example: score and verdict, rule checks, requirement match table, and tailoring plan" width="720"/></p>
 
 ### Resume designs
 

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<title>맞춤도 평가 예시</title>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<main class="capture evaluation">
+<article class="report">
+<h1>평가: 가나다커머스 — 백엔드 개발자</h1>
+<p class="verdict"><strong>4.3/5 — 지원 권장.</strong> 결제·정산 정합성 요구가 대표 프로젝트와 직접 겹치고, 남은 빈틈은 우대 사항뿐.</p>
+<ul class="gates">
+<li>근무지: 통과 "서울 강남구 테헤란로"</li>
+<li>언어·스택: 통과 "주력 언어 1개 이상 능숙" (Kotlin·Spring은 "경험이 있으면 좋아요" → 우대)</li>
+<li>연봉: 미공개 (면접 후 협의)</li>
+</ul>
+<h2>C) 요구사항 대응표</h2>
+<table>
+<colgroup><col style="width:27%"/><col style="width:10%"/><col style="width:23%"/><col style="width:31%"/><col style="width:9%"/></colgroup>
+<thead><tr><th>공고 문장</th><th>구분</th><th>내 경험</th><th>근거 파일</th><th>충족</th></tr></thead>
+<tbody>
+<tr><td>"동시성 이슈를 원인부터 해결해 본 분"</td><td>필수</td><td>주문 API p99 820ms → 240ms</td><td><code>project_index.yaml#cache</code></td><td>충족</td></tr>
+<tr><td>"Kafka 기반 이벤트 설계 경험"</td><td>우대</td><td>정산 이벤트 도입</td><td><code>project_index.yaml#kafka</code></td><td>부분</td></tr>
+</tbody>
+</table>
+<h2>E) 맞춤 이력서 계획</h2>
+<ul class="plan"><li>기본본: <code>base_service.yaml</code> · 프로젝트 순서: cache → settle → kafka · SKILLS: Kotlin, Spring Boot, MySQL, Redis, Kafka …</li></ul>
+</article>
+</main>
+</body>
+</html>
+

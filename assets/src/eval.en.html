@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Fit evaluation example</title>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<main class="capture evaluation">
+<article class="report">
+<h1>Evaluation: Ganada Commerce — Backend Developer</h1>
+<p class="verdict"><strong>4.3/5 — Apply.</strong> Payment/settlement consistency requirements overlap directly with the lead project; remaining gaps are preferred items only.</p>
+<ul class="gates">
+<li>Location: pass "Teheran-ro, Gangnam, Seoul"</li>
+<li>Language/stack: pass "Proficient in at least one main language" (Kotlin/Spring is "nice to have" → preferred)</li>
+<li>Salary: undisclosed</li>
+</ul>
+<h2>C) Requirement match table</h2>
+<table>
+<colgroup><col style="width:25%"/><col style="width:12%"/><col style="width:22%"/><col style="width:31%"/><col style="width:10%"/></colgroup>
+<thead><tr><th>Posting text</th><th>Type</th><th>My experience</th><th>Evidence file</th><th>Met</th></tr></thead>
+<tbody>
+<tr><td>"Has solved concurrency issues from the root cause"</td><td>Required</td><td>Order API p99 820ms → 240ms</td><td><code>project_index.yaml#cache</code></td><td>Yes</td></tr>
+<tr><td>"Event design with Kafka"</td><td>Preferred</td><td>Settlement events</td><td><code>project_index.yaml#kafka</code></td><td>Partly</td></tr>
+</tbody>
+</table>
+<h2>E) Tailoring plan</h2>
+<ul class="plan"><li>Base: <code>base_service.yaml</code> · Project order: cache → settle → kafka · SKILLS: Kotlin, Spring Boot, MySQL, Redis, Kafka …</li></ul>
+</article>
+</main>
+</body>
+</html>
+

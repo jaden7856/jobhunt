@@ -1,0 +1,30 @@
+* { box-sizing: border-box; }
+html, body { margin: 0; background: #fff; }
+body { color: #2b3138; font: 14px/1.6 "Pretendard", "Noto Sans CJK KR", sans-serif; word-break: keep-all; }
+code { font-family: Menlo, monospace; font-size: .88em; }
+.capture { padding: 16px; background: #fff; }
+.flow { width: 820px; }
+.steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+.step { position: relative; display: flex; flex-direction: column; padding: 17px 14px; border: 1px solid #e1e5ea; border-radius: 8px; }
+.step:not(:last-child)::after { content: "→"; position: absolute; right: -20px; top: 50%; color: #1e4fc2; font-size: 20px; }
+.number { color: #1e4fc2; font-size: 12px; font-weight: 700; letter-spacing: .08em; }
+h1, h2, p { margin: 0; }
+.step h2 { margin: 7px 0 14px; color: #15181c; font-size: 20px; line-height: 1.3; }
+.step p { font-size: 13px; }
+.step .outcome { margin-top: auto; padding-top: 18px; color: #1e4fc2; font-weight: 600; }
+.feedback { position: relative; height: 45px; margin: 0 88px 16px; border: solid #1e4fc2; border-width: 0 1px 1px; border-radius: 0 0 8px 8px; text-align: center; }
+.feedback::before { content: ""; position: absolute; top: 1px; left: -4px; width: 7px; height: 7px; border: solid #1e4fc2; border-width: 1px 0 0 1px; transform: rotate(45deg); }
+.feedback span { position: relative; top: 32px; padding: 3px 12px; background: #fff; color: #1e4fc2; font-size: 12px; }
+.evaluation { width: 720px; }
+.report { padding: 26px; border: 1px solid #e1e5ea; border-radius: 8px; }
+.report h1 { color: #15181c; font-size: 23px; line-height: 1.4; letter-spacing: -.025em; }
+.verdict { margin-top: 18px; padding: 14px 16px; background: #eef2fb; border-radius: 8px; }
+.verdict strong { display: block; margin-bottom: 5px; font-size: 21px; color: #1e4fc2; }
+.gates { margin: 20px 0 0; padding-left: 18px; }
+.gates li { padding: 3px 0; }
+.report h2 { margin: 25px 0 10px; font-size: 16px; color: #15181c; }
+table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 12px; line-height: 1.55; }
+th, td { padding: 10px 7px; border-bottom: 1px solid #e1e5ea; vertical-align: top; text-align: left; }
+th { background: #eef2fb; color: #566069; font-weight: 600; }
+td code { overflow-wrap: anywhere; }
+.plan { margin: 0; padding-left: 18px; }
