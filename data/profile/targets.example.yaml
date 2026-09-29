@@ -32,6 +32,8 @@ signals:          # 점수 가감
   minus: ["포괄임금제 + 야근 암시", "5인 미만 초기 스타트업"]
 
 priority_companies: "자체 채용 사이트로 주로 뽑는 국내 IT 기업 (목록은 data/search/sources.yaml)"
+priority_override_roles: [서비스 백엔드]           # 우선 기업이면 점수와 관계없이 PASS 를 주는 역할
+priority_override_excludes: [DevOps, SRE, 데이터]  # 우선 기업이어도 점수대로 판정
 reapply_days: 183               # 지원한 회사는 이 기간 동안 scan에서 뺀다
 
 # scoring: { role: 0.30, requirements: 0.30, narrative: 0.15, conditions: 0.15, comp: 0.10 }  # 기본값과 다를 때만
