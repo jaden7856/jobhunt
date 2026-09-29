@@ -59,7 +59,7 @@ Rendered from the fictional sample [`examples/example.yaml`](examples/example.ya
 ```bash
 git clone https://github.com/jaden7856/resume-builder.git
 cd resume-builder
-bash scripts/setup.sh   # Python packages, Playwright Chromium, Noto Sans CJK KR, poppler
+bash scripts/setup.sh   # Python packages, Playwright Chromium, fonts (Pretendard, Noto CJK KR), poppler
 ```
 
 ### 2. Build the sample

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 빌드 환경 준비: Python 패키지, Playwright Chromium, Noto Sans CJK KR, poppler(PNG 변환)
+# 빌드 환경 준비: Python 패키지, Playwright Chromium, 폰트(Pretendard, Noto Sans/Serif CJK KR), poppler(PNG 변환)
 # 사용: bash scripts/setup.sh
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -22,10 +22,21 @@ if [[ "$(uname)" == "Darwin" ]]; then
   command -v brew >/dev/null || { echo "  Homebrew 가 필요합니다: https://brew.sh"; exit 1; }
   fc-list 2>/dev/null | grep -qi "Noto Sans CJK KR" || ls ~/Library/Fonts 2>/dev/null | grep -qi "NotoSansCJK" \
     || brew install --cask font-noto-sans-cjk-kr
+  fc-list 2>/dev/null | grep -qi "Noto Serif CJK KR" || ls ~/Library/Fonts 2>/dev/null | grep -qi "NotoSerifCJK" \
+    || brew install --cask font-noto-serif-cjk-kr
+  fc-list 2>/dev/null | grep -qi "Pretendard" || ls ~/Library/Fonts 2>/dev/null | grep -qi "Pretendard" \
+    || brew install --cask font-pretendard
   command -v pdftoppm >/dev/null || brew install poppler
 else
-  if ! fc-list | grep -qi "Noto Sans CJK"; then
+  if ! fc-list | grep -qi "Noto Sans CJK"; then   # fonts-noto-cjk 에 Serif CJK 도 들어 있다
     sudo apt-get update -qq && sudo apt-get install -y -qq fonts-noto-cjk
+  fi
+  if ! fc-list | grep -qi "Pretendard"; then
+    dir=~/.local/share/fonts/pretendard; mkdir -p "$dir"
+    for w in Regular Medium SemiBold Bold ExtraBold; do
+      curl -fsSL -o "$dir/Pretendard-$w.otf" "https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/public/static/Pretendard-$w.otf"
+    done
+    fc-cache -f "$dir" >/dev/null
   fi
   command -v pdftoppm >/dev/null || sudo apt-get install -y -qq poppler-utils
 fi

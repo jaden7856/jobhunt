@@ -59,7 +59,7 @@
 ```bash
 git clone https://github.com/jaden7856/resume-builder.git
 cd resume-builder
-bash scripts/setup.sh   # Python 패키지, Playwright Chromium, Noto Sans CJK KR, poppler
+bash scripts/setup.sh   # Python 패키지, Playwright Chromium, 폰트(Pretendard, Noto CJK KR), poppler
 ```
 
 ### 2. 예시 빌드

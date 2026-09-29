@@ -18,7 +18,7 @@ scripts/render.py           yaml → HTML → PDF + PNG, 디자인 A/B/C, 빌드
 scripts/check.py            페이지 수 · 제목 홀로 남음 · 링크 · 플레이스홀더 · 문체 검사
 scripts/check_links.py      링크 접속 확인 (표준 라이브러리만, 어디서나 실행)
 scripts/git_log.sh          로컬 git 저장소에서 작성자 기준 커밋 로그 추출
-scripts/setup.sh            Playwright Chromium, Noto Sans CJK KR, poppler 설치
+scripts/setup.sh            Playwright Chromium, 폰트(Pretendard, Noto Sans/Serif CJK KR), poppler 설치
 references/yaml_schema.md   yaml 형식 (먼저 읽는다)
 references/writing_rules.md 문장 규칙과 점검 방법
 references/style_rules.yaml 금지어·번역투·기호 한도 (check.py 가 읽음)

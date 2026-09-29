@@ -57,7 +57,21 @@ def esc(s):
 
 
 # ══════════════════════════════ CSS ══════════════════════════════
+# 본문은 Pretendard(한글 문서용, 영문·숫자가 또렷함). 없으면 Noto Sans CJK KR로 대체.
+SANS = '"Circled","Pretendard","Pretendard Variable","Noto Sans CJK KR","Noto Sans KR",sans-serif'
+SERIF = '"Noto Serif CJK KR","Noto Serif KR",serif'
+MONO = '"Noto Sans Mono CJK KR",Menlo,monospace'
+
 BREAKS = """
+/* Pretendard의 ①② 원문자는 본문보다 작다. 이 범위만 Noto Sans CJK로 그린다. */
+@font-face { font-family:"Circled"; font-weight:400; unicode-range:U+2460-24FF;
+  src:local("NotoSansCJKkr-Regular"), local("Noto Sans CJK KR"); }
+@font-face { font-family:"Circled"; font-weight:700; unicode-range:U+2460-24FF;
+  src:local("NotoSansCJKkr-Bold"), local("Noto Sans CJK KR Bold"); }
+body { word-break:keep-all; overflow-wrap:break-word; letter-spacing:-0.01em; }   /* 한글은 어절 단위로 줄바꿈 */
+p, li, .opt, .summary { text-wrap:pretty; }
+h2, h3, .sub-title { text-wrap:balance; }
+.period, .meta, .kpi .v, .timeline b, .contact { font-variant-numeric:tabular-nums; }
 .phead { page-break-inside:avoid; }
 .pstart { page-break-inside:avoid; }   /* 제목·메타·요약 바 + 첫 행을 한 덩어리로: 제목만 페이지 끝에 남지 않게 */
 .row .label, .sub-title { page-break-after:avoid; }
@@ -74,19 +88,19 @@ mark.confirm { background:#fff1a8; color:#6b5200; font-size:7.4pt; font-weight:7
 A = dict(ink="#20241f", body="#33382f", mut="#7a7f72", hair="#e3e5dc", acc="#2e6e51", accd="#1f5038")
 CSS_A = BREAKS + f"""
 @page {{ size:A4; margin:16mm 18mm 16mm 18mm; }}
-body {{ margin:0; background:#fff; color:{A['body']}; font:9.3pt/1.6 "Noto Sans CJK KR","Noto Sans KR",sans-serif; }}
+body {{ margin:0; background:#fff; color:{A['body']}; font:9.3pt/1.65 {SANS}; }}
 a {{ color:{A['accd']}; text-decoration:none; }}
 b {{ color:{A['ink']}; }}
-code {{ font-family:"Noto Sans Mono CJK KR",Menlo,monospace; font-size:8.7pt; color:{A['accd']}; background:#f1f4ee; padding:0 3px; border-radius:2px; }}
+code {{ font-family:{MONO}; font-size:8.7pt; color:{A['accd']}; background:#f1f4ee; padding:0 3px; border-radius:2px; }}
 .hd {{ border-bottom:1px solid {A['ink']}; padding-bottom:14px; }}
-.hd .name {{ font-family:"Noto Serif CJK KR","Noto Serif KR",serif; font-weight:600; font-size:23pt; color:{A['ink']}; letter-spacing:-0.5px; line-height:1.2; }}
+.hd .name {{ font-family:{SERIF}; font-weight:600; font-size:24pt; color:{A['ink']}; letter-spacing:-0.02em; line-height:1.2; }}
 .hd .role {{ font-size:10pt; color:{A['body']}; margin-top:4px; }}
 .hd .contact {{ margin-top:8px; font-size:8.6pt; color:{A['mut']}; display:flex; gap:14px; flex-wrap:wrap; }}
 .pf {{ margin-top:10px; font-size:8.8pt; color:{A['body']}; }}
 .pf .tag {{ font-size:7.4pt; font-weight:700; letter-spacing:1.5px; color:{A['acc']}; border:1px solid {A['acc']}; padding:1px 7px; margin-right:8px; vertical-align:1px; }}
 .pf a {{ font-weight:700; }}
 .section {{ margin-top:22px; }}
-.stitle {{ font-family:"Noto Serif CJK KR",serif; font-weight:600; font-size:12.5pt; color:{A['ink']}; letter-spacing:0.5px; padding-bottom:6px; border-bottom:1px solid {A['hair']}; margin-bottom:12px; }}
+.stitle {{ font-family:{SERIF}; font-weight:600; font-size:12.5pt; color:{A['ink']}; letter-spacing:0.06em; padding-bottom:6px; border-bottom:1px solid {A['hair']}; margin-bottom:12px; }}
 .summary-lead {{ margin:0 0 7px; font-size:9.6pt; }}
 li {{ margin:4px 0; }}
 .skills .line {{ margin:5px 0; display:flex; gap:12px; }}
@@ -98,15 +112,15 @@ li {{ margin:4px 0; }}
 .timeline li b {{ color:{A['accd']}; font-weight:700; }}
 .project {{ border-top:1px solid {A['hair']}; margin-top:18px; padding-top:16px; }}
 .section > .project:first-of-type {{ border-top:none; margin-top:4px; padding-top:0; }}
-.project h2 {{ font-family:"Noto Serif CJK KR",serif; font-weight:600; font-size:12pt; margin:0 0 4px; color:{A['ink']}; letter-spacing:-0.2px; display:flex; align-items:baseline; gap:10px; }}
+.project h2 {{ font-family:{SERIF}; font-weight:600; font-size:12pt; margin:0 0 4px; color:{A['ink']}; letter-spacing:-0.2px; display:flex; align-items:baseline; gap:10px; }}
 .project h2 .num {{ font-weight:600; font-size:11pt; color:{A['acc']}; flex-shrink:0; }}
 .meta {{ font-size:8.4pt; color:{A['mut']}; margin-bottom:10px; display:flex; gap:7px; flex-wrap:wrap; align-items:baseline; }}
 .meta .role {{ font-weight:700; color:{A['body']}; }}
-.chip {{ font-family:"Noto Sans Mono CJK KR",Menlo,monospace; font-size:8pt; color:{A['mut']}; }}
+.chip {{ font-size:8.2pt; color:{A['mut']}; }}
 .chip + .chip::before {{ content:"· "; }}
-.summary {{ border-left:2px solid {A['acc']}; padding:2px 0 2px 11px; margin:8px 0 10px; font-size:9.4pt; color:{A['body']}; background:none; }}
+.summary {{ font-family:{SERIF}; font-size:9.9pt; line-height:1.6; color:{A['ink']}; padding:0; margin:8px 0 12px; background:none; }}
 .row {{ margin:10px 0; }}
-.row .label {{ display:block; font-size:7.9pt; font-weight:700; color:{A['acc']}; letter-spacing:1.6px; margin-bottom:3px; page-break-after:avoid; }}
+.row .label {{ display:block; font-size:8.4pt; font-weight:700; color:{A['acc']}; letter-spacing:0; margin-bottom:3px; page-break-after:avoid; }}
 .row .body p {{ margin:0 0 5px; }}
 .options {{ display:block; margin:1px 0; }}
 .opt {{ border:none; background:none; padding:3px 0 3px 15px; position:relative; font-size:8.9pt; color:#5c6154; line-height:1.55; }}
@@ -115,11 +129,11 @@ li {{ margin:4px 0; }}
 .opt .t {{ display:inline; font-weight:700; color:{A['body']}; margin-right:5px; }}
 .opt.adopted {{ color:{A['body']}; }}
 .opt.adopted .t {{ color:{A['accd']}; }}
-.opt.adopted .t::after {{ content:"채택"; font-size:7pt; font-weight:700; color:{A['accd']}; border:1px solid {A['acc']}; padding:0 5px; margin-left:7px; letter-spacing:1px; vertical-align:1px; white-space:nowrap; display:inline-block; }}
+.opt.adopted .t::after {{ content:"채택"; font-size:7pt; font-weight:700; color:{A['accd']}; border:1px solid {A['acc']}; padding:0 5px; margin-left:7px; letter-spacing:0; vertical-align:1px; white-space:nowrap; display:inline-block; }}
 .result {{ display:flex; margin-top:8px; }}
 .kpi {{ border:none; border-left:1px solid {A['hair']}; padding:2px 18px; min-width:0; flex:initial; }}
 .kpi:first-child {{ border-left:none; padding-left:0; }}
-.kpi .v {{ font-family:"Noto Serif CJK KR",serif; font-weight:600; font-size:13pt; color:{A['accd']}; line-height:1.25; letter-spacing:-0.3px; }}
+.kpi .v {{ font-family:{SERIF}; font-weight:600; font-size:13pt; color:{A['accd']}; line-height:1.25; letter-spacing:-0.3px; }}
 .kpi .k {{ font-size:7.9pt; color:{A['mut']}; margin-top:2px; }}
 .related {{ font-size:8.4pt; color:{A['mut']}; margin-top:9px; }}
 .related a {{ color:{A['accd']}; }}
@@ -133,19 +147,19 @@ li {{ margin:4px 0; }}
 B = dict(ink="#15181c", body="#2b3138", mut="#566069", hair="#e1e5ea", acc="#1e4fc2", tint="#eef2fb")
 CSS_B = BREAKS + f"""
 @page {{ size:A4; margin:15mm 16mm 15mm 16mm; }}
-body {{ margin:0; background:#fff; color:{B['body']}; font:9.2pt/1.58 "Noto Sans CJK KR","Noto Sans KR",sans-serif; }}
+body {{ margin:0; background:#fff; color:{B['body']}; font:9.3pt/1.62 {SANS}; }}
 a {{ color:{B['acc']}; text-decoration:none; }}
 b {{ color:{B['ink']}; }}
-code {{ font-family:"Noto Sans Mono CJK KR",Menlo,monospace; font-size:8.6pt; color:{B['ink']}; background:#f2f4f7; padding:0 3px; }}
+code {{ font-family:{MONO}; font-size:8.6pt; color:{B['ink']}; background:#f2f4f7; padding:0 3px; }}
 .hd {{ display:flex; justify-content:space-between; align-items:flex-end; border-bottom:3px solid {B['ink']}; padding-bottom:12px; }}
-.hd .name {{ font-weight:900; font-size:22pt; color:{B['ink']}; letter-spacing:-0.8px; line-height:1.15; }}
+.hd .name {{ font-weight:800; font-size:24pt; color:{B['ink']}; letter-spacing:-0.03em; line-height:1.15; }}
 .hd .role {{ font-size:9.6pt; color:{B['mut']}; margin-top:3px; font-weight:500; }}
 .hd .contact {{ text-align:right; font-size:8.5pt; color:{B['mut']}; line-height:1.8; }}
 .pf {{ margin-top:10px; font-size:8.7pt; color:{B['body']}; }}
 .pf .tag {{ font-size:7.3pt; font-weight:800; letter-spacing:1.2px; color:#fff; background:{B['acc']}; padding:2px 7px; margin-right:8px; white-space:nowrap; }}
 .pf a {{ white-space:nowrap; font-weight:800; }}
 .section {{ margin-top:24px; }}
-.stitle {{ font-weight:900; font-size:11.5pt; color:{B['ink']}; letter-spacing:0.8px; margin-bottom:0; }}
+.stitle {{ font-weight:800; font-size:11pt; color:{B['ink']}; letter-spacing:0.12em; margin-bottom:0; }}
 .stitle::after {{ content:""; display:block; width:28px; height:3.5px; background:{B['acc']}; margin:5px 0 13px; }}
 .summary-lead {{ margin:0 0 7px; font-size:9.5pt; }}
 li {{ margin:4px 0; }}
@@ -158,26 +172,26 @@ li {{ margin:4px 0; }}
 .timeline li b {{ color:{B['acc']}; }}
 .project {{ border-top:1px solid {B['hair']}; margin-top:19px; padding-top:15px; }}
 .section > .project:first-of-type {{ border-top:none; margin-top:2px; padding-top:0; }}
-.project h2 {{ font-size:11.8pt; margin:0 0 4px; font-weight:800; color:{B['ink']}; letter-spacing:-0.3px; display:flex; align-items:baseline; gap:9px; }}
-.project h2 .num {{ font-weight:900; font-size:12pt; color:{B['acc']}; flex-shrink:0; letter-spacing:0; }}
+.project h2 {{ font-size:12pt; margin:0 0 5px; font-weight:700; color:{B['ink']}; letter-spacing:-0.02em; display:flex; align-items:baseline; gap:9px; }}
+.project h2 .num {{ font-weight:800; font-size:12pt; font-variant-numeric:tabular-nums; color:{B['acc']}; flex-shrink:0; letter-spacing:0; }}
 .meta {{ font-size:8.3pt; color:{B['mut']}; margin-bottom:9px; display:flex; gap:6px; flex-wrap:wrap; align-items:center; }}
 .meta .role {{ font-weight:700; color:{B['ink']}; }}
-.chip {{ font-family:"Noto Sans Mono CJK KR",Menlo,monospace; font-size:7.4pt; border:1px solid {B['hair']}; padding:0 5px; color:{B['body']}; background:#fff; }}
-.summary {{ background:{B['tint']}; border-left:3px solid {B['acc']}; padding:7px 11px; margin:7px 0 10px; font-size:9.2pt; }}
+.chip {{ font-size:7.8pt; font-weight:500; border:1px solid {B['hair']}; padding:0 6px; color:{B['body']}; background:#fff; }}
+.summary {{ background:{B['tint']}; padding:8px 12px; margin:7px 0 11px; font-size:9.4pt; font-weight:500; color:{B['ink']}; }}
 .row {{ margin:9px 0; }}
-.row .label {{ display:block; font-size:8pt; font-weight:800; color:{B['ink']}; letter-spacing:1.4px; margin-bottom:3px; page-break-after:avoid; }}
-.row .label::before {{ content:""; display:inline-block; width:7px; height:7px; background:{B['acc']}; margin-right:6px; }}
+.row .label {{ display:block; font-size:8.6pt; font-weight:700; color:{B['ink']}; letter-spacing:0; margin-bottom:3px; page-break-after:avoid; }}
+.row .label::before {{ content:""; display:inline-block; width:6px; height:6px; background:{B['acc']}; margin-right:6px; vertical-align:1px; }}
 .row .body p {{ margin:0 0 5px; }}
 .options {{ display:block; margin:1px 0; }}
-.opt {{ border:none; border-left:3px solid {B['hair']}; background:none; padding:2px 0 2px 11px; margin:5px 0; font-size:8.8pt; color:#59616b; line-height:1.5; }}
+.opt {{ border:none; border-left:1px solid {B['hair']}; background:none; padding:2px 0 2px 11px; margin:5px 0; font-size:8.8pt; color:#59616b; line-height:1.5; }}
 .opt .t {{ display:inline; font-weight:700; color:{B['body']}; margin-right:5px; }}
-.opt.adopted {{ border-left-color:{B['acc']}; background:{B['tint']}; padding:5px 10px 5px 11px; color:{B['body']}; }}
+.opt.adopted {{ border-left-color:{B['acc']}; background:{B['tint']}; padding:6px 12px 6px 11px; color:{B['body']}; }}
 .opt.adopted .t {{ color:{B['acc']}; }}
-.opt.adopted .t::after {{ content:"채택"; font-size:7pt; font-weight:800; background:{B['acc']}; color:#fff; padding:1px 5px; margin-left:7px; letter-spacing:1px; vertical-align:1px; white-space:nowrap; display:inline-block; }}
+.opt.adopted .t::after {{ content:"채택"; font-size:7pt; font-weight:800; background:{B['acc']}; color:#fff; padding:1px 5px; margin-left:7px; letter-spacing:0; vertical-align:1px; white-space:nowrap; display:inline-block; }}
 .result {{ display:flex; gap:0; margin-top:8px; background:{B['tint']}; padding:8px 4px; }}
 .kpi {{ border:none; border-left:1px solid #d5ddf0; padding:1px 16px; min-width:0; flex:1; }}
 .kpi:first-child {{ border-left:none; }}
-.kpi .v {{ font-size:12.5pt; font-weight:900; color:{B['acc']}; line-height:1.25; letter-spacing:-0.4px; }}
+.kpi .v {{ font-size:13pt; font-weight:800; color:{B['acc']}; line-height:1.25; letter-spacing:-0.02em; }}
 .kpi .k {{ font-size:7.8pt; color:{B['mut']}; margin-top:2px; }}
 .related {{ font-size:8.3pt; color:{B['mut']}; margin-top:9px; }}
 .sub-block {{ margin-top:13px; padding-top:10px; border-top:1px dashed {B['hair']}; }}
@@ -190,21 +204,22 @@ li {{ margin:4px 0; }}
 C = dict(ink="#17191c", body="#26292d", mut="#6e675f", hair="#e6e2dc", acc="#b3611e", accd="#8f4d16", tint="#faf5ee")
 CSS_C = BREAKS + f"""
 @page {{ size:A4; margin:14mm 16mm 15mm 16mm; }}
-body {{ margin:0; background:#fff; color:{C['body']}; font:9.3pt/1.58 "Noto Sans CJK KR","Noto Sans KR",sans-serif; }}
+body {{ margin:0; background:#fff; color:{C['body']}; font:9.3pt/1.62 {SANS}; }}
 a {{ color:{C['accd']}; text-decoration:none; }}
 b {{ color:{C['ink']}; }}
-code {{ font-family:"Noto Sans Mono CJK KR",Menlo,monospace; font-size:8.7pt; color:{C['accd']}; background:{C['tint']}; padding:0 3px; border-radius:2px; }}
+code {{ font-family:{MONO}; font-size:8.7pt; color:{C['accd']}; background:{C['tint']}; padding:0 3px; border-radius:2px; }}
 .mast {{ background:{C['ink']}; color:#fff; padding:15px 18px 14px; margin-bottom:4px; }}
-.mast .name {{ font-weight:700; font-size:21pt; letter-spacing:-0.5px; line-height:1.2; color:#fff; }}
+.mast .name {{ font-weight:800; font-size:23pt; letter-spacing:-0.02em; line-height:1.2; color:#fff; }}
 .mast .role {{ font-size:9.6pt; color:#c9c3ba; margin-top:3px; }}
-.mast .contact {{ margin-top:9px; font-size:8.5pt; color:#a8a29a; display:flex; gap:14px; flex-wrap:wrap; }}
+.mast .contact {{ margin-top:9px; font-size:8.5pt; color:#b3ada4; letter-spacing:0; display:flex; gap:14px; flex-wrap:wrap; }}
 .mast .contact a {{ color:#e8c49a; }}
-.pf {{ background:{C['tint']}; border-left:3px solid {C['acc']}; padding:7px 12px; margin-top:0; font-size:8.7pt; color:{C['body']}; }}
+.pf {{ background:{C['tint']}; padding:7px 18px; margin-top:0; font-size:8.7pt; color:{C['body']}; }}
 .pf .tag {{ font-size:7.3pt; font-weight:800; letter-spacing:1.2px; color:#fff; background:{C['acc']}; padding:1px 6px; margin-right:8px; white-space:nowrap; }}
 .pf a {{ font-weight:700; }}
 .section {{ margin-top:22px; }}
-.stitle {{ font-size:11.5pt; font-weight:800; color:{C['ink']}; margin-bottom:12px; }}
-.stitle .ov {{ display:block; font-size:7.2pt; font-weight:800; color:{C['acc']}; letter-spacing:2.2px; margin-bottom:2px; }}
+.stitle {{ display:flex; align-items:center; gap:9px; font-size:11.5pt; font-weight:700; color:{C['ink']}; margin-bottom:12px; }}
+.stitle::after {{ content:""; flex:1; height:1px; background:{C['hair']}; }}
+.stitle .ov {{ font-size:7.2pt; font-weight:700; color:#fff; background:{C['acc']}; letter-spacing:0.14em; padding:2px 6px 2px 7px; }}
 .summary-lead {{ margin:0 0 7px; font-size:9.5pt; }}
 li {{ margin:4px 0; }}
 .skills .line {{ margin:5px 0; display:flex; gap:12px; }}
@@ -216,14 +231,14 @@ li {{ margin:4px 0; }}
 .timeline li b {{ color:{C['accd']}; }}
 .project {{ border-top:1px solid {C['hair']}; margin-top:18px; padding-top:15px; }}
 .section > .project:first-of-type {{ border-top:none; margin-top:2px; padding-top:0; }}
-.project h2 {{ font-size:11.6pt; margin:0 0 4px; font-weight:800; color:{C['ink']}; letter-spacing:-0.3px; display:flex; align-items:baseline; gap:9px; }}
-.project h2 .num {{ font-weight:800; font-size:9pt; color:#fff; background:{C['ink']}; padding:1px 7px; flex-shrink:0; letter-spacing:0.5px; }}
+.project h2 {{ font-size:12pt; margin:0 0 5px; font-weight:700; color:{C['ink']}; letter-spacing:-0.02em; display:flex; align-items:baseline; gap:9px; }}
+.project h2 .num {{ font-weight:700; font-size:9pt; font-variant-numeric:tabular-nums; color:#fff; background:{C['ink']}; padding:1px 7px; flex-shrink:0; letter-spacing:0.5px; }}
 .meta {{ font-size:8.3pt; color:{C['mut']}; margin-bottom:9px; display:flex; gap:6px; flex-wrap:wrap; align-items:center; }}
 .meta .role {{ font-weight:700; color:{C['ink']}; }}
-.chip {{ font-family:"Noto Sans Mono CJK KR",Menlo,monospace; font-size:7.4pt; background:#f6f3ef; border:1px solid {C['hair']}; padding:0 5px; color:{C['body']}; }}
-.summary {{ background:{C['tint']}; border-left:3px solid {C['acc']}; padding:7px 11px; margin:7px 0 10px; font-size:9.3pt; }}
+.chip {{ font-size:7.8pt; font-weight:500; background:#f6f3ef; border:1px solid {C['hair']}; padding:0 6px; color:{C['body']}; }}
+.summary {{ background:{C['tint']}; padding:8px 12px; margin:7px 0 11px; font-size:9.4pt; font-weight:500; color:{C['ink']}; }}
 .row {{ margin:9px 0; }}
-.row .label {{ display:block; font-size:7.8pt; font-weight:800; color:{C['acc']}; letter-spacing:1.8px; margin-bottom:3px; page-break-after:avoid; }}
+.row .label {{ display:block; font-size:8.6pt; font-weight:700; color:{C['accd']}; letter-spacing:0; margin-bottom:3px; page-break-after:avoid; }}
 .row .body p {{ margin:0 0 5px; }}
 .options {{ display:block; margin:1px 0; }}
 .opt {{ border:none; background:none; padding:3px 0 3px 15px; margin:3px 0; position:relative; font-size:8.8pt; color:#5f5a52; line-height:1.5; }}
@@ -232,10 +247,10 @@ li {{ margin:4px 0; }}
 .opt .t {{ display:inline; font-weight:700; color:{C['body']}; margin-right:5px; }}
 .opt.adopted {{ color:{C['body']}; }}
 .opt.adopted .t {{ color:{C['accd']}; }}
-.opt.adopted .t::after {{ content:"채택"; font-size:7pt; font-weight:800; background:{C['acc']}; color:#fff; padding:1px 5px; margin-left:7px; letter-spacing:1px; vertical-align:1px; white-space:nowrap; display:inline-block; }}
+.opt.adopted .t::after {{ content:"채택"; font-size:7pt; font-weight:800; background:{C['acc']}; color:#fff; padding:1px 5px; margin-left:7px; letter-spacing:0; vertical-align:1px; white-space:nowrap; display:inline-block; }}
 .result {{ display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }}
 .kpi {{ background:{C['ink']}; border:none; padding:6px 13px 7px; min-width:110px; flex:1; }}
-.kpi .v {{ font-size:11.5pt; font-weight:800; color:#fff; line-height:1.25; letter-spacing:-0.3px; }}
+.kpi .v {{ font-size:12pt; font-weight:700; color:#fff; line-height:1.25; letter-spacing:0; }}
 .kpi .k {{ font-size:7.7pt; color:#b3ada4; margin-top:2px; }}
 .related {{ font-size:8.3pt; color:{C['mut']}; margin-top:9px; }}
 .sub-block {{ margin-top:13px; padding-top:10px; border-top:1px dashed {C['hair']}; }}
