@@ -25,7 +25,7 @@ scripts/render.py           yaml → HTML → PDF + PNG, 디자인 A/B/C, 빌드
 scripts/check.py            페이지 수 · 제목 홀로 남음 · 링크 · 플레이스홀더 · 문체 검사
 scripts/check_links.py      링크 접속 확인 (표준 라이브러리만, 어디서나 실행)
 scripts/git_log.sh          로컬 git 저장소에서 작성자 기준 커밋 로그 추출
-scripts/setup.sh            Playwright Chromium, 폰트(Pretendard, Noto Sans/Serif CJK KR), poppler 설치
+scripts/setup.sh            스킬 연결(~/.claude/skills 링크) + Playwright Chromium, 폰트(Pretendard, Noto Sans/Serif CJK KR), poppler 설치
 scripts/scan.py             공고 수집 (원티드·점핏·Greenhouse·토스·NHN·카카오·greetinghr) → 거르기 → pipeline.md
 scripts/alive.py            추적 공고 마감 확인
 scripts/tracker.py          지원 현황 기록(add/set)과 통합 보고표(report)

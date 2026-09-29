@@ -77,18 +77,39 @@
 Python 3.9 이상, macOS(Homebrew) 또는 Debian/Ubuntu(apt)가 필요합니다.
 
 ```bash
-git clone https://github.com/jaden7856/resume-builder.git
-cd resume-builder
-bash scripts/setup.sh   # Python 패키지, Playwright Chromium, 폰트(Pretendard, Noto CJK KR), poppler
+git clone https://github.com/jaden7856/resume-builder.git ~/resume-builder
+cd ~/resume-builder
+bash scripts/setup.sh
 ```
 
-### 2. Claude 스킬로 연결
+`setup.sh`가 하는 일:
+- **Claude 스킬 연결:** `~/.claude/skills/resume-pdf-builder`가 이 폴더를 가리키게 합니다. 복사가 아니라 링크라서, 이 폴더에 쌓이는 개인화가 스킬에 바로 반영됩니다.
+- **빌드 환경:** Python 패키지, Playwright Chromium, 폰트(Pretendard, Noto CJK KR), poppler를 설치합니다.
+
+| 옵션 | 설명 |
+|---|---|
+| `--skill-only` | 스킬 연결만 |
+| `--no-skill` | 스킬 연결 없이 빌드 환경만 |
+| `CLAUDE_SKILLS_DIR=경로` | 스킬 폴더 위치를 바꿀 때 (기본 `~/.claude/skills`) |
+
+같은 이름의 폴더나 다른 곳을 가리키는 링크가 이미 있으면 덮어쓰지 않고 알려 줍니다.
+
+> **왜 마켓플레이스·스킬 설치가 아니라 `git clone`인가요?**
+>
+> 이 스킬은 쓸수록 내 것이 되도록 만들었습니다.
+> - **내 기준이 도구 옆에 쌓입니다.** 목표 역할·연봉·제외 조건(`data/profile/`), 경험 근거(`data/experience/`), 검색 조건·우선 기업(`data/search/`), 평가와 지원 기록이 모두 저장소 안 `data/`에 쌓입니다.
+> - **설치 방식에 따라 기록이 사라질 수 있습니다.** 마켓플레이스·플러그인으로 설치한 스킬은 관리되는 캐시 폴더(예: `~/.claude/plugins/cache/…/<버전>/`)에 들어가고, 업데이트할 때 버전 폴더째 바뀝니다. 그러면 거기 쌓인 개인 기록과 내가 고친 규칙이 함께 사라집니다.
+> - **업데이트해도 내 기록은 그대로입니다.** clone한 폴더는 내 작업 사본이라 `git pull`로 도구만 받아옵니다. `data/`는 `.gitignore`로 빠져 있어 업데이트가 건드리지 않습니다.
+> - **도구 자체를 고쳐 쓸 수 있습니다.** 수집 사이트(`references/sources.md`, `scripts/providers/`), 평가 기준(`modes/evaluate.md`), 문체 규칙(`references/style_rules.yaml`), 이력서 디자인(`scripts/render.py`)이 모두 평범한 파일입니다. fork해서 내 방식대로 바꾸고 원본의 업데이트는 merge로 받으면 됩니다.
+> - **자료가 내 PC 밖으로 나가지 않습니다.** 공고 수집과 이력서 빌드는 이 PC의 Python·Chromium으로 돌고, 개인 자료는 로컬 파일로만 남습니다.
+
+업데이트:
 
 ```bash
-ln -s "$PWD" ~/.claude/skills/resume-pdf-builder   # Claude Code 기준
+cd ~/resume-builder && git pull   # data/ 는 그대로
 ```
 
-### 3. Claude에게 이렇게 말하면 됩니다
+### 2. Claude에게 이렇게 말하면 됩니다
 
 | 말하기 | 일어나는 일 |
 |---|---|
@@ -98,7 +119,7 @@ ln -s "$PWD" ~/.claude/skills/resume-pdf-builder   # Claude Code 기준
 | "이 공고용 이력서 만들어줘" | 평가의 계획으로 yaml 작성 → PDF 빌드 → 검사 → 수정 반복 |
 | "지원했어" / "서류 붙었어" | 현황표 갱신, 재지원 쿨다운 적용, 결과가 쌓이면 기준 조정 제안 |
 
-### 4. 스크립트만 따로 쓰기
+### 3. 스크립트만 따로 쓰기
 
 ```bash
 bash scripts/weekly.sh                             # 수집 → 마감 확인 → 현황표 (LLM 없이, cron·launchd 가능)
@@ -206,7 +227,7 @@ scripts/
   render.py                  yaml → HTML → PDF + PNG, 디자인 A/B/C
   check.py · check_links.py  빌드 후 검사, 링크 접속 확인
   git_log.sh                 로컬 git 저장소에서 내 커밋 로그 추출
-  setup.sh                   Chromium, 폰트, poppler 설치
+  setup.sh                   설치: 스킬 연결 + Chromium, 폰트, poppler
 references/
   sources.md                 채용 사이트별 수집 방법
   yaml_schema.md             이력서 yaml 형식

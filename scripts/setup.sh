@@ -1,8 +1,48 @@
 #!/usr/bin/env bash
-# 빌드 환경 준비: Python 패키지, Playwright Chromium, 폰트(Pretendard, Noto Sans/Serif CJK KR), poppler(PNG 변환)
-# 사용: bash scripts/setup.sh
+# 설치: Claude 스킬 연결 + 빌드 환경(Python 패키지, Playwright Chromium, 폰트 Pretendard·Noto Sans/Serif CJK KR, poppler)
+# 사용: bash scripts/setup.sh              전부
+#       bash scripts/setup.sh --skill-only 스킬 연결만
+#       bash scripts/setup.sh --no-skill   스킬 연결 없이 빌드 환경만
+# 스킬 폴더를 바꾸려면 CLAUDE_SKILLS_DIR=경로 (기본 ~/.claude/skills)
 set -euo pipefail
 cd "$(dirname "$0")/.."
+
+SKILL=1; ENV=1
+for a in "$@"; do
+  case "$a" in
+    --skill-only) ENV=0 ;;
+    --no-skill) SKILL=0 ;;
+    *) echo "알 수 없는 옵션: $a"; exit 2 ;;
+  esac
+done
+
+link_skill() {
+  # 이 폴더를 그대로 스킬로 연결한다. 복사하지 않으므로 data/ 개인화와 git pull 업데이트가 스킬에 바로 반영된다.
+  local repo name dir dest
+  repo="$(pwd -P)"
+  name="$(sed -n 's/^name:[[:space:]]*//p' SKILL.md | head -1)"
+  dir="${CLAUDE_SKILLS_DIR:-$HOME/.claude/skills}"
+  dest="$dir/$name"
+  mkdir -p "$dir"
+  if [ -L "$dest" ]; then
+    if [ "$(cd "$dest" 2>/dev/null && pwd -P)" = "$repo" ]; then
+      echo "  이미 연결됨: $dest"
+    else
+      echo "  $dest 가 다른 곳($(readlink "$dest"))을 가리킵니다. 바꾸려면: rm \"$dest\" 후 다시 실행"
+    fi
+  elif [ -e "$dest" ]; then
+    echo "  $dest 에 폴더/파일이 이미 있어 건드리지 않았습니다. 옮긴 뒤 다시 실행하세요."
+  else
+    ln -s "$repo" "$dest"
+    echo "  연결함: $dest → $repo"
+  fi
+}
+
+if [ "$SKILL" = 1 ]; then
+  echo "▶ Claude 스킬 연결"
+  link_skill
+fi
+[ "$ENV" = 1 ] || exit 0
 
 PIP_FLAGS=""
 python3 -m pip install --help 2>/dev/null | grep -q -- "--break-system-packages" && PIP_FLAGS="--break-system-packages"

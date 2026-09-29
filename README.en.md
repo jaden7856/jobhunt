@@ -79,18 +79,39 @@ Rendered from the fictional sample [`examples/example.yaml`](examples/example.ya
 Requires Python 3.9+, and macOS (Homebrew) or Debian/Ubuntu (apt).
 
 ```bash
-git clone https://github.com/jaden7856/resume-builder.git
-cd resume-builder
-bash scripts/setup.sh   # Python packages, Playwright Chromium, fonts (Pretendard, Noto CJK KR), poppler
+git clone https://github.com/jaden7856/resume-builder.git ~/resume-builder
+cd ~/resume-builder
+bash scripts/setup.sh
 ```
 
-### 2. Connect it as a Claude skill
+What `setup.sh` does:
+- **Connects the Claude skill:** points `~/.claude/skills/resume-pdf-builder` at this folder. It's a link, not a copy, so the personalization that builds up here reaches the skill immediately.
+- **Build environment:** installs Python packages, Playwright Chromium, fonts (Pretendard, Noto CJK KR) and poppler.
+
+| Option | Description |
+|---|---|
+| `--skill-only` | Only connect the skill |
+| `--no-skill` | Only the build environment |
+| `CLAUDE_SKILLS_DIR=path` | Use a different skills folder (default `~/.claude/skills`) |
+
+If a folder or a link to somewhere else already exists under that name, it's left untouched and you're told what to do.
+
+> **Why `git clone` instead of a marketplace or skill install?**
+>
+> This skill is meant to become yours the more you use it.
+> - **Your criteria live next to the tool.** Target roles, salary and deal-breakers (`data/profile/`), experience evidence (`data/experience/`), search settings and priority companies (`data/search/`), evaluations and applications all accumulate under `data/` inside the repository.
+> - **Some installs would lose that history.** A marketplace or plugin install lives in a managed cache folder (e.g. `~/.claude/plugins/cache/…/<version>/`) that is swapped out on every update. Your records and your rule changes would go with it.
+> - **Updates leave your data alone.** A clone is your own working copy, so `git pull` brings in tool updates only. `data/` is git-ignored and never touched.
+> - **You can change the tool itself.** Job sources (`references/sources.md`, `scripts/providers/`), evaluation rules (`modes/evaluate.md`), writing rules (`references/style_rules.yaml`) and resume design (`scripts/render.py`) are plain files. Fork it, adapt it, and merge upstream changes when you want them.
+> - **Your data stays on your machine.** Collection and builds run on your own Python and Chromium, and personal data only ever exists as local files.
+
+Update:
 
 ```bash
-ln -s "$PWD" ~/.claude/skills/resume-pdf-builder   # Claude Code
+cd ~/resume-builder && git pull   # data/ stays as is
 ```
 
-### 3. Talk to Claude
+### 2. Talk to Claude
 
 | Say | What happens |
 |---|---|
@@ -100,7 +121,7 @@ ln -s "$PWD" ~/.claude/skills/resume-pdf-builder   # Claude Code
 | "이 공고용 이력서 만들어줘" (make a resume for it) | Writes the YAML from the plan → builds the PDF → checks → revises |
 | "지원했어" / "서류 붙었어" (applied / passed screening) | Updates the tracker, applies the re-apply cooldown, suggests criteria tweaks as outcomes accumulate |
 
-### 4. Use the scripts on their own
+### 3. Use the scripts on their own
 
 ```bash
 bash scripts/weekly.sh                             # collect → liveness check → overview (no LLM, cron/launchd friendly)
@@ -208,7 +229,7 @@ scripts/
   render.py                  YAML → HTML → PDF + PNG, designs A/B/C
   check.py · check_links.py  Post-build checks, link reachability
   git_log.sh                 Extract your own commits from a local git repo
-  setup.sh                   Install Chromium, fonts, poppler
+  setup.sh                   Install: skill link + Chromium, fonts, poppler
 references/
   sources.md                 Per-site collection methods
   yaml_schema.md             Resume YAML format
