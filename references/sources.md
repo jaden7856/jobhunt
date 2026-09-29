@@ -15,11 +15,11 @@
 
 | 사이트 | 목록 | 상세 (자격요건 본문) | 실측 |
 |---|---|---|---|
-| 원티드 | `https://www.wanted.co.kr/api/chaos/navigation/v1/results?job_group_id=518&job_ids=872\|674&years=5` 또는 `/api/v4/jobs?country=kr&tag_type_ids=872&job_sort=job.latest_order&limit=..&offset=..` | `/api/v4/jobs/{id}` → `job.detail.{requirements, main_tasks, preferred_points, intro, benefits}` | 2026-09-29 |
-| 점핏 | `https://jumpit-api.saramin.co.kr/api/positions?keyword=..&page=N` (`jobCategory=1` 서버/백엔드) | `/api/position/{id}` → `qualifications` | 2026-09-29 |
+| 원티드 | `https://www.wanted.co.kr/api/chaos/navigation/v1/results?job_group_id=518&job_ids=872\|674&years=5` 또는 `/api/v4/jobs?country=kr&tag_type_ids=872&job_sort=job.latest_order&limit=..&offset=..` | `/api/v4/jobs/{id}` → `job.detail.{requirements, main_tasks, preferred_points, intro, benefits}`, 마감은 `job.status`(active/close), 연봉은 `annual_from/to`. 키워드 검색(`/api/chaos/search/v1/results?query=`)은 결과가 적어 목록 API를 쓴다 | 2026-09-29 |
+| 점핏 | `https://jumpit-api.saramin.co.kr/api/positions?keyword=..&page=N` (`jobCategory=1` 서버/백엔드) | `/api/position/{id}` → `qualifications`. 마감일 필드로 지난 공고를 거른다 | 2026-09-29 |
 | 사람인 | 검색 페이지 `/zf_user/search/recruit?searchword=..` (HTML) | `relay/view`가 아니라 `/zf_user/jobs/relay/view-detail?rec_idx={id}&rec_seq=0` 을 받아야 본문이 나온다 | 2026-09-23 |
-| 잡코리아 | 검색 페이지 `/Search/?stext=..` (HTML, 목록일 뿐 공고 아님) | `/Recruit/GI_Read/{id}` | 2026-09-23 |
-| LinkedIn | `linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=..&location=Seoul, South Korea&f_TPR=r2592000&start=N` | `/jobs-guest/jobs/api/jobPosting/{id}` | 2026-09-23 |
+| 잡코리아 | 검색 페이지 `/Search/?stext=..` (HTML, 목록일 뿐 공고 아님) | `/Recruit/GI_Read/{id}`. 페이지에서 마감일을 정규식으로 뽑으면 엉뚱한 문구가 잡힌다(2026-09-01) → 본문의 접수 기간을 직접 읽는다 | 2026-09-23 |
+| LinkedIn | `linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=..&location=Seoul, South Korea&f_TPR=r2592000&start=N` | `/jobs-guest/jobs/api/jobPosting/{id}`. 숫자 ID만으로 `jobs/view/{id}` URL을 다시 만들면 전부 마감처럼 보인다(2026-09-01) → 검색 결과의 전체 URL을 그대로 쓴다. 한국어 JD만 채택 | 2026-09-23 |
 | 리멤버 | `https://career.rememberapp.co.kr/job/postings?search=..` (브라우저로 열어 읽음, 검색엔진 색인 없음) | 브라우저 | 2026-09-01 |
 | 프로그래머스 커리어 | 도메인 없음 | — | 2026-09-29 |
 
@@ -35,7 +35,8 @@
 | 네이버 | `recruit.navercorp.com/rcrt/loadJobList.do?…&firstIndex=0` (JSON, `annoId`) → `/rcrt/view.do?annoId={id}` | 한 공고에 여러 직무가 섹션으로 들어 있으니 해당 섹션만 판정 | 2026-09-23 |
 | 두나무 | `careers.dunamu.com` 메인 HTML의 `/detail/{n}` 링크 | 공고 수 적음 | 2026-09-23 |
 | SK텔레콤 | `skcareers.com/Recruit?corpCode=10005` | `careers.sktelecom.com`은 이관 안내만 있음 | 2026-09-23 |
-| greetinghr (`*.career.greetinghr.com`) | 첫 화면에 공고 목록 | 브라우저 한 번 읽기로 충분 | 2026-09-01 |
+| 카카오 | `https://careers.kakao.com/public/api/job-list?part=TECHNOLOGY&company=ALL&page=N` | 공동체(`S-`) 공고는 자격요건이 비어 있음(외부 사이트) | 2026-09-23 |
+| greetinghr (`*.career.greetinghr.com`) | `https://{slug}.career.greetinghr.com/ko/home` HTML의 `__NEXT_DATA__`에 공고 목록, 본문은 `/ko/o/{id}` | bucketplace·kakaopay·kakaoenterprise는 `__NEXT_DATA__`가 없어 브라우저로 읽는다 | 2026-09-23 |
 | roundhr (`*.recruit.roundhr.com`) | 브라우저 | — | 미확인 |
 
 새 회사를 추가할 때: Greenhouse·Lever·Ashby 공개 API가 있는지 먼저 확인하고, 없으면 채용 사이트 URL이 열리는지 확인한 뒤에만 `data/search/sources.yaml`에 넣는다. 확인하지 않은 URL은 넣지 않는다.
