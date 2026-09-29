@@ -2,6 +2,7 @@
 
 사이트 공통 사실만 적는다(엔드포인트, 본문 위치, 마감 판정). 개인 검색 조건은 `data/search/sources.yaml`.
 실측 날짜를 붙인다. 형식이 바뀌면 여기를 고치고 날짜를 갱신한다.
+`scripts/providers/`가 자동으로 다루는 곳: 원티드, 점핏, Greenhouse, 토스, NHN, 카카오, greetinghr(`__NEXT_DATA__` 있는 곳). 나머지는 Claude가 이 문서대로 직접 수집한다.
 
 ## 공통 규칙
 

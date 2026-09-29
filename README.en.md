@@ -117,6 +117,11 @@ Then ask Claude something like *"Build me a resume for this job posting"*. The f
 | `modes/tailor.md` | Turns the tailoring plan into a per-posting YAML, then builds and checks the PDF (steps below) |
 | `modes/track.md` | Records applications and outcomes, and proposes triage adjustments as results accumulate |
 
+```bash
+bash scripts/weekly.sh                      # collect → liveness check → combined report (no LLM)
+python3 scripts/tracker.py set 3 지원함      # record an application (re-apply cooldown is automatic)
+```
+
 Per-site collection methods live in [`references/sources.md`](references/sources.md); the design and phases in [`docs/ROADMAP.md`](docs/ROADMAP.md) (Korean).
 
 ## 🧭 How It Works (tailoring)
@@ -159,6 +164,8 @@ scripts/
   check.py                   Page count, orphaned headings, links, placeholders, style
   check_links.py             Link reachability (stdlib only)
   git_log.sh                 Extract your own commits from a local git repo
+  scan.py · alive.py         Collect postings, check whether they are still open (providers/ per site)
+  tracker.py · weekly.sh     Application tracker and combined report, weekly scan
   setup.sh                   Install Chromium, fonts, poppler
 references/
   sources.md                 Per-site job collection methods

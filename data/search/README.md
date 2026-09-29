@@ -5,3 +5,5 @@
 - `pipeline.md`: 1차 선별을 통과한 공고 대기함(대기 / 제외 / 지원 완료 / 마감 / 처리 완료).
 - `scan-history.tsv`: 한 번이라도 본 공고 기록. 중복 제거에 쓴다.
 - `blacklist.md`: 지원하지 않을 회사(사용자가 직접 정한 것만).
+- `inbox/`: `scripts/scan.py`가 받은 공고 본문(자격요건·우대·주요업무). 1차 선별이 읽는다.
+- `reports/`: `scripts/weekly.sh` 주간 보고.

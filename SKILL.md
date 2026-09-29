@@ -26,6 +26,11 @@ scripts/check.py            페이지 수 · 제목 홀로 남음 · 링크 · �
 scripts/check_links.py      링크 접속 확인 (표준 라이브러리만, 어디서나 실행)
 scripts/git_log.sh          로컬 git 저장소에서 작성자 기준 커밋 로그 추출
 scripts/setup.sh            Playwright Chromium, 폰트(Pretendard, Noto Sans/Serif CJK KR), poppler 설치
+scripts/scan.py             공고 수집 (원티드·점핏·Greenhouse·토스·NHN·카카오·greetinghr) → 거르기 → pipeline.md
+scripts/alive.py            추적 공고 마감 확인
+scripts/tracker.py          지원 현황 기록(add/set)과 통합 보고표(report)
+scripts/weekly.sh           주간 스캔의 LLM 없는 부분 (scan → alive → report)
+scripts/providers/          사이트별 수집 모듈
 references/sources.md       채용 사이트별 수집 방법 (엔드포인트, 본문 위치, 마감 판정)
 references/yaml_schema.md   yaml 형식
 references/writing_rules.md 문장 규칙과 점검 방법
@@ -52,9 +57,12 @@ data/                       사용자 자료 (git 제외, 구조만 올라감)
 | 요청 예 | 모드 |
 |---|---|
 | "처음 설정", "내 조건 바꿀래", "목표 역할 추가" | `modes/onboard.md` |
-| "공고 찾아줘", "새 공고 있어?", "주간 스캔" | `modes/scan.md` |
+| "공고 찾아줘", "새 공고 있어?", "주간 스캔" | `modes/scan.md` (`bash scripts/weekly.sh` 먼저) |
+| "새로 수집한 공고 선별해줘" | `modes/scan.md` 4단계부터 |
+| "공고 현황 보여줘", "표로 보여줘" | `python3 scripts/tracker.py report --alive` 출력 |
 | 공고 URL·본문을 줌, "이 공고 어때?", "평가해줘" | `modes/evaluate.md` |
 | "이 공고용 이력서 만들어줘", "이력서 고쳐줘", "다시 빌드" | `modes/tailor.md` (평가 없이 공고만 받았으면 evaluate를 먼저 제안) |
-| "지원했어", "서류 붙었어", "떨어졌어", "지원 현황" | `modes/track.md` |
+| "지원했어", "서류 붙었어", "떨어졌어", "지원 현황" | `modes/track.md` (`scripts/tracker.py`) |
+| "prep {회사}", "면접 준비" | 그 공고의 `.eval.md` F블록 + `standing.md` "자주 쓰는 흐름" |
 
 공고 URL을 받으면 evaluate → (사용자가 지원하기로 하면) tailor → track 순서로 이어 간다. 각 단계 사이에 사용자 확인을 받는다.

@@ -2,6 +2,16 @@
 
 지원 현황표 `data/applications/tracker.md`를 관리한다. 먼저 `modes/_shared.md`를 읽는다.
 
+## 기록 방법
+
+표를 손으로 고치지 않는다. `scripts/tracker.py`로 바꾼다(형식·상태값 검증, pipeline.md 연동).
+
+```bash
+python3 scripts/tracker.py add --company 회사 --role 포지션 --score 4.2/5 --eval data/job_postings/<공고>.eval.md --memo "서울 강남 · 원티드 · <url>"
+python3 scripts/tracker.py set <번호|회사> 지원함 [--note "메모"] [--pdf]
+python3 scripts/tracker.py report [--alive] [--since YYYY-MM-DD]
+```
+
 ## 형식
 
 ```markdown
@@ -31,7 +41,7 @@
 
 ## 규칙
 
-- 사용자가 "지원했다"고 하면 즉시 `지원함`으로 바꾸고, `pipeline.md`의 해당 공고를 "지원 완료 — 재지원 쿨다운"으로 옮긴다.
-- 재지원 쿨다운: `지원함` 이후 `targets.yaml`의 `reapply_days`(기본 183일) 안에는 같은 회사 공고를 scan에서 뺀다.
+- 사용자가 "지원했다"고 하면 즉시 `tracker.py set <번호> 지원함`. pipeline.md의 해당 공고는 스크립트가 "지원 완료 — 재지원 쿨다운"으로 옮긴다.
+- 재지원 쿨다운: `지원함` 이후 `targets.yaml`의 `reapply_days`(기본 183일) 안에는 같은 회사 공고를 scan에서 뺀다(`scan.py`가 자동으로).
 - 결과(`서류합격`·`불합격` 등)가 들어오면 그 공고의 `.eval.md` 점수와 비교해 본다. 점수는 높은데 떨어졌거나 낮은데 붙은 경우가 쌓이면(3건 이상) 선별 기준 조정안을 사용자에게 제안하고, 받아들이면 `targets.yaml`·`brief.md`에 적는다.
 - 행을 지우지 않는다. 잘못 넣은 행은 상태를 `제외`로 두고 메모에 이유를 쓴다.

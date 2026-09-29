@@ -117,6 +117,11 @@ ln -s "$PWD" ~/.claude/skills/resume-pdf-builder
 | `modes/tailor.md` | 평가의 맞춤 계획으로 공고별 yaml을 만들고 PDF를 빌드·검사합니다 (아래 작동 순서) |
 | `modes/track.md` | 지원 현황과 결과를 기록하고, 결과가 쌓이면 선별 기준 조정을 제안합니다 |
 
+```bash
+bash scripts/weekly.sh                      # 수집 → 마감 확인 → 통합 보고표 (LLM 없이)
+python3 scripts/tracker.py set 3 지원함      # 지원 기록 (재지원 쿨다운 자동)
+```
+
 사이트별 수집 방법은 [`references/sources.md`](references/sources.md), 전체 설계와 단계는 [`docs/ROADMAP.md`](docs/ROADMAP.md)에 있습니다.
 
 ## 🧭 작동 순서 (맞춤 이력서)
@@ -159,6 +164,8 @@ scripts/
   check.py                   페이지 수 · 제목 홀로 남음 · 링크 · 플레이스홀더 · 문체
   check_links.py             링크 접속 확인 (표준 라이브러리만)
   git_log.sh                 로컬 git 저장소에서 내 커밋 로그 추출
+  scan.py · alive.py         공고 수집·마감 확인 (providers/ 사이트별 모듈)
+  tracker.py · weekly.sh     지원 현황 기록·통합 보고표, 주간 스캔
   setup.sh                   Chromium, 폰트, poppler 설치
 references/
   sources.md                 채용 사이트별 수집 방법

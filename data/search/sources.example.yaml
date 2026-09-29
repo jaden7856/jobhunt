@@ -6,6 +6,11 @@ title_filter:
   positive: [백엔드, Backend, 서버 개발, Server Engineer, Software Engineer, Platform Engineer, 플랫폼 엔지니어, DevOps]
   negative: [프론트엔드, Frontend, iOS, Android, 인턴, 신입, Junior, QA]
 
+# 연차: 공고에 연차 숫자가 있을 때만 적용(원티드·점핏).
+career_filter:
+  exclude_if_max_below: 2
+  exclude_if_min_at_least: 10
+
 # 근무지: always_allow 는 항상 통과, block 은 제외, 나머지는 통과시키고 [근무지 확인 필요] 표시.
 location_filter:
   always_allow: [서울, Seoul, 판교, 성남, 분당, 재택]
@@ -26,3 +31,4 @@ boards:
 companies:
   - { name: 가나다커머스, careers_url: "https://careers.example.com", priority: true }
   - { name: 라마바페이, careers_url: "https://boards.greenhouse.io/example", api: "https://boards-api.greenhouse.io/v1/boards/example/jobs", priority: false }
+  - { name: 사아자, careers_url: "https://example.career.greetinghr.com/", priority: true, method: browser }   # 스크립트가 못 읽는 곳은 method: browser

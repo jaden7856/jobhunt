@@ -26,7 +26,7 @@
 | `modes/_shared.md` | 모든 모드 공통 규칙, 한국 채용 용어, 파일 지도 |
 | `modes/onboard.md` · `scan.md` · `evaluate.md` · `tailor.md` · `track.md` | 모드별 절차 |
 | `references/sources.md` | 채용 사이트별 수집 방법(엔드포인트, 상세 본문 위치, 마감 판정) |
-| `scripts/` | 빌드·검사, (2단계) 수집 스크립트 |
+| `scripts/` | 빌드·검사, 공고 수집(`scan.py`, `providers/`), 마감 확인(`alive.py`), 지원 현황(`tracker.py`), 주간 실행(`weekly.sh`) |
 
 **사용자 파일 (`data/`, git 제외, 구조와 예시만 올라감)**
 
@@ -41,6 +41,8 @@
 | `data/search/pipeline.md` | 선별 대기 공고함 | `data/pipeline.md` |
 | `data/search/scan-history.tsv` | 본 공고 기록(중복 제거) | `data/scan-history.tsv` |
 | `data/search/blacklist.md` | 지원하지 않을 회사 | `data/blacklist.md` |
+| `data/search/inbox/` | scan.py가 받은 공고 본문 (1차 선별 입력) | — |
+| `data/search/reports/` | weekly.sh 주간 보고 | — |
 | `data/job_postings/` | 공고 원문(`*.md`)과 평가(`*.eval.md`) | `jds/` + `reports/` |
 | `data/applications/tracker.md` | 지원 현황표 | `data/applications.md` |
 | `data/resumes/`, `data/output/` | 확정 yaml, PDF·PNG | `output/` |
@@ -76,7 +78,8 @@ scan ──► search/pipeline.md ──► 1차 선별(brief.md) ──► eval
 | 단계 | 내용 | 상태 |
 |---|---|---|
 | 1 | 데이터 계약, 모드 문서(`modes/`), 수집 방법 문서, `SKILL.md` 라우터, 기존 career-ops 개인 설정 이전 | 완료 (2026-09-29) |
-| 2 | `scripts/scan.py` + 공급원 모듈(원티드·점핏·Greenhouse → 기업 사이트 → 사람인·잡코리아). 제목·근무지 필터, 중복 제거, `pipeline.md`·`scan-history.tsv` 기록, 마감 확인 | 예정 |
-| 3 | 평가 리포트 형식 고정, 지원 현황표 갱신 스크립트(상태값 검증, 재지원 쿨다운) | 예정 |
+| 2 | `scripts/scan.py` + `scripts/providers/`(원티드·점핏·Greenhouse·토스·NHN·카카오·greetinghr). 제목·연차·근무지 필터, 중복·제외 회사·쿨다운, `pipeline.md`·`scan-history.tsv`·`inbox/` 기록, `alive.py` 마감 확인, `weekly.sh` | 완료 (2026-09-29) |
+| 2b | 사람인·잡코리아·LinkedIn·네이버·리멤버 공급원 (HTML·브라우저 필요, 지금은 `references/sources.md`대로 수동) | 예정 |
+| 3 | 평가 리포트 형식 고정, `tracker.py`(상태값 검증, 재지원 쿨다운 연동, 통합 보고표) | 지원 현황 부분 완료 (2026-09-29) |
 | 4 | 평가의 요구사항 대응표 → 맞춤 yaml 자동 초안 (프로젝트 순서, SKILLS 교집합, 용어 치환) | 예정 |
 | 5 | 학습 루프: 결과(서류 합격·탈락)와 피드백을 모아 선별 기준·강조점 조정 제안 | 예정 |
