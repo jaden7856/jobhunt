@@ -1,40 +1,88 @@
 <h1 align="center">resume-builder</h1>
 
 <p align="center">
-  Write your developer resume in YAML, build a print-ready A4 PDF — with Claude as your interviewer and editor.
+  Find Korean developer job postings, score how well each one fits you, and build a resume tailored to each posting as an A4 PDF.<br/>
+  A Claude skill that gets sharper the more you use it.
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Claude-Skill-D97757?style=flat-square" alt="Claude Skill"/>
-  <img src="https://img.shields.io/badge/Python-3-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python 3"/>
-  <img src="https://img.shields.io/badge/Playwright-Chromium-2EAD33?style=flat-square&logo=playwright&logoColor=white" alt="Playwright"/>
+  <img src="https://img.shields.io/badge/Python-3.9+-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python 3.9+"/>
+  <img src="https://img.shields.io/badge/Jobs-Korea-1E4FC2?style=flat-square" alt="Korean job boards"/>
   <img src="https://img.shields.io/badge/Output-A4_PDF_%2B_PNG-555?style=flat-square" alt="A4 PDF + PNG"/>
 </p>
 
 <p align="center">
   <a href="./README.md">한국어</a> | <a href="./README.en.md">English</a>
   <br/>
-  <a href="#-preview">Preview</a> · <a href="#-quick-start">Quick Start</a> · <a href="#-find--evaluate--tailor">Find → Evaluate → Tailor</a> · <a href="#-how-it-works-tailoring">How It Works</a> · <a href="#-build-checks">Build Checks</a> · <a href="#-project-structure">Project Structure</a>
+  <a href="#-preview">Preview</a> · <a href="#-quick-start">Quick Start</a> · <a href="#-1-find-postings">Find</a> · <a href="#-2-fit-evaluation">Evaluate</a> · <a href="#-3-tailored-resume">Tailor</a> · <a href="#-personalization-that-compounds">Personalization</a> · <a href="#-project-structure">Structure</a>
 </p>
 
 ## 📖 Overview
 
-**resume-builder** is a [Claude](https://claude.com) skill plus a small Python toolchain that finds Korean developer job postings, evaluates them against your experience, and builds a resume tailored to each posting.
+```
+ Find                    Evaluate                     Tailor                        Track & learn
+ ──────────             ──────────                   ──────────                    ──────────
+ Wanted · Jumpit ·       Rule checks (location,        Per-posting YAML from          Applications, outcomes
+ Greenhouse · company    language, stack, years, pay)  the evaluation's plan          and corrections in data/
+ career sites                 Requirement ↔ experience      │                             │
+      │                  match table, 1–5 score             ▼                             ▼
+ Filter & dedupe  ──►    Tailoring plan          ──►   A4 PDF build + checks   ──►    Sharper triage next time
+```
 
-Content lives in a YAML file. Layout and build live in `scripts/render.py`. Claude walks you through the process step by step — target position, source material, project selection, portfolio links — then writes the YAML, builds the PDF, and runs automated checks until there are zero errors.
+**resume-builder** is a [Claude](https://claude.com) skill plus Python scripts.
+
+- **Scripts:** Mechanical work (collecting postings, checking whether they're still open, updating the tracker) runs without an LLM.
+- **Claude:** Handles the judgment calls (does this posting fit you? what should the resume lead with?) by following the procedures in `modes/`.
+- **Your data:** Everything personal stays under `data/` and never reaches git.
+
+> The tool targets the Korean job market, so its prompts, reports and resumes are written in Korean.
 
 ### Highlights
 
-- 🔎 **Find and evaluate postings** — collects postings from Wanted, Jumpit, Saramin, JobKorea and company career sites, filters by location, language and tech-stack rules, and scores each with a requirement-by-requirement match table
-- 📈 **Personalization that compounds** — your corrections and application outcomes accumulate under `data/` and sharpen the next triage and tailoring
-- 🧾 **Content as data** — the resume is a YAML file (`references/yaml_schema.md`), so tailoring for each company is a `cp` and a few edits
-- 🎨 **Three designs** — A Editorial, **B Swiss Grid (default)**, C Dark Masthead, switchable with one flag
-- 🧭 **Guided interview** — Claude asks what it needs one step at a time and reuses answers already saved under `data/`
-- 🔍 **Evidence-first projects** — every project follows *problem → root cause → options considered → execution → measured result*
-- ✅ **Build checks** — page count, orphaned headings, broken links, placeholders, banned phrases, and tone
-- 🔒 **Private by default** — your real data under `data/` is git-ignored; only folder structure and examples are committed
+- 🔎 **Find postings:** Collects from Wanted, Jumpit, Greenhouse boards (Daangn, Coupang, KRAFTON …), Toss, NHN, Kakao and greetinghr companies in one run. It filters by title, required years, location, already-seen postings, blocked companies and re-apply cooldowns.
+- 📊 **Score the fit:** Checks your location, English and tech-stack rules against quoted posting text, maps every requirement to your own experience, and scores 1–5. Required vs. preferred is told apart by Korean sentence endings ("~필요해요" vs. "~좋아요").
+- 📝 **Tailor the resume:** Turns the evaluation's plan (projects to lead with, skill overlap, wording) into a per-posting YAML, then builds it in one of three designs as an A4 PDF. Every build is checked automatically.
+- 📋 **Track applications:** Shows evaluated and triage-passed postings in a single table with "applied?" and "still open?" columns.
+- 📈 **Personalization that compounds:** Corrections like "this score is too high" or "you missed my X experience", plus application outcomes, accumulate in dated files under `data/`.
+- 🛡️ **No fabrication:** Only facts from your own files are used. Inferred sentences are tagged `[확인 필요]` (needs confirmation), and you always submit applications yourself.
+- 🔒 **Safe to publish:** Real files under `data/` are git-ignored; only folder structure and fictional examples are committed.
 
 ## 🖼 Preview
+
+### Posting overview (`scripts/tracker.py report --alive`)
+
+Fictional companies. Translated here; the actual output is in Korean.
+
+| Company | Role | Location | Score | Verdict | Applied | New | Open | Reason |
+|---|---|---|---|---|---|---|---|---|
+| Ganada Commerce | Backend Developer | Seoul Gangnam | 4.3/5 | Apply | No |  | Open | Meets all 3 required items on payment/settlement consistency |
+| Ramaba Pay | Server Engineer | Pangyo | 3.9/5 | Triage PASS | No | ✓ | Open | Any language, 3y+, high traffic, team uses Kotlin (preferred) |
+| Saaja Labs | Platform Engineer | Seoul Seongdong | 3.6/5 | Consider | No |  | Open | K8s ops required, Terraform gap (preferred) |
+| Chakata Soft | Backend Engineer | Seoul Seocho | 4.0/5 | Passed screening | Yes (screening passed) |  | Open | 1st interview Oct 8 |
+
+### Fit evaluation (`data/job_postings/*.eval.md`, translated)
+
+```markdown
+# Evaluation: Ganada Commerce — Backend Developer
+
+**4.3/5 — Apply.** Payment/settlement consistency requirements overlap directly with the lead project; remaining gaps are preferred items only.
+
+- Location: pass "Teheran-ro, Gangnam, Seoul"
+- Language/stack: pass "Proficient in at least one main language" (Kotlin/Spring is "nice to have" → preferred)
+- Salary: undisclosed
+
+## C) Requirement match table
+| Posting text | Type | My experience | Evidence file | Met |
+|---|---|---|---|---|
+| "Has solved concurrency issues from the root cause" | Required | Order API p99 820ms → 240ms | project_index.yaml#cache | Yes |
+| "Event design with Kafka" | Preferred | Settlement events | project_index.yaml#kafka | Partly |
+
+## E) Tailoring plan
+- Base: base_service.yaml · Project order: cache → settle → kafka · SKILLS: Kotlin, Spring Boot, MySQL, Redis, Kafka …
+```
+
+### Resume designs
 
 Rendered from the fictional sample [`examples/example.yaml`](examples/example.yaml).
 
@@ -51,12 +99,9 @@ Rendered from the fictional sample [`examples/example.yaml`](examples/example.ya
 
 ## 🚀 Quick Start
 
-### Prerequisites
-
-- Python 3
-- macOS (Homebrew) or Debian/Ubuntu (apt)
-
 ### 1. Install
+
+Requires Python 3.9+, and macOS (Homebrew) or Debian/Ubuntu (apt).
 
 ```bash
 git clone https://github.com/jaden7856/resume-builder.git
@@ -64,14 +109,78 @@ cd resume-builder
 bash scripts/setup.sh   # Python packages, Playwright Chromium, fonts (Pretendard, Noto CJK KR), poppler
 ```
 
-### 2. Build the sample
+### 2. Connect it as a Claude skill
 
 ```bash
-python3 scripts/render.py examples/example.yaml \
-  --profile data/profile/profile.example.yaml --offline
+ln -s "$PWD" ~/.claude/skills/resume-pdf-builder   # Claude Code
 ```
 
-Output goes to `data/output/<name>_<job>_<version>.pdf`, with one PNG per page.
+### 3. Talk to Claude
+
+| Say | What happens |
+|---|---|
+| "처음 설정해줘" (set me up) | Asks for target roles, salary, location and deal-breakers, and writes your criteria to `data/profile/` |
+| "공고 찾아줘" (find postings) | Runs `weekly.sh`, triages new postings against your criteria, shows the overview table |
+| (paste a URL) "이 공고 어때?" (how is this one?) | Rule checks, requirement match table, score, tailoring plan, interview prep |
+| "이 공고용 이력서 만들어줘" (make a resume for it) | Writes the YAML from the plan → builds the PDF → checks → revises |
+| "지원했어" / "서류 붙었어" (applied / passed screening) | Updates the tracker, applies the re-apply cooldown, suggests criteria tweaks as outcomes accumulate |
+
+### 4. Use the scripts on their own
+
+```bash
+bash scripts/weekly.sh                             # collect → liveness check → overview (no LLM, cron/launchd friendly)
+python3 scripts/scan.py --dry-run                  # see what would be collected without writing files
+python3 scripts/tracker.py report --alive          # one table of evaluated and triaged postings
+python3 scripts/tracker.py set 3 지원함             # record an application
+python3 scripts/render.py examples/example.yaml \
+  --profile data/profile/profile.example.yaml --offline   # build the sample resume
+```
+
+## 🔎 1. Find Postings
+
+`scripts/scan.py` collects postings and saves the full requirement text to `data/search/inbox/`. Claude then triages them against `data/profile/brief.md`.
+
+| Source | Method | Automated by |
+|---|---|---|
+| Wanted, Jumpit | Public JSON list and detail | `scan.py` |
+| Greenhouse companies (Daangn, Coupang, KRAFTON …) | Official public API | `scan.py` |
+| Toss (all affiliates), NHN, Kakao, greetinghr companies | Career-site JSON | `scan.py` |
+| Saramin, JobKorea, LinkedIn, Remember, other career sites | HTML / browser | Claude, following [`references/sources.md`](references/sources.md) |
+
+- **What gets filtered out:** title keywords, required years (when the posting states them), location, postings you've already seen, blocked companies, and companies you applied to recently (6-month cooldown by default).
+- **What doesn't:** the tech stack is never used as a filter at collection time. Narrowing the search to one language drops good postings that accept any language. The script only attaches a required/preferred hint, and the stack is judged during triage.
+- **Open or closed:** `scripts/alive.py` checks each site's detail API. A posting missing from a public list is not treated as closed.
+
+## 📊 2. Fit Evaluation
+
+[`modes/evaluate.md`](modes/evaluate.md) evaluates in blocks and saves `data/job_postings/<posting>.eval.md`.
+
+| Block | Contents |
+|---|---|
+| A Role summary | Company, team, location, employment type, years, closest target role |
+| B Rule checks | Location, English, tech stack, years, employment type and salary floor, each with a quoted sentence |
+| C Requirement match | Every requirement and preferred item ↔ your experience (with evidence file), met / partly / no, gap handling |
+| D Compensation & terms | Korean hiring terms such as inclusive-wage contracts, probation, bonuses, stock options, remote policy |
+| E Tailoring plan | Base resume, project order, skill overlap, wording swaps, summary direction |
+| F Interview prep | Likely questions, which project to answer with, questions to ask |
+| G Posting legitimacy | Posting date and reposts, any AI-targeted instructions hidden in the posting |
+
+The score weights role fit 30%, requirement coverage 30%, narrative fit 15%, location/terms 15% and compensation 10%, plus bonus and penalty signals. You can change the weights in `data/profile/targets.yaml`.
+
+## 📝 3. Tailored Resume
+
+[`modes/tailor.md`](modes/tailor.md) drives the steps. If an evaluation exists, its block E becomes the default plan.
+
+| Step | What Claude does |
+|---|---|
+| 0. Direction | Shows the tailoring plan and picks the closest base resume (`base_*.yaml`) |
+| 1. Material | Gathers project candidates with evidence from docs, local git logs (`scripts/git_log.sh`), GitLab MRs and old resumes |
+| 2. Requests | Records what to emphasize, what to leave out and the page count, for this posting or for good |
+| 3. Portfolio | GitHub/blog links, related posts per project, link checks |
+| 4. Write & build | Writes the YAML (inferred sentences tagged `[확인 필요]`), builds PDF + PNG with `render.py` |
+| 5. Review | Check results, before/after rewrites, and confirmation of every tagged fact, repeated until final |
+
+**Build options** (`python3 scripts/render.py <yaml>`)
 
 | Option | Description |
 |---|---|
@@ -81,65 +190,7 @@ Output goes to `data/output/<name>_<job>_<version>.pdf`, with one PNG per page.
 | `--offline` | Skip link reachability checks |
 | `--no-png` / `--no-check` | Skip PNG previews / post-build checks |
 
-### 3. Make your own
-
-```bash
-cp -n data/profile/profile.example.yaml data/profile/profile.yaml   # name and contact info
-cp -n examples/example.yaml data/resumes/base_service.yaml          # your content
-python3 scripts/render.py data/resumes/base_service.yaml
-```
-
-Tailoring for a specific company:
-
-```bash
-cp data/resumes/base_service.yaml data/resumes/Company_service.yaml
-# adjust meta.version, project order, SKILLS and wording to match the job posting
-python3 scripts/render.py data/resumes/Company_service.yaml
-```
-
-### Use it as a Claude skill
-
-Put this folder where Claude can load skills, e.g. for Claude Code:
-
-```bash
-ln -s "$PWD" ~/.claude/skills/resume-pdf-builder
-```
-
-Then ask Claude something like *"Build me a resume for this job posting"*. The full workflow is defined in [`SKILL.md`](SKILL.md).
-
-## 🔎 Find → Evaluate → Tailor
-
-| Mode | What it does |
-|---|---|
-| `modes/onboard.md` | Sets target roles, salary, location/language/stack rules, and builds a short triage brief |
-| `modes/scan.md` | Collects postings, filters titles, locations and duplicates, triages them into an inbox |
-| `modes/evaluate.md` | Rule checks, requirement ↔ experience match table, compensation terms, tailoring plan, interview prep |
-| `modes/tailor.md` | Turns the tailoring plan into a per-posting YAML, then builds and checks the PDF (steps below) |
-| `modes/track.md` | Records applications and outcomes, and proposes triage adjustments as results accumulate |
-
-```bash
-bash scripts/weekly.sh                      # collect → liveness check → combined report (no LLM)
-python3 scripts/tracker.py set 3 지원함      # record an application (re-apply cooldown is automatic)
-```
-
-Per-site collection methods live in [`references/sources.md`](references/sources.md); the design and phases in [`docs/ROADMAP.md`](docs/ROADMAP.md) (Korean).
-
-## 🧭 How It Works (tailoring)
-
-| Step | What Claude does |
-|---|---|
-| 0. Direction | Asks for the target position and job posting, extracts 3–5 key requirements, and picks the closest base resume |
-| 1. Material | Collects experience docs, local git logs (`scripts/git_log.sh`), GitLab MRs, or old resumes, then proposes up to 5 projects with evidence |
-| 2. Requests | Records strengths to emphasize, things to leave out, page count, and sections — per posting or as standing preferences |
-| 3. Portfolio | Adds GitHub/blog links, suggests 1–2 related posts per project, and verifies that every link opens |
-| 4. Write & build | Writes the YAML, tags inferred sentences with `[확인 필요]` ("needs confirmation"), and builds PDF + PNG |
-| 5. Review | Shows check results and before/after rewrites, confirms every tagged fact, and repeats until final |
-
-Facts are never invented: anything Claude inferred stays tagged until you confirm it.
-
-## ✅ Build Checks
-
-`render.py` calls `scripts/check.py` after every build. You can also run it on its own: `python3 scripts/check.py <yaml> <pdf>`.
+**Build checks** (`scripts/check.py`)
 
 | Check | Rule | Level |
 |---|---|---|
@@ -151,37 +202,56 @@ Facts are never invented: anything Claude inferred stays tagged until you confir
 | Translationese | `translationese` in the same file | Warning |
 | Summary tone | Every sentence in the first summary paragraph ends in `~니다` | Error |
 
-Writing rules are editable: change `references/style_rules.yaml` and the next build picks them up.
+## 📈 Personalization That Compounds
+
+The tool (`SKILL.md`, `modes/`, `scripts/`, `references/`) is versioned in git. Your criteria and records live only under `data/`.
+
+| What the skill learns | Where it goes |
+|---|---|
+| Target roles, career narrative, salary, location/language/stack rules, bonus and penalty signals | `data/profile/targets.yaml` |
+| Short triage brief | `data/profile/brief.md` |
+| Project evidence and confirmed facts | `data/experience/` |
+| House rules, report format, resume wording decisions | `data/preferences/standing.md` |
+| Search settings, priority companies, inbox, seen-posting history | `data/search/` |
+| Posting text and evaluations | `data/job_postings/` |
+| Applications and outcomes | `data/applications/tracker.md` |
+
+- Corrections are written to the matching file with a date, and superseded decisions keep their previous value.
+- Once three or more outcomes accumulate, the skill looks for mismatches between scores and results and proposes criteria adjustments.
+- Design and phases: [`docs/ROADMAP.md`](docs/ROADMAP.md) (Korean).
 
 ## 📁 Project Structure
 
 ```
-SKILL.md                     Skill entry point, routes requests to modes (Claude reads this)
+SKILL.md                     Skill entry point, routes requests to modes
 modes/                       Shared rules and per-mode procedures (onboard · scan · evaluate · tailor · track)
-docs/ROADMAP.md              Design and phases
 scripts/
-  render.py                  YAML → HTML → PDF + PNG, designs A/B/C, runs checks
-  check.py                   Page count, orphaned headings, links, placeholders, style
-  check_links.py             Link reachability (stdlib only)
+  scan.py · providers/       Posting collection (one module per site)
+  alive.py                   Open/closed check
+  tracker.py                 Application tracker and combined overview
+  weekly.sh                  Weekly scan (scan → alive → report)
+  render.py                  YAML → HTML → PDF + PNG, designs A/B/C
+  check.py · check_links.py  Post-build checks, link reachability
   git_log.sh                 Extract your own commits from a local git repo
-  scan.py · alive.py         Collect postings, check whether they are still open (providers/ per site)
-  tracker.py · weekly.sh     Application tracker and combined report, weekly scan
   setup.sh                   Install Chromium, fonts, poppler
 references/
-  sources.md                 Per-site job collection methods
-  yaml_schema.md             YAML format
+  sources.md                 Per-site collection methods
+  yaml_schema.md             Resume YAML format
   writing_rules.md           Writing rules and how to check them
   style_rules.yaml           Banned words, translationese, symbol limits
   resume_guide.md            General resume rules
+docs/ROADMAP.md              Design and phases
 examples/example.yaml        Fictional sample resume
 assets/                      README preview images and sample PDF
-data/                        Your data (git-ignored; only structure is committed)
+data/                        Your data (git-ignored; only structure and examples are committed)
   profile/ experience/ preferences/ portfolio/ search/ job_postings/ applications/ resumes/ output/
 ```
 
 ## 🔒 Privacy
 
-Real files under `data/` are excluded by `.gitignore`; only folder READMEs, `.gitkeep`, and `*.example.*` files are committed. Your name and contact info are never hard-coded. They're read from `data/profile/profile.yaml` at build time, so the repository can stay public.
+- Real files under `data/` are excluded by `.gitignore`; only folder READMEs, `.gitkeep` and `*.example.*` files are committed.
+- Your name and contact info are never hard-coded. They're read from `data/profile/profile.yaml` at build time.
+- The Wanted, Jumpit and career-site JSON endpoints are unofficial; they're used for personal purposes with a delay between requests.
 
 ## 🙏 Acknowledgements
 
