@@ -83,8 +83,9 @@ def main(argv=None):
         for j in jobs:
             status = None
             key = (K.norm_company(j.company), j.title.lower())
-            if j.url in seen or key in tracked or key in batch_keys:
-                status = "skipped_dup"
+            url_seen = j.url in seen
+            if url_seen or key in tracked or key in batch_keys:
+                status = "skipped_dup"      # 다른 사이트에 올라온 같은 공고도 URL은 기록해 둔다 (다음 실행에서 다시 안 나오게)
             elif K.title_ok(j.title, tf):
                 status = "skipped_title"
             elif K.career_check(j.extra.get("career"), cf):
@@ -98,7 +99,8 @@ def main(argv=None):
             elif a.seed:
                 status = "seeded"
             batch_keys.add(key)
-            if status != "skipped_dup":
+            if not url_seen:
+                seen.add(j.url)
                 hist.append(dict(url=j.url, first_seen=K.TODAY, portal=j.source, title=j.title, company=j.company,
                                  status=status or "added", location=j.location, posted_at=j.posted_at,
                                  normalized_company=K.norm_company(j.company)))
