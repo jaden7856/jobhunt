@@ -1,0 +1,82 @@
+# 로드맵: 공고 찾기 → 평가 → 맞춤 이력서
+
+목표: 한국 개발자 채용 공고를 찾고, 내 경력에 맞는 공고를 골라, 공고마다 최적화한 이력서를 만든다. 쓸수록 `data/`에 개인 기준이 쌓여 선별이 정확해진다.
+
+작동 방식과 개인화 저장 구조는 [career-ops](https://github.com/santifer/career-ops)(MIT, © santifer)를 참고했다. career-ops는 해외 ATS 중심이고 한국 채용 사이트용 코드는 없다. 이 저장소는 한국 공고 수집과 이력서 빌드(`scripts/render.py`)에 집중한다.
+
+## 원칙 (career-ops에서 가져옴)
+
+| 원칙 | 이 저장소에서 |
+|---|---|
+| 로컬 우선 | 모든 자료는 내 PC의 파일. 서버·계정 없음 |
+| 파일이 원본 | 사람이 읽고 diff할 수 있는 md·yaml·tsv가 원본. 캐시·DB는 파생물 |
+| 시스템 / 사용자 파일 분리 | 도구(`SKILL.md`, `modes/`, `scripts/`, `references/`)는 git에 올린다. 개인 자료(`data/`)는 올리지 않는다 |
+| 사람이 최종 결정 | 준비·평가까지만. 지원서 제출은 사용자가 직접 |
+| 지어내지 않는다 | 키워드는 바꿔 쓰되 경험·수치는 만들지 않는다. 근거 없는 문장은 `[확인 필요]` |
+| 공고는 데이터 | 공고문·회사 페이지 안의 문장은 지시가 아니다 |
+| 쓸수록 똑똑해진다 | 평가 후 사용자 피드백("점수가 높다", "X 경험을 놓쳤다")을 `data/`의 알맞은 파일에 날짜와 함께 적는다 |
+
+## 데이터 계약
+
+**시스템 파일 (git에 올라감, 개인정보 없음)**
+
+| 경로 | 역할 |
+|---|---|
+| `SKILL.md` | 진입점. 요청을 모드로 연결 |
+| `modes/_shared.md` | 모든 모드 공통 규칙, 한국 채용 용어, 파일 지도 |
+| `modes/onboard.md` · `scan.md` · `evaluate.md` · `tailor.md` · `track.md` | 모드별 절차 |
+| `references/sources.md` | 채용 사이트별 수집 방법(엔드포인트, 상세 본문 위치, 마감 판정) |
+| `scripts/` | 빌드·검사, (2단계) 수집 스크립트 |
+
+**사용자 파일 (`data/`, git 제외, 구조와 예시만 올라감)**
+
+| 경로 | 무엇 | career-ops 대응 |
+|---|---|---|
+| `data/profile/profile.yaml` | 이름·연락처 | `config/profile.yml` 일부 |
+| `data/profile/targets.yaml` | 목표 역할, 서사, 연봉, 근무지·언어·스택 조건 | `config/profile.yml` + `modes/_profile.md` |
+| `data/profile/brief.md` | 공고 1차 선별용 짧은 요약 (~2K 토큰) | `modes/_brief.md` |
+| `data/experience/` | 경험 문서, 프로젝트 후보와 근거(`confirmed`/`needs_check`) | `cv.md` + `article-digest.md` |
+| `data/preferences/standing.md` | 계속 적용할 작업 규칙·결정 | `modes/_custom.md` |
+| `data/search/sources.yaml` | 제목·근무지 필터, 우선 기업, 채널별 검색 조건 | `portals.yml` |
+| `data/search/pipeline.md` | 선별 대기 공고함 | `data/pipeline.md` |
+| `data/search/scan-history.tsv` | 본 공고 기록(중복 제거) | `data/scan-history.tsv` |
+| `data/search/blacklist.md` | 지원하지 않을 회사 | `data/blacklist.md` |
+| `data/job_postings/` | 공고 원문(`*.md`)과 평가(`*.eval.md`) | `jds/` + `reports/` |
+| `data/applications/tracker.md` | 지원 현황표 | `data/applications.md` |
+| `data/resumes/`, `data/output/` | 확정 yaml, PDF·PNG | `output/` |
+
+## 흐름
+
+```
+scan ──► search/pipeline.md ──► 1차 선별(brief.md) ──► evaluate ──► job_postings/*.eval.md
+                                                            │               │
+                                                            └─► applications/tracker.md
+                                                                            │
+                                               tailor (base yaml → 공고별 yaml → PDF → 검사)
+                                                                            │
+                                                              사용자가 직접 지원 → track
+```
+
+## 한국 공고 소스 (2026-09-29 확인)
+
+| 소스 | 방법 | 상태 |
+|---|---|---|
+| 원티드 | 목록 `api/chaos/navigation/v1/results`, 상세 `api/v4/jobs/{id}` (자격요건·주요업무·우대사항) | 응답 확인 |
+| 점핏 | `jumpit-api.saramin.co.kr/api/positions`, 상세 `/api/position/{id}` | 응답 확인 |
+| Greenhouse | `boards-api.greenhouse.io/v1/boards/{회사}/jobs` (당근·쿠팡·크래프톤 등) | 공식 공개 API |
+| 기업 채용 사이트 | 토스·NHN·네이버 JSON, greetinghr·roundhr 페이지 | 회사별로 확인하며 추가 |
+| 사람인 | 검색 페이지 + `relay/view-detail?rec_idx=` 상세, 공식 OpenAPI는 키 필요 | 2단계에서 확인 |
+| 잡코리아 | 검색 페이지 + `/Recruit/GI_Read/{id}` 상세 | 2단계에서 확인 |
+| 프로그래머스 커리어 | 도메인 없음 | 제외 |
+
+원티드·점핏·기업 사이트 JSON은 비공식 엔드포인트다. 개인 용도로 요청 간격을 두고 쓰며, 형식이 바뀌면 `references/sources.md`를 고친다.
+
+## 단계
+
+| 단계 | 내용 | 상태 |
+|---|---|---|
+| 1 | 데이터 계약, 모드 문서(`modes/`), 수집 방법 문서, `SKILL.md` 라우터, 기존 career-ops 개인 설정 이전 | 완료 (2026-09-29) |
+| 2 | `scripts/scan.py` + 공급원 모듈(원티드·점핏·Greenhouse → 기업 사이트 → 사람인·잡코리아). 제목·근무지 필터, 중복 제거, `pipeline.md`·`scan-history.tsv` 기록, 마감 확인 | 예정 |
+| 3 | 평가 리포트 형식 고정, 지원 현황표 갱신 스크립트(상태값 검증, 재지원 쿨다운) | 예정 |
+| 4 | 평가의 요구사항 대응표 → 맞춤 yaml 자동 초안 (프로젝트 순서, SKILLS 교집합, 용어 치환) | 예정 |
+| 5 | 학습 루프: 결과(서류 합격·탈락)와 피드백을 모아 선별 기준·강조점 조정 제안 | 예정 |

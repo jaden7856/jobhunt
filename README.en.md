@@ -14,17 +14,19 @@
 <p align="center">
   <a href="./README.md">한국어</a> | <a href="./README.en.md">English</a>
   <br/>
-  <a href="#-preview">Preview</a> · <a href="#-quick-start">Quick Start</a> · <a href="#-how-it-works">How It Works</a> · <a href="#-build-checks">Build Checks</a> · <a href="#-project-structure">Project Structure</a>
+  <a href="#-preview">Preview</a> · <a href="#-quick-start">Quick Start</a> · <a href="#-find--evaluate--tailor">Find → Evaluate → Tailor</a> · <a href="#-how-it-works-tailoring">How It Works</a> · <a href="#-build-checks">Build Checks</a> · <a href="#-project-structure">Project Structure</a>
 </p>
 
 ## 📖 Overview
 
-**resume-builder** is a [Claude](https://claude.com) skill plus a small Python toolchain for writing Korean-language developer resumes.
+**resume-builder** is a [Claude](https://claude.com) skill plus a small Python toolchain that finds Korean developer job postings, evaluates them against your experience, and builds a resume tailored to each posting.
 
 Content lives in a YAML file. Layout and build live in `scripts/render.py`. Claude walks you through the process step by step — target position, source material, project selection, portfolio links — then writes the YAML, builds the PDF, and runs automated checks until there are zero errors.
 
 ### Highlights
 
+- 🔎 **Find and evaluate postings** — collects postings from Wanted, Jumpit, Saramin, JobKorea and company career sites, filters by location, language and tech-stack rules, and scores each with a requirement-by-requirement match table
+- 📈 **Personalization that compounds** — your corrections and application outcomes accumulate under `data/` and sharpen the next triage and tailoring
 - 🧾 **Content as data** — the resume is a YAML file (`references/yaml_schema.md`), so tailoring for each company is a `cp` and a few edits
 - 🎨 **Three designs** — A Editorial, **B Swiss Grid (default)**, C Dark Masthead, switchable with one flag
 - 🧭 **Guided interview** — Claude asks what it needs one step at a time and reuses answers already saved under `data/`
@@ -105,7 +107,19 @@ ln -s "$PWD" ~/.claude/skills/resume-pdf-builder
 
 Then ask Claude something like *"Build me a resume for this job posting"*. The full workflow is defined in [`SKILL.md`](SKILL.md).
 
-## 🧭 How It Works
+## 🔎 Find → Evaluate → Tailor
+
+| Mode | What it does |
+|---|---|
+| `modes/onboard.md` | Sets target roles, salary, location/language/stack rules, and builds a short triage brief |
+| `modes/scan.md` | Collects postings, filters titles, locations and duplicates, triages them into an inbox |
+| `modes/evaluate.md` | Rule checks, requirement ↔ experience match table, compensation terms, tailoring plan, interview prep |
+| `modes/tailor.md` | Turns the tailoring plan into a per-posting YAML, then builds and checks the PDF (steps below) |
+| `modes/track.md` | Records applications and outcomes, and proposes triage adjustments as results accumulate |
+
+Per-site collection methods live in [`references/sources.md`](references/sources.md); the design and phases in [`docs/ROADMAP.md`](docs/ROADMAP.md) (Korean).
+
+## 🧭 How It Works (tailoring)
 
 | Step | What Claude does |
 |---|---|
@@ -137,7 +151,9 @@ Writing rules are editable: change `references/style_rules.yaml` and the next bu
 ## 📁 Project Structure
 
 ```
-SKILL.md                     Skill definition and workflow (Claude reads this)
+SKILL.md                     Skill entry point, routes requests to modes (Claude reads this)
+modes/                       Shared rules and per-mode procedures (onboard · scan · evaluate · tailor · track)
+docs/ROADMAP.md              Design and phases
 scripts/
   render.py                  YAML → HTML → PDF + PNG, designs A/B/C, runs checks
   check.py                   Page count, orphaned headings, links, placeholders, style
@@ -145,6 +161,7 @@ scripts/
   git_log.sh                 Extract your own commits from a local git repo
   setup.sh                   Install Chromium, fonts, poppler
 references/
+  sources.md                 Per-site job collection methods
   yaml_schema.md             YAML format
   writing_rules.md           Writing rules and how to check them
   style_rules.yaml           Banned words, translationese, symbol limits
@@ -152,9 +169,13 @@ references/
 examples/example.yaml        Fictional sample resume
 assets/                      README preview images and sample PDF
 data/                        Your data (git-ignored; only structure is committed)
-  profile/ experience/ preferences/ portfolio/ job_postings/ resumes/ output/
+  profile/ experience/ preferences/ portfolio/ search/ job_postings/ applications/ resumes/ output/
 ```
 
 ## 🔒 Privacy
 
 Real files under `data/` are excluded by `.gitignore`; only folder READMEs, `.gitkeep`, and `*.example.*` files are committed. Your name and contact info are never hard-coded. They're read from `data/profile/profile.yaml` at build time, so the repository can stay public.
+
+## 🙏 Acknowledgements
+
+The job-search flow and the personalization layout (system vs. user files, files as the source of truth, personalization that compounds) follow [career-ops](https://github.com/santifer/career-ops) (MIT, © santifer). Some rules in `modes/_shared.md` and the Korean hiring-terms table are adapted and condensed from career-ops' `AGENTS.md` and `modes/ko/_shared.md`.

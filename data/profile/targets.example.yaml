@@ -1,0 +1,37 @@
+# 목표와 조건 (예시, 가상 인물). 복사해서 targets.yaml 로 쓴다.
+# 사실(성과·수치)은 여기 쓰지 않는다 → data/experience/. 여기는 "무엇을 원하고 무엇을 피하는지".
+
+roles:            # 목표 역할. fit: primary / secondary / adjacent(이직 가능하면)
+  - { name: 서비스 백엔드 (Kotlin·Spring), fit: primary, level: "4년차" }
+  - { name: 결제·정산 도메인 백엔드, fit: primary }
+  - { name: 플랫폼 엔지니어, fit: adjacent }
+not_targets: [프론트엔드, 모바일, 데이터 엔지니어링, SRE 온콜 전담]
+
+narrative:
+  headline: "Kotlin 백엔드 개발자 4년차 — 주문·정산 트래픽 안정화"
+  exit_story: "본인 말 그대로 한두 문장 (이직 이유, 원하는 환경)"
+
+compensation:     # 세전 연봉. 하한 미만을 명시한 공고는 제외
+  target: "6,000만원 ~ 7,000만원"
+  floor: "6,000만원"
+  disclose_current: false
+
+location:
+  allow: [서울, 판교]
+  commute_ok: [과천, 안양]      # 통근 가능하면 점수 낮춰 통과
+  remote: any                   # any / hybrid / onsite
+
+gates:            # 하나라도 걸리면 제외. 근거 문장을 남긴다
+  english_required: exclude     # 영어 필수·영어 면접·영어 전용 공고
+  stack: "경험 없는 언어(예: Go, Python)를 '필수'로 요구하면 제외. 우대에만 있으면 통과"
+  employment: [SI, 파견, 고객사 상주]
+  years: { min: 2, max: 8 }     # 요구 연차가 이 범위를 벗어나면 제외
+
+signals:          # 점수 가감
+  plus:  ["자체 서비스를 계속 고도화하는 조직", "결제·정산 도메인"]
+  minus: ["포괄임금제 + 야근 암시", "5인 미만 초기 스타트업"]
+
+priority_companies: "자체 채용 사이트로 주로 뽑는 국내 IT 기업 (목록은 data/search/sources.yaml)"
+reapply_days: 183               # 지원한 회사는 이 기간 동안 scan에서 뺀다
+
+# scoring: { role: 0.30, requirements: 0.30, narrative: 0.15, conditions: 0.15, comp: 0.10 }  # 기본값과 다를 때만

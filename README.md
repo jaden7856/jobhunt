@@ -14,17 +14,19 @@
 <p align="center">
   <a href="./README.md">한국어</a> | <a href="./README.en.md">English</a>
   <br/>
-  <a href="#-미리보기">미리보기</a> · <a href="#-빠른-시작">빠른 시작</a> · <a href="#-작동-순서">작동 순서</a> · <a href="#-빌드-후-검사">빌드 후 검사</a> · <a href="#-폴더-구조">폴더 구조</a>
+  <a href="#-미리보기">미리보기</a> · <a href="#-빠른-시작">빠른 시작</a> · <a href="#-공고-찾기--평가--맞춤-이력서">공고 찾기·평가</a> · <a href="#-작동-순서-맞춤-이력서">작동 순서</a> · <a href="#-빌드-후-검사">빌드 후 검사</a> · <a href="#-폴더-구조">폴더 구조</a>
 </p>
 
 ## 📖 소개
 
-**resume-builder**는 한국어 개발자 이력서를 만드는 [Claude](https://claude.com) 스킬과 Python 빌드 도구입니다.
+**resume-builder**는 한국 개발자 채용 공고를 찾고, 내 경력으로 평가하고, 공고마다 맞춘 이력서를 만드는 [Claude](https://claude.com) 스킬과 Python 빌드 도구입니다.
 
 내용은 YAML 파일에, 모양과 빌드는 `scripts/render.py`에 있습니다. Claude가 목표 포지션, 자료, 프로젝트 선택, 포트폴리오 링크를 차례로 묻고 YAML을 작성합니다. 그다음 PDF를 빌드하고 자동 검사 오류가 0이 될 때까지 고칩니다.
 
 ### 특징
 
+- 🔎 **공고 찾기와 평가** — 원티드·점핏·사람인·잡코리아·기업 채용 사이트에서 공고를 모아, 근무지·언어·기술 스택 조건으로 거르고 요구사항 대응표로 평가합니다
+- 📈 **쓸수록 정확해지는 개인화** — 판단 교정과 지원 결과를 `data/`에 쌓아 다음 선별·맞춤에 반영합니다
 - 🧾 **내용은 데이터로** — 이력서는 YAML 파일(`references/yaml_schema.md`). 회사별 맞춤본은 `cp` 후 몇 군데만 고치면 됩니다
 - 🎨 **디자인 3종** — A 에디토리얼, **B 스위스 그리드(기본)**, C 다크 마스트헤드. 옵션 하나로 바꿉니다
 - 🧭 **단계별 질문** — 필요한 것만 한 단계씩 묻고, `data/`에 저장된 답은 다시 묻지 않습니다
@@ -105,7 +107,19 @@ ln -s "$PWD" ~/.claude/skills/resume-pdf-builder
 
 그다음 *"이 공고에 맞춰 이력서 만들어줘"* 처럼 요청하면 됩니다. 전체 흐름은 [`SKILL.md`](SKILL.md)에 있습니다.
 
-## 🧭 작동 순서
+## 🔎 공고 찾기 → 평가 → 맞춤 이력서
+
+| 모드 | 하는 일 |
+|---|---|
+| `modes/onboard.md` | 목표 역할, 연봉, 근무지·언어·스택 조건을 정하고 1차 선별 요약을 만듭니다 |
+| `modes/scan.md` | 채용 사이트에서 공고를 모아 제목·근무지·중복을 거르고, 1차 선별해 대기함에 쌓습니다 |
+| `modes/evaluate.md` | 조건 판정, 자격요건·우대사항과 내 경험의 대응표, 보상 조건, 맞춤 이력서 계획, 면접 준비 |
+| `modes/tailor.md` | 평가의 맞춤 계획으로 공고별 yaml을 만들고 PDF를 빌드·검사합니다 (아래 작동 순서) |
+| `modes/track.md` | 지원 현황과 결과를 기록하고, 결과가 쌓이면 선별 기준 조정을 제안합니다 |
+
+사이트별 수집 방법은 [`references/sources.md`](references/sources.md), 전체 설계와 단계는 [`docs/ROADMAP.md`](docs/ROADMAP.md)에 있습니다.
+
+## 🧭 작동 순서 (맞춤 이력서)
 
 | 단계 | Claude가 하는 일 |
 |---|---|
@@ -137,7 +151,9 @@ ln -s "$PWD" ~/.claude/skills/resume-pdf-builder
 ## 📁 폴더 구조
 
 ```
-SKILL.md                     스킬 정의와 작동 순서 (Claude가 읽음)
+SKILL.md                     스킬 진입점, 요청을 모드로 연결 (Claude가 읽음)
+modes/                       공통 규칙과 모드별 절차 (onboard · scan · evaluate · tailor · track)
+docs/ROADMAP.md              설계와 단계
 scripts/
   render.py                  YAML → HTML → PDF + PNG, 디자인 A/B/C, 검사 호출
   check.py                   페이지 수 · 제목 홀로 남음 · 링크 · 플레이스홀더 · 문체
@@ -145,6 +161,7 @@ scripts/
   git_log.sh                 로컬 git 저장소에서 내 커밋 로그 추출
   setup.sh                   Chromium, 폰트, poppler 설치
 references/
+  sources.md                 채용 사이트별 수집 방법
   yaml_schema.md             YAML 형식
   writing_rules.md           문장 규칙과 점검 방법
   style_rules.yaml           금지어 · 번역투 · 기호 한도
@@ -152,9 +169,13 @@ references/
 examples/example.yaml        가상 인물 예시
 assets/                      README 미리보기 이미지와 예시 PDF
 data/                        내 자료 (git 제외, 구조만 올라감)
-  profile/ experience/ preferences/ portfolio/ job_postings/ resumes/ output/
+  profile/ experience/ preferences/ portfolio/ search/ job_postings/ applications/ resumes/ output/
 ```
 
 ## 🔒 개인정보
 
 `data/` 아래 실제 파일은 `.gitignore`로 빠지고 폴더 README, `.gitkeep`, `*.example.*`만 올라갑니다. 이름·연락처는 코드에 없고 빌드할 때 `data/profile/profile.yaml`에서 읽습니다. 그래서 저장소를 공개해도 됩니다.
+
+## 🙏 참고
+
+공고 탐색·평가 흐름과 개인화 파일 구조(시스템/사용자 파일 분리, 파일이 원본, 쓸수록 개인화)는 [career-ops](https://github.com/santifer/career-ops)(MIT, © santifer)를 참고했습니다. `modes/_shared.md`의 규칙 일부와 한국 채용 용어 표는 career-ops의 `AGENTS.md`, `modes/ko/_shared.md`를 옮기고 줄인 것입니다.
