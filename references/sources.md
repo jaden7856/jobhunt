@@ -16,7 +16,7 @@
 
 | 사이트 | 목록 | 상세 (자격요건 본문) | 실측 |
 |---|---|---|---|
-| 원티드 | `https://www.wanted.co.kr/api/chaos/navigation/v1/results?job_group_id=518&job_ids=872\|674&years=5` 또는 `/api/v4/jobs?country=kr&tag_type_ids=872&job_sort=job.latest_order&limit=..&offset=..` | `/api/v4/jobs/{id}` → `job.detail.{requirements, main_tasks, preferred_points, intro, benefits}`, 마감은 `job.status`(active/close), 연봉은 `annual_from/to`. 키워드 검색(`/api/chaos/search/v1/results?query=`)은 결과가 적어 목록 API를 쓴다 | 2026-09-29 |
+| 원티드 | `https://www.wanted.co.kr/api/chaos/navigation/v1/results?job_group_id=518&job_ids=872\|674\|10110&years=5` (872 서버 개발자 · 674 DevOps · 10110 소프트웨어 엔지니어 — 백엔드 공고가 10110에만 달린 경우가 있다, 2026-09-30) 또는 `/api/v4/jobs?country=kr&tag_type_ids=872&job_sort=job.latest_order&limit=..&offset=..` | `/api/v4/jobs/{id}` → `job.detail.{requirements, main_tasks, preferred_points, intro, benefits}`, 마감은 `job.status`(active/close), 연봉은 `annual_from/to`. 키워드 검색(`/api/chaos/search/v1/results?query=`)은 결과가 적어 목록 API를 쓴다 | 2026-09-29 |
 | 점핏 | `https://jumpit-api.saramin.co.kr/api/positions?keyword=..&page=N` (`jobCategory=1` 서버/백엔드) | `/api/position/{id}` → `qualifications`. 마감일 필드로 지난 공고를 거른다 | 2026-09-29 |
 | 사람인 | 검색 페이지 `/zf_user/search/recruit?searchword=..` (HTML) | `relay/view`가 아니라 `/zf_user/jobs/relay/view-detail?rec_idx={id}&rec_seq=0` 을 받아야 본문이 나온다 | 2026-09-23 |
 | 잡코리아 | 검색 페이지 `/Search/?stext=..` (HTML, 목록일 뿐 공고 아님) | `/Recruit/GI_Read/{id}`. 페이지에서 마감일을 정규식으로 뽑으면 엉뚱한 문구가 잡힌다(2026-09-01) → 본문의 접수 기간을 직접 읽는다 | 2026-09-23 |

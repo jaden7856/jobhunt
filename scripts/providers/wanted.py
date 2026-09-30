@@ -9,7 +9,7 @@ BASE = "https://www.wanted.co.kr"
 
 
 def collect(cfg: dict) -> List[Job]:
-    q = "&".join(f"job_ids={i}" for i in cfg.get("job_ids", [872, 674]))
+    q = "&".join(f"job_ids={i}" for i in cfg.get("job_ids", [872, 674, 10110]))
     url = (f"{BASE}/api/chaos/navigation/v1/results?job_group_id={cfg.get('job_group_id', 518)}&{q}"
            f"&country=kr&job_sort=job.latest_order&years={cfg.get('years', -1)}&locations=all&limit=100&offset=0")
     jobs = []

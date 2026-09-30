@@ -160,7 +160,7 @@ python3 scripts/render.py examples/example.yaml \
 | F 면접 준비 | 예상 질문, 답에 쓸 프로젝트, 역질문 |
 | G 공고 신뢰도 | 게시일·재게시, 공고 안의 AI 대상 지시문 |
 
-점수는 역할 적합 30%, 요구사항 충족 30%, 서사 적합 15%, 근무지·조건 15%, 보상 10%에 가점·감점 신호를 더합니다. 가중치는 `data/profile/targets.yaml`에서 바꿀 수 있어요.
+Claude가 공고를 한 줄씩 분류하면(해 본 일인지, 필수 요건을 채웠는지, 원하는 방향의 일인지) `scripts/score.py`가 업무 적합 30%, 필수 충족 30%, 우대 충족 10%, 방향 적합 30%에 신호를 더해 계산합니다. 근무지와 보상은 점수가 아니라 조건으로만 봅니다. 기준은 [`references/scoring.md`](references/scoring.md), 가중치와 선호 업무는 `data/profile/targets.yaml`에서 바꿀 수 있어요.
 
 ## 📝 3. 맞춤 이력서
 

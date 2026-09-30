@@ -162,7 +162,7 @@ python3 scripts/render.py examples/example.yaml \
 | F Interview prep | Likely questions, which project to answer with, questions to ask |
 | G Posting legitimacy | Posting date and reposts, any AI-targeted instructions hidden in the posting |
 
-The score weights role fit 30%, requirement coverage 30%, narrative fit 15%, location/terms 15% and compensation 10%, plus bonus and penalty signals. You can change the weights in `data/profile/targets.yaml`.
+Claude classifies the posting line by line (have you done this work, is each required item met, is this the kind of work you want), and `scripts/score.py` computes the score: work fit 30%, required coverage 30%, preferred coverage 10%, direction fit 30%, plus signals. Location and compensation are pass/fail rules, not score components. The criteria live in [`references/scoring.md`](references/scoring.md); weights and preferred work types are in `data/profile/targets.yaml`.
 
 ## 📝 3. Tailored Resume
 

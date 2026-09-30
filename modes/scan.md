@@ -6,6 +6,7 @@
 
 - `data/search/sources.yaml`: 채널, 제목·근무지 필터, 우선 기업
 - `data/profile/brief.md`: 1차 선별 기준 (없거나 템플릿 그대로면 `modes/onboard.md`로 먼저 만든다)
+- `references/scoring.md`: 점수 기준 (분류 방법과 계산), `data/profile/calibration.md`: 사용자가 교정한 판정 사례
 - `data/search/scan-history.tsv`, `data/search/pipeline.md`, `data/applications/tracker.md`, `data/search/blacklist.md`: 중복·쿨다운·제외 확인
 - `references/sources.md`: 사이트별 엔드포인트, 본문 위치, 마감 판정
 
@@ -23,12 +24,14 @@
    - 제외 회사(`blacklist.md`), 재지원 쿨다운(`tracker.md`에서 `지원함` 이후 `targets.yaml`의 `reapply_days` 안인 회사).
    - 연차: 공고에 연차 숫자가 있으면 `sources.yaml`의 `career_filter`.
 3. **본문 받기.** 남은 공고의 상세 본문(자격요건·우대사항·주요업무)을 받는다. 우산 공고는 하위 포지션까지 펼친다(토스는 스크립트가 하위 링크를 본문 끝에 모아 둔다).
-4. **1차 선별.** "새로 수집 (선별 전)"의 공고마다 `inbox/` 본문과 `brief.md`만 보고 판정한다(전체 평가는 하지 않는다). 줄 끝의 `언어:` 힌트는 참고일 뿐이고, 판정은 자격요건 문장으로 한다.
-   - 제외 조건(근무지·언어·스택·연차·형태)에 걸리면 `FAIL`. 판정 근거가 된 자격요건 문장을 한 줄 남긴다.
-   - 나머지는 역할 적합·요구사항 충족·근무지·보상·서사 적합으로 1~5점. 3.5 이상 `PASS`, 3.0~3.4 `MARGINAL`, 미만 `FAIL`.
-   - 우선 기업은 제외 조건을 통과하고 `targets.yaml`의 `priority_override_roles`에 드는 역할이면 점수와 관계없이 `PASS`. `priority_override_excludes` 직군(예: DevOps·SRE·운영)은 점수대로 판정한다.
+4. **1차 선별.** "새로 수집 (선별 전)"의 공고마다 `references/scoring.md` 순서대로 한다. 점수를 어림하지 않는다.
+   - `python3 scripts/score.py init <inbox 본문> -o data/search/judgments/<출처>_<id>.yaml` 로 뼈대를 만들고, 줄마다 분류(fit·met·gap)와 방향·조건·신호를 채운다. 줄 끝의 `언어:` 힌트는 참고일 뿐이고, 조건 판정은 자격요건 문장으로 한다.
+   - 제외 조건에 걸리면 `gates`에 `fail`과 근거 문장만 적고 줄 분류는 생략한다.
+   - `calibration.md`의 사례와 닮았으면 같은 쪽으로 분류한다.
+   - `python3 scripts/score.py data/search/judgments/<파일>.yaml`의 점수와 판정을 그대로 쓴다. 3.5 이상 `PASS`, 3.0~3.4 `MARGINAL`, 미만 `FAIL`.
+   - 우선 기업은 판정 파일에 `priority: true`(가점만, 자동 PASS 없음).
 5. **기록.**
-   - 선별한 줄을 "새로 수집 (선별 전)"에서 빼고, PASS·MARGINAL은 "대기"로(`선별 전` 자리를 `triage: PASS 3.8/5`로, 뒤에 한 줄 근거), FAIL은 "제외 (YYYY-MM-DD)"로 근거와 함께 옮긴다.
+   - 선별한 줄을 "새로 수집 (선별 전)"에서 빼고, PASS·MARGINAL은 "대기"로(`선별 전` 자리를 `triage: PASS 3.8/5`로, 뒤에 한 줄 근거와 `판정: data/search/judgments/<파일>.yaml`), FAIL은 "제외 (YYYY-MM-DD)"로 근거와 함께 옮긴다.
    - 마감 확인은 `python3 scripts/alive.py --write`(마감된 대기 공고를 "마감 확인 (날짜)"로, 평가함 행을 포기로). `확인 불가`는 브라우저로 본다.
 6. **보고.** `python3 scripts/tracker.py report --since <지난 스캔 날짜>` 출력(아래 표 형식)을 그대로 보여 주고, 채널별 건수·미스캔 채널을 덧붙인다. 전체 평가는 사용자가 고른 공고만 `modes/evaluate.md`로.
    - 채널별 건수(0건 포함), 조건별 제외 건수, 미스캔 채널과 이유.

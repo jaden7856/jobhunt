@@ -23,7 +23,7 @@ company_aliases:
 
 # 채용 플랫폼
 boards:
-  wanted:   { enabled: true, job_group_id: 518, job_ids: [872, 674], years: 4 }
+  wanted:   { enabled: true, job_group_id: 518, job_ids: [872, 674, 10110], years: 4 }   # 서버 · DevOps · 소프트웨어 엔지니어
   jumpit:   { enabled: true, keywords: [백엔드, 서버, 플랫폼] }
   saramin:  { enabled: true, keywords: [백엔드 개발자, 서버 개발자] }
   jobkorea: { enabled: true, keywords: [백엔드 개발자, 서버 개발자] }

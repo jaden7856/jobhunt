@@ -28,6 +28,8 @@
 | 이름·연락처·학력 | `profile/profile.yaml` |
 | 목표 역할, 이직 서사, 연봉, 근무지·언어·스택 조건, 우선 기업 기준 | `profile/targets.yaml` |
 | 1차 선별용 요약 (targets + 대표 성과, 짧게) | `profile/brief.md` |
+| 사용자가 교정한 판정 사례 | `profile/calibration.md` |
+| 공고별 줄 단위 판정 (점수 계산 입력) | `search/judgments/*.yaml` |
 | 경험 문서, 프로젝트 후보·근거, 확인받은 사실 | `experience/` |
 | 작업 규칙, 이력서 표현 결정 | `preferences/standing.md` |
 | 검색 조건, 우선 기업 목록 | `search/sources.yaml` |
@@ -38,7 +40,7 @@
 
 ## 4. 학습 (쓸수록 정확해지게)
 
-- 사용자 피드백은 그 성격의 파일에 바로 적는다. "이 점수 너무 높다" → `targets.yaml`/`brief.md`의 기준 조정, "내 X 경험을 놓쳤다" → `experience/`, "앞으로 이렇게 해" → `standing.md`.
+- 사용자 피드백은 그 성격의 파일에 바로 적는다. "이 점수 너무 높다" → `references/scoring.md` "교정" 순서대로 (판정 파일 수정, `targets.yaml`의 `scoring` 조정, `calibration.md`에 사례 한 줄), "내 X 경험을 놓쳤다" → `experience/`, "앞으로 이렇게 해" → `standing.md`.
 - 덧붙일 때 날짜를 남긴다. 바뀐 결정은 지우지 말고 `(이전: …, 바꾼 날 YYYY-MM-DD)`로 남긴다.
 - 수집·평가에서 실수가 드러나면(공고 누락, 마감 오판) 원인과 새 절차를 `standing.md`(개인 규칙) 또는 `references/sources.md`(사이트 공통 사실)에 적는다.
 - `brief.md`는 `targets.yaml`과 대표 성과가 바뀌면 다시 만들고 사용자에게 보여 준다.

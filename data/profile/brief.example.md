@@ -24,6 +24,7 @@ Kotlin 백엔드 개발자 4년차. 커머스 주문·정산. 서울·판교 근
 - 연봉 상한이 6,000만원 미만으로 명시
 
 ## 점수
-3.5 이상 PASS, 3.0~3.4 MARGINAL, 미만 FAIL. 우선 기업은 제외 조건을 통과하고 목표 역할(서비스 백엔드)이면 PASS, 그 밖의 직군은 점수대로.
-- 감점 −0.5: 포괄임금제+야근 암시, 5인 미만
-- 가점 +0.5: 자체 서비스 고도화 조직, 결제·정산 도메인
+직접 매기지 않는다. `references/scoring.md` 대로 줄마다 분류해 `data/search/judgments/` 에 판정 파일을 쓰고 `scripts/score.py` 로 계산한다.
+- 하고 싶은 일: 결제·정산 시스템, 사용자가 많은 B2C 서비스 (`targets.yaml` 의 `scoring.prefer_work`)
+- 깎는 일: 어드민 API 위주, 운영 위주
+- 교정 사례: `data/profile/calibration.md`

@@ -29,9 +29,11 @@ scripts/setup.sh            스킬 연결(~/.claude/skills 링크) + Playwright 
 scripts/scan.py             공고 수집 (원티드·점핏·LinkedIn·Greenhouse·토스·NHN·카카오·greetinghr) → 거르기 → pipeline.md
 scripts/alive.py            추적 공고 마감 확인
 scripts/tracker.py          지원 현황 기록(add/set)과 통합 보고표(report)
+scripts/score.py            공고 점수 계산 (줄 단위 판정 파일 → 항목별 점수)
 scripts/weekly.sh           주간 스캔의 LLM 없는 부분 (scan → alive → report)
 scripts/providers/          사이트별 수집 모듈
 references/sources.md       채용 사이트별 수집 방법 (엔드포인트, 본문 위치, 마감 판정)
+references/scoring.md       공고 점수 기준 (분류 방법, 계산, 교정)
 references/yaml_schema.md   yaml 형식
 references/writing_rules.md 문장 규칙과 점검 방법
 references/style_rules.yaml 금지어·번역투·기호 한도 (check.py 가 읽음)
