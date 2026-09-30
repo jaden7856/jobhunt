@@ -11,7 +11,7 @@ description: 한국 개발자 채용 공고를 찾고(원티드·점핏·LinkedI
 
 ## 저장소
 
-기본 위치: 사용자 맥 `~/Desktop/develop/resume-builder` (GitHub에 올려 관리).
+이 SKILL.md가 있는 폴더가 저장소 루트다(`scripts/setup.sh`가 스킬 폴더를 저장소에 링크한다). 아래 경로와 명령은 모두 저장소 루트 기준.
 
 ```
 SKILL.md                    이 파일 (모드 연결)
@@ -26,7 +26,7 @@ scripts/check.py            페이지 수 · 제목 홀로 남음 · 링크 · �
 scripts/check_links.py      링크 접속 확인 (표준 라이브러리만, 어디서나 실행)
 scripts/git_log.sh          로컬 git 저장소에서 작성자 기준 커밋 로그 추출
 scripts/setup.sh            스킬 연결(~/.claude/skills 링크) + Playwright Chromium, 폰트(Pretendard, Noto Sans/Serif CJK KR), poppler 설치
-scripts/scan.py             공고 수집 (원티드·점핏·LinkedIn·Greenhouse·토스·NHN·카카오·greetinghr·나인하이어) → 거르기 → pipeline.md
+scripts/scan.py             공고 수집 (원티드·점핏·LinkedIn·Greenhouse·토스·NHN·카카오·네이버·배민·라인·greetinghr·나인하이어) → 거르기 → pipeline.md
 scripts/alive.py            추적 공고 마감 확인
 scripts/tracker.py          지원 현황 기록(add/set)과 통합 보고표(report)
 scripts/score.py            공고 점수 계산 (줄 단위 판정 파일 → 항목별 점수)
@@ -48,7 +48,7 @@ data/                       사용자 자료 (git 제외, 구조만 올라감)
 
 ## 시작할 때
 
-1. 저장소에 접근한다. 맥 폴더가 연결되어 있지 않으면 `~/Desktop/develop/resume-builder` 접근을 요청한다. 없으면 GitHub 주소를 물어 클론한다.
+1. 저장소 루트로 간다. 스킬 폴더가 링크면 링크가 가리키는 실제 폴더다. 이 폴더에 접근할 수 없는 환경(클라우드 작업공간 등)이면 사용자에게 저장소 폴더 연결을 요청하고, 저장소가 없으면 GitHub 주소를 물어 클론한다.
 2. `modes/_shared.md`를 읽는다.
 3. `modes/onboard.md`의 세션 시작 점검을 한다. 빠진 개인화 파일이 있으면 알린다.
 4. `data/preferences/standing.md`를 읽는다. 이미 정해진 것은 다시 묻지 않는다.

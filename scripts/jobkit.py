@@ -35,6 +35,18 @@ TODAY = date.today().isoformat()
 
 
 # ── HTTP ──────────────────────────────────────────────
+class _Redirect308(urllib.request.HTTPRedirectHandler):
+    """파이썬 3.9 urllib 은 308 을 따라가지 않는다 (3.11부터 지원). 307 처럼 다룬다."""
+    def http_error_308(self, req, fp, code, msg, headers):
+        return self.http_error_307(req, fp, code, msg, headers)
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        if code == 308:
+            code = 307
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
+_OPENER = urllib.request.build_opener(_Redirect308)
 UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36"
 _last: Dict[str, float] = {}
 
@@ -47,7 +59,7 @@ def http_get(url: str, accept: str = "application/json", delay: float = 1.0, tim
         time.sleep(wait)
     req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": accept})
     try:
-        with urllib.request.urlopen(req, timeout=timeout) as r:
+        with _OPENER.open(req, timeout=timeout) as r:
             status, body = r.status, r.read().decode("utf-8", "replace")
     except urllib.error.HTTPError as e:
         status, body = e.code, ""

@@ -8,10 +8,10 @@
 
 방법과 실측 날짜는 references/sources.md. 형식이 바뀌면 ShapeError 를 올려 "응답 형식 변경"으로 보고한다.
 """
-from . import greenhouse, greetinghr, jumpit, kakao, linkedin, nhn, ninehire, toss, wanted
+from . import greenhouse, greetinghr, jumpit, kakao, line, linkedin, naver, nhn, ninehire, toss, wanted, woowa
 
 BOARDS = {"wanted": wanted, "jumpit": jumpit, "linkedin": linkedin}
-ALL = [wanted, jumpit, linkedin, greenhouse, toss, nhn, kakao, greetinghr, ninehire]
+ALL = [wanted, jumpit, linkedin, greenhouse, toss, nhn, kakao, greetinghr, ninehire, naver, woowa, line]
 BY_ATS = {"greetinghr": greetinghr, "ninehire": ninehire, "greenhouse": greenhouse}   # sources.yaml 의 ats: (discover.py 가 적음)
 
 
@@ -30,6 +30,12 @@ def for_company(c: dict):
         return nhn
     if "careers.kakao.com" in url:
         return kakao
+    if any(h in url for h in naver.HOSTS) or "career.navercloudcorp.com" in url:
+        return naver
+    if "career.woowahan.com" in url:
+        return woowa
+    if "careers.linecorp.com" in url:
+        return line
     if ".career.greetinghr.com" in url:
         return greetinghr
     return None

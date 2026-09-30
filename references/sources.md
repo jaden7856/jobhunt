@@ -2,7 +2,7 @@
 
 사이트 공통 사실만 적는다(엔드포인트, 본문 위치, 마감 판정). 개인 검색 조건은 `data/search/sources.yaml`.
 실측 날짜를 붙인다. 형식이 바뀌면 여기를 고치고 날짜를 갱신한다.
-`scripts/providers/`가 자동으로 다루는 곳: 원티드, 점핏, LinkedIn, Greenhouse, 토스, NHN, 카카오, greetinghr(`__NEXT_DATA__` 있는 곳, 회사 도메인에 붙인 것 포함), 나인하이어. 나머지는 Claude가 이 문서대로 직접 수집한다.
+`scripts/providers/`가 자동으로 다루는 곳: 원티드, 점핏, LinkedIn, Greenhouse, 토스, NHN, 카카오, 네이버 계열, 우아한형제들, 라인, greetinghr(`__NEXT_DATA__` 있는 곳, 회사 도메인에 붙인 것 포함), 나인하이어. 나머지는 Claude가 이 문서대로 직접 수집한다.
 수집할 회사를 넓히는 방법은 아래 "회사 찾기".
 
 ## 공통 규칙
@@ -17,7 +17,7 @@
 
 | 사이트 | 목록 | 상세 (자격요건 본문) | 실측 |
 |---|---|---|---|
-| 원티드 | `https://www.wanted.co.kr/api/chaos/navigation/v1/results?job_group_id=518&job_ids=872\|674\|10110&years=5` (872 서버 개발자 · 674 DevOps · 10110 소프트웨어 엔지니어 — 백엔드 공고가 10110에만 달린 경우가 있다, 2026-09-30) 또는 `/api/v4/jobs?country=kr&tag_type_ids=872&job_sort=job.latest_order&limit=..&offset=..` | `/api/v4/jobs/{id}` → `job.detail.{requirements, main_tasks, preferred_points, intro, benefits}`, 마감은 `job.status`(active/close), 연봉은 `annual_from/to`. 키워드 검색(`/api/chaos/search/v1/results?query=`)은 결과가 적어 목록 API를 쓴다 | 2026-09-29 |
+| 원티드 | `https://www.wanted.co.kr/api/chaos/navigation/v1/results?job_group_id=518&job_ids=872\|674\|10110&years={연차}` (872 서버 개발자 · 674 DevOps · 10110 소프트웨어 엔지니어 — 백엔드 공고가 10110에만 달린 경우가 있다, 2026-09-30) 또는 `/api/v4/jobs?country=kr&tag_type_ids=872&job_sort=job.latest_order&limit=..&offset=..` | `/api/v4/jobs/{id}` → `job.detail.{requirements, main_tasks, preferred_points, intro, benefits}`, 마감은 `job.status`(active/close), 연봉은 `annual_from/to`. 키워드 검색(`/api/chaos/search/v1/results?query=`)은 결과가 적어 목록 API를 쓴다 | 2026-09-29 |
 | 점핏 | `https://jumpit-api.saramin.co.kr/api/positions?keyword=..&page=N` (`jobCategory=1` 서버/백엔드) | `/api/position/{id}` → `qualifications`. 마감일 필드로 지난 공고를 거른다 | 2026-09-29 |
 | 사람인 | 검색 페이지 `/zf_user/search/recruit?searchword=..` (HTML) | `relay/view`가 아니라 `/zf_user/jobs/relay/view-detail?rec_idx={id}&rec_seq=0` 을 받아야 본문이 나온다 | 2026-09-23 |
 | 잡코리아 | 검색 페이지 `/Search/?stext=..` (HTML, 목록일 뿐 공고 아님) | `/Recruit/GI_Read/{id}`. 페이지에서 마감일을 정규식으로 뽑으면 엉뚱한 문구가 잡힌다(2026-09-01) → 본문의 접수 기간을 직접 읽는다 | 2026-09-23 |
@@ -34,7 +34,9 @@
 | Greenhouse 쓰는 회사 (당근, 쿠팡, 크래프톤 등) | `https://boards-api.greenhouse.io/v1/boards/{보드}/jobs?content=true` | 공식 공개 API | 2026-09-29 |
 | 토스 (전 계열사) | 목록 `https://api-public.toss.im/api/v3/ipd-eggnog/career/jobs` | 본문은 `content`가 아니라 `metadata` 중 이름에 "Job Description"이 들어간 필드(마크다운). "집중 채용" 같은 우산 공고는 본문의 하위 포지션 링크(`grnh.se/…`, `job_id=`)를 모두 펼쳐 각각 판정하고, 보통 하위 중 1개만 지원 가능. 마감 판정: `toss.im/career/job-detail?job_id=` 가 200이고 `<title>`에 포지션명이 있으면 활성, 404면 마감. HTML 본문은 `</head>` 뒤 "합류하게 될 팀 / 이런 분과 함께하고 싶어요" 섹션 | 2026-09-23 |
 | NHN | 목록 `GET https://careers.nhn.com/v1/job-postings` (최신 30건만), 상세 `GET /v1/job-postings/{id}` | `finishYn=N`·`postingYn=Y`·`applicationUseYn=Y`면 활성. 추적 중인 공고는 목록이 아니라 상세 API로 확인. `/preview/…` URL은 추천·전환형일 수 있음 | 2026-09-23 |
-| 네이버 | `recruit.navercorp.com/rcrt/loadJobList.do?…&firstIndex=0` (JSON, `annoId`) → `/rcrt/view.do?annoId={id}` | 한 공고에 여러 직무가 섹션으로 들어 있으니 해당 섹션만 판정 | 2026-09-23 |
+| 네이버 계열 (네이버·네이버클라우드·네이버파이낸셜·네이버웹툰) | `https://{recruit.navercorp.com · recruit.navercloudcorp.com · recruit.naverfincorp.com · recruit.webtoonscorp.com}/rcrt/loadJobList.do?annoId=&sw=&…&firstIndex=N` (JSON, 10건씩, `totalSize`) → 본문 `/rcrt/view.do?annoId={id}` 의 `detail_wrap` | 한 공고에 여러 직무가 섹션으로 들어 있으니 해당 섹션만 판정. 네이버클라우드 소개 사이트(`career.navercloudcorp.com`)가 아니라 `recruit.navercloudcorp.com` 이 채용 시스템 | 2026-09-30 |
+| 우아한형제들 | 목록 `https://career.woowahan.com/w1/recruits?page=N&size=50` (JSON), 본문 `/w1/recruits/{recruitNumber}` 의 `recruitContents`, 공고 URL `/recruitment/{recruitNumber}/detail` | 없는 공고는 `code: 9002` | 2026-09-30 |
+| 라인 | `https://careers.linecorp.com/page-data/ko/jobs/page-data.json` 의 `allStrapiJobs` (전 세계) → 도시가 Seoul·Bundang·Gwacheon 이고 `publish: true` 인 것만, 본문 `/page-data/ko/jobs/{id}/page-data.json` 의 `strapiJobs.content` | `publish: false` 는 게시 종료 | 2026-09-30 |
 | 두나무 | `careers.dunamu.com` 메인 HTML의 `/detail/{n}` 링크 | 공고 수 적음 | 2026-09-23 |
 | SK텔레콤 | `skcareers.com/Recruit?corpCode=10005` | `careers.sktelecom.com`은 이관 안내만 있음 | 2026-09-23 |
 | 카카오 | `https://careers.kakao.com/public/api/job-list?part=TECHNOLOGY&company=ALL&page=N` | 공동체(`S-`) 공고는 자격요건이 비어 있음(외부 사이트) | 2026-09-23 |
@@ -62,7 +64,7 @@
 
 **점수(인지도·규모):** 연봉상위 1% 3.5 · 6~10% 2.0 · 11~20% 1.0, 인원 1,001명 이상 2.0 · 301~1,000명 1.5 · 51~300명 0.5, 알려진 회사 목록 2.0, 기술 블로그 1.5, GitHub 조직 1.0(팔로워 100 이상 +0.5). 기본은 2.5 이상을 조사하고 3.0 이상을 추가한다.
 
-**채용 사이트 찾기(probe):** 홈페이지에서 "채용·Careers·Recruit·Jobs" 링크를 찾아 열고, URL과 HTML로 채용 시스템(greetinghr·나인하이어·Greenhouse·Lever·recruiter.co.kr·Notion·자체)을 판별한다. 스크립트가 다루는 시스템이면 공고 목록을 실제로 받아 보고(`verified: 공고 수`) 검증된 것만 자동 수집으로 넣는다. 나머지는 `method: browser`.
+**채용 사이트 찾기(probe):** (파이썬 3.9 urllib 은 308 리다이렉트를 따라가지 않아 `jobkit.http_get` 이 직접 처리한다) 홈페이지에서 "채용·Careers·Recruit·Jobs" 링크를 찾아 열고, URL과 HTML로 채용 시스템(greetinghr·나인하이어·Greenhouse·Lever·recruiter.co.kr·Notion·자체)을 판별한다. 스크립트가 다루는 시스템이면 공고 목록을 실제로 받아 보고(`verified: 공고 수`) 검증된 것만 자동 수집으로 넣는다. 나머지는 `method: browser`.
 
 ```bash
 python3 scripts/discover.py collect            # 후보 모으기 (원티드 포함 20분 안팎, --skip-wanted 면 수 초)
@@ -70,6 +72,8 @@ python3 scripts/discover.py probe --top 150    # 점수 높은 후보의 채용 
 python3 scripts/discover.py report             # 후보 표
 python3 scripts/discover.py promote --dry-run  # 추가될 회사 미리 보기 → 사용자 확인 후 --dry-run 없이
 ```
+
+**홈페이지에서 못 찾은 곳:** 링크가 스크립트로 그려지거나 봇을 막는 사이트(403)는 `discover.py missing` 으로 목록을 뽑고, Firecrawl(`firecrawl_search "{회사} 채용"`, 없으면 WebSearch)로 채용 사이트 주소를 찾아 `회사<TAB>URL<TAB>출처` 파일로 `discover.py set <파일>` 에 넣는다. 채용 시스템 판별과 목록 검증은 스크립트가 한다. 채용 사이트가 없는 회사는 URL 자리에 `-`.
 
 `data/search/companies.yaml` 의 `status`(후보·추가·제외)와 `memo`는 손으로 고쳐도 다음 실행에 남는다. 지원하지 않을 회사(`blacklist.md`)와 이미 수집하는 채용 사이트를 쓰는 계열사는 추가하지 않는다.
 

@@ -4,6 +4,8 @@
   python3 scripts/discover.py collect          정보원에서 회사 후보를 모으고 인지도·규모 점수를 매긴다
   python3 scripts/discover.py probe [--top N]  점수 높은 후보의 채용 사이트와 채용 시스템(ATS)을 찾는다
   python3 scripts/discover.py report           후보 표 (점수·채용 사이트·ATS·수집 가능 여부)
+  python3 scripts/discover.py missing          채용 사이트를 못 찾은 후보 (Firecrawl·검색으로 채울 목록)
+  python3 scripts/discover.py set <파일.tsv>   밖에서 찾은 채용 사이트(회사<TAB>URL<TAB>출처)를 넣고 채용 시스템을 판별·검증
   python3 scripts/discover.py promote [--min S] [--dry-run]
                                                점수 S 이상이고 채용 사이트를 찾은 회사를 sources.yaml companies 에 넣는다
 
@@ -286,6 +288,48 @@ def cmd_probe(a):
     _save(reg)
 
 
+def classify(c: dict, careers: str, via: str) -> dict:
+    """밖에서 찾은 채용 사이트 URL 로 채용 시스템을 판별하고 목록을 받아 검증한다."""
+    st, page = K.http_get(careers, accept="text/html", timeout=15)
+    name, _ = ats_of(careers, page if st == 200 else "")
+    r = dict(probe=f"찾음 ({via})", careers=careers, ats=name or "자체")
+    n = verify(name, careers, c["name"]) if name else None
+    if n is not None:
+        r["verified"] = n
+    if st != 200:
+        r["probe"] += f" · HTTP {st}"
+    return r
+
+
+def cmd_missing(a):
+    reg = _load()
+    rows = [c for c in sorted(reg.values(), key=lambda c: -c.get("tier", 0))
+            if c["status"] == "후보" and c.get("tier", 0) >= a.min and c.get("probed") and not c.get("careers")]
+    for c in rows:
+        print(f"{c['name']}\t{c.get('tier')}\t{c.get('probe')}\t{c.get('home') or c['signals'].get('homepage') or ''}")
+
+
+def cmd_set(a):
+    reg = _load()
+    for line in K.read_text(a.file).splitlines():
+        if not line.strip() or line.startswith("#"):
+            continue
+        name, url, *via = [x.strip() for x in line.split("\t")]
+        c = reg.get(_find(reg, [name]))
+        if not c:
+            print(f"  {name}: 후보에 없음 — 건너뜀")
+            continue
+        if not url or url == "-":
+            c["probe"] = f"채용 사이트 없음 ({via[0] if via else '수동'})"
+            continue
+        for k in ("careers", "ats", "verified"):
+            c.pop(k, None)
+        c.update(classify(c, url, via[0] if via else "수동"))
+        c["probed"] = K.TODAY
+        print(f"  {c['name']}: {c['probe']} {c.get('ats')} {'검증 ' + str(c['verified']) + '건' if 'verified' in c else ''} {url}")
+    _save(reg)
+
+
 def cmd_report(a):
     reg = _load()
     rows = [c for c in sorted(reg.values(), key=lambda c: -c.get("tier", 0)) if c.get("tier", 0) >= a.min]
@@ -351,11 +395,14 @@ def main(argv=None):
     p = sub.add_parser("probe"); p.add_argument("--top", type=int, default=60); p.add_argument("--min", type=float, default=2.5)
     p.add_argument("--again", action="store_true")
     p = sub.add_parser("report"); p.add_argument("--min", type=float, default=2.5)
+    p = sub.add_parser("missing"); p.add_argument("--min", type=float, default=2.5)
+    p = sub.add_parser("set"); p.add_argument("file")
     p = sub.add_parser("promote"); p.add_argument("--min", type=float, default=2.5, help="자동 수집(검증된 채용 시스템) 최소 점수")
     p.add_argument("--min-browser", type=float, default=4.0, help="브라우저 수집 최소 점수 (매번 손이 가서 더 높게)")
     p.add_argument("--dry-run", action="store_true")
     a = ap.parse_args(argv)
-    return {"collect": cmd_collect, "probe": cmd_probe, "report": cmd_report, "promote": cmd_promote}[a.cmd](a)
+    return {"collect": cmd_collect, "probe": cmd_probe, "report": cmd_report, "promote": cmd_promote,
+            "missing": cmd_missing, "set": cmd_set}[a.cmd](a)
 
 
 if __name__ == "__main__":
