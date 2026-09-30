@@ -3,7 +3,9 @@
 # 제목 필터: positive 중 하나가 들어가야 통과, negative 가 들어가면 제외.
 # 언어(Go, Kotlin 등)로 좁히지 않는다. 언어 조건은 평가 단계에서 자격요건 본문으로 판정.
 title_filter:
-  positive: [백엔드, Backend, 서버 개발, Server Engineer, Software Engineer, Platform Engineer, 플랫폼 엔지니어, DevOps]
+  # 영어·한글 표기를 둘 다 넣는다 (Cloud Engineer / 클라우드 엔지니어). 게임 서버처럼 언어가 갈리는 직군은 직무명으로 빼지 말고
+  # 통과시킨 뒤 자격요건의 언어·엔진으로 거른다 (score.py stack 게이트).
+  positive: [백엔드, Backend, 서버 개발, Server Engineer, Software Engineer, Platform Engineer, 플랫폼 엔지니어, Cloud Engineer, 클라우드 엔지니어, 서버 프로그래머, DevOps]
   negative: [프론트엔드, Frontend, iOS, Android, 인턴, 신입, Junior, QA]
 
 # 연차: 공고에 연차 숫자가 있을 때만 적용(원티드·점핏).

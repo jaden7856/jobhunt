@@ -2,7 +2,7 @@
 
 Only site-wide facts go here (endpoints, body location, closing check). Personal search conditions live in `data/search/sources.yaml`.
 Date every measurement. When a format changes, fix it here and update the date.
-Handled automatically by `scripts/providers/`: Wanted, Jumpit, LinkedIn, Greenhouse, Toss, NHN, Kakao, the Naver group, Woowa Brothers, LINE, greetinghr (sites with `__NEXT_DATA__`, including ones on a company domain), ninehire. Claude collects the rest by hand following this document.
+Handled automatically by `scripts/providers/`: Wanted, Jumpit, LinkedIn, Greenhouse, Toss, NHN, Kakao, the Naver group, Woowa Brothers, LINE, greetinghr (sites with `__NEXT_DATA__`, including ones on a company domain), ninehire, hiworks recruit. Claude collects the rest by hand following this document.
 To widen the set of companies collected, see "Company discovery" below.
 
 ## Common rules
@@ -42,6 +42,7 @@ Saramin's official OpenAPI (`oapi.saramin.co.kr`) needs an access key.
 | Kakao | `https://careers.kakao.com/public/api/job-list?part=TECHNOLOGY&company=ALL&page=N` | affiliate (`S-`) postings have empty qualifications (external site). Affiliates collected from their own career site go in `skip_companies` (`companyName` values) so they aren't queued twice | 2026-09-30 |
 | greetinghr (`*.career.greetinghr.com`, or a company domain like `recruit.회사.com`) | posting list in query `["openings"]` of `__NEXT_DATA__` in `{career site}/ko/home` or the landing HTML; body at `/ko/o/{id}`. On a company domain, set `ats: greetinghr` in `sources.yaml` | bucketplace · kakaoenterprise have no `__NEXT_DATA__`; read them in a browser (kakaopay works again as of 2026-09-30). Closing check recognizes company-domain posting URLs by the `/ko/o/{id}` path. Before adding a company-domain greetinghr site, check it isn't the same workspace as one already collected under `*.career.greetinghr.com` (29CM's musinsacareers.com is MUSINSA's). A "powered by greetinghr" link at the bottom (`www.greetinghr.com/?utm_source=career_page`) means the page is a greetinghr career site | 2026-09-30 |
 | ninehire (`*.ninehire.site`, or a company domain) | `homepageProps.homepage.companyId` from the landing page's `__NEXT_DATA__` → `https://api.ninehire.com/identity-access/homepage/recruitments?companyId={id}&page=N&countPerPage=50` (`status: in_progress` only). Body is `pageProps.jobPosting.content` (HTML) in `__NEXT_DATA__` of `{career site}/job_posting/{addressKey}` | years in `career.range.{over, below}` | 2026-09-30 |
+| hiworks recruit (`recruit.회사.com/recruit/jobs`, e.g. Gabia) | `recruit-api.gabiaoffice.hiworks.com/v1/career-site`: `tokens/site-information` with header `x-career-site-domain: 회사.com` → `office_no`; list `offices/{office_no}/announces`; body `…/announces/{id}` `description` (HTML, sometimes one image). Set `ats: hiworks` | missing id → 404. Found by reading the page's JS (`.GET("/v1/career-site/…")`) | 2026-09-30 |
 | recruiter.co.kr (`*.recruiter.co.kr`) | browser | — | unverified |
 | roundhr (`*.recruit.roundhr.com`) | browser | — | unverified |
 

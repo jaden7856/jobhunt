@@ -39,6 +39,7 @@ ATS = [
     ("greenhouse", r"boards(?:-api)?\.greenhouse\.io/(?:v1/boards/)?[\w-]+|job-boards\.greenhouse\.io/[\w-]+|gh_jid=", "greenhouse"),
     ("lever", r"jobs\.lever\.co/[\w-]+", "lever"),
     ("ninehire", r"[\w-]+\.ninehire\.site|ninehire\.com", "ninehire"),
+    ("hiworks", r"recruit\.[\w.-]+/recruit/(?:jobs|view/)|gabiaoffice\.hiworks\.com", "hiworks"),   # 가비아 하이웍스 채용 (JS 로 그림)
     ("recruiter", r"[\w-]+\.recruiter\.co\.kr", None),
     ("roundhr", r"[\w-]+\.recruit\.roundhr\.com", None),
     ("notion", r"[\w-]+\.notion\.site|notion\.so/", None),

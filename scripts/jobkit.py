@@ -51,13 +51,13 @@ UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
 _last: Dict[str, float] = {}
 
 
-def http_get(url: str, accept: str = "application/json", delay: float = 1.0, timeout: int = 20):
+def http_get(url: str, accept: str = "application/json", delay: float = 1.0, timeout: int = 20, headers: Optional[dict] = None):
     """(status, text). 같은 호스트에는 delay 초 간격을 둔다 (references/sources.md 공통 규칙)."""
     host = url.split("/")[2]
     wait = _last.get(host, 0) + delay - time.time()
     if wait > 0:
         time.sleep(wait)
-    req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": accept})
+    req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": accept, **(headers or {})})
     try:
         with _OPENER.open(req, timeout=timeout) as r:
             status, body = r.status, r.read().decode("utf-8", "replace")

@@ -8,11 +8,11 @@
 
 방법과 실측 날짜는 references/sources.md. 형식이 바뀌면 ShapeError 를 올려 "응답 형식 변경"으로 보고한다.
 """
-from . import greenhouse, greetinghr, jumpit, kakao, line, linkedin, naver, nhn, ninehire, toss, wanted, woowa
+from . import greenhouse, greetinghr, hiworks, jumpit, kakao, line, linkedin, naver, nhn, ninehire, toss, wanted, woowa
 
 BOARDS = {"wanted": wanted, "jumpit": jumpit, "linkedin": linkedin}
-ALL = [wanted, jumpit, linkedin, greenhouse, toss, nhn, kakao, greetinghr, ninehire, naver, woowa, line]
-BY_ATS = {"greetinghr": greetinghr, "ninehire": ninehire, "greenhouse": greenhouse}   # sources.yaml 의 ats: (discover.py 가 적음)
+ALL = [wanted, jumpit, linkedin, greenhouse, toss, nhn, kakao, greetinghr, ninehire, naver, woowa, line, hiworks]
+BY_ATS = {"greetinghr": greetinghr, "ninehire": ninehire, "greenhouse": greenhouse, "hiworks": hiworks}   # sources.yaml 의 ats: (discover.py 가 적음)
 
 
 def for_company(c: dict):
