@@ -68,7 +68,8 @@ def detail(job: Job) -> str:
 
 
 def handles(url: str) -> bool:
-    return ".career.greetinghr.com/ko/o/" in url
+    # 회사 도메인에 붙인 그리팅(career.bithumbcorp.com 등)도 공고 주소가 /ko/o/{번호} 꼴이다
+    return ".career.greetinghr.com/ko/o/" in url or bool(re.search(r"^https?://[^/]+/(?:ko|en)/o/\d+/?$", url))
 
 
 def alive(url: str) -> Optional[bool]:

@@ -15,7 +15,7 @@ def collect(cfg: dict) -> List[Job]:
             raise ShapeError("카카오 응답에 jobList 없음")
         total = d.get("totalPage") or 1
         for k in d["jobList"]:
-            if k.get("closeFlag"):
+            if k.get("closeFlag") or k.get("companyName") in cfg.get("skip_companies", ()):   # 계열사 채용 사이트로 따로 수집하는 곳
                 continue
             text = "\n\n".join(f"## {h}\n{html_text(k.get(f))}" for h, f in
                                (("주요업무", "workContentDesc"), ("자격요건", "qualification")) if (k.get(f) or "").strip())
