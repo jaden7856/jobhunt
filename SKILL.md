@@ -66,10 +66,20 @@ Read the mode file that matches the request and follow it.
 | "공고 찾아줘", "새 공고 있어?", "주간 스캔" | `modes/scan.md` (run `bash scripts/weekly.sh` first) |
 | "회사 더 찾아줘", "수집 회사 넓혀줘" | `modes/scan.md` step 0 (`scripts/discover.py`) |
 | "새로 수집한 공고 선별해줘" | `modes/scan.md` from step 4 |
-| "공고 현황 보여줘", "표로 보여줘" | output of `python3 scripts/tracker.py report --alive` |
+| "공고 현황 보여줘", "표로 보여줘" | run `python3 scripts/report_html.py` (writes `data/search/reports/postings.html`, design in `DESIGN.md`) and show that page — see "Showing the posting report" below |
 | a posting URL or body, "이 공고 어때?", "평가해줘" | `modes/evaluate.md` |
 | "이 공고용 이력서 만들어줘", "이력서 고쳐줘", "다시 빌드" | `modes/tailor.md` (given only a posting with no evaluation, offer evaluate first) |
 | "지원했어", "서류 붙었어", "떨어졌어", "지원 현황" | `modes/track.md` (`scripts/tracker.py`) |
 | "prep {회사}", "면접 준비" | block F of that posting's `.eval.md` + the "자주 쓰는 흐름" section of `standing.md` |
+
+### Showing the posting report
+
+The report is one self-contained HTML file so any agent (Claude Code, Codex, Grok, …) and any browser can open it. How to put it in front of the user depends on the host, never the other way round:
+
+- Host that can publish HTML pages (e.g. Claude Artifacts): also write the skeleton-less version with `--fragment <path>` and publish that file; keep publishing to the same page so the link stays.
+- Any other host: open `data/search/reports/postings.html` in the user's browser (`open` on macOS) or give the path.
+- Text-only fallback: `python3 scripts/tracker.py report --alive` prints the same rows as a Markdown table.
+
+Do not hand-write report HTML or restyle it per session; change `scripts/report_html.py` and `DESIGN.md` together when the design changes.
 
 Given a posting URL, continue evaluate → tailor (if the user decides to apply) → track, with user confirmation between steps.

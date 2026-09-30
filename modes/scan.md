@@ -35,7 +35,7 @@ Collect postings from job sites, screen them once, and queue them in `data/searc
 5. **Record.**
    - Remove screened lines from "새로 수집 (선별 전)". Move PASS and MARGINAL to "대기" (replace `선별 전` with `triage: PASS 3.8/5`, followed by a one-line reason and `판정: data/search/judgments/<file>.yaml`); move FAIL to "제외 (YYYY-MM-DD)" with the reason.
    - For closing checks run `python3 scripts/alive.py --write` (closed queued postings go to "마감 확인 (날짜)", tracker rows in 평가함 become 포기). Open `확인 불가` ones in a browser.
-6. **Report.** Show the output of `python3 scripts/tracker.py report --since <last scan date>` (table format below) as is, and add per-channel counts and unscanned channels. Full evaluation only for postings the user picks, via `modes/evaluate.md`.
+6. **Report.** Build the HTML posting report with `python3 scripts/report_html.py` and show it as described in SKILL.md "Showing the posting report" (rows found since the previous report get a 신규 tag). In text-only hosts show `python3 scripts/tracker.py report --since <last scan date>` (table format below) instead, and add per-channel counts and unscanned channels. Full evaluation only for postings the user picks, via `modes/evaluate.md`.
    - Per-channel counts (including 0), exclusion counts per condition, unscanned channels and why.
    - One table: postings newly found this time + postings already evaluated or screened that are still open. Keep evaluated and recommended postings in the same table.
 

@@ -41,16 +41,13 @@
 
 ## 🖼 미리보기
 
-### 공고 현황표 (`scripts/tracker.py report --alive`)
+### 공고 현황표 (`scripts/report_html.py`)
 
-가상 회사로 만든 예시입니다.
+가상 회사로 만든 견본입니다(`python3 scripts/report_html.py --demo`). 등본 같은 괘선 서식에 판정 구간별 대장, 지원 권장 도장, 마감 D-일수, 항목별 점수 붙임이 들어갑니다. HTML 한 파일이라 어떤 브라우저·AI 에이전트에서도 열리고, Claude 에서는 `--fragment` 판을 Artifact 로 올립니다. 디자인 기준은 [`DESIGN.md`](DESIGN.md).
 
-| 회사 | 포지션 | 근무지 | 점수 | 판정 | 지원 여부 | 새로 찾음 | 마감 | 한 줄 근거 |
-|---|---|---|---|---|---|---|---|---|
-| 가나다커머스 | 백엔드 개발자 | 서울 강남 | 4.3/5 | 지원 권장 | 미지원 |  | 열림 | 결제·정산 정합성 필수 요건 3/3 충족, 자체 서비스 |
-| 라마바페이 | Server Engineer | 판교 | 3.9/5 | 1차 PASS | 미지원 | ✓ | 열림 | 언어 무관 3년+ · 대규모 트래픽 · 팀 Kotlin(우대) |
-| 사아자랩스 | Platform Engineer | 서울 성동 | 3.6/5 | 지원 고려 | 미지원 |  | 열림 | K8s 운영 필수 · Terraform 갭(우대) |
-| 차카타소프트 | 백엔드 엔지니어 | 서울 서초 | 4.0/5 | 서류합격 | 지원함 (서류합격) |  | 열림 | 1차 면접 10/8 |
+<p align="center"><img src="assets/report.ko.png" alt="공고 현황표 견본: 판정별 결재란, 지원 권장 대장과 인주 도장, 항목별 점수 붙임" width="720"/></p>
+
+텍스트만 되는 환경에서는 `python3 scripts/tracker.py report --alive` 가 같은 내용을 표로 출력합니다.
 
 ### 맞춤도 평가 (`data/job_postings/*.eval.md`)
 
@@ -125,7 +122,8 @@ cd ~/resume-builder && git pull   # data/ 는 그대로
 ```bash
 bash scripts/weekly.sh                             # 수집 → 마감 확인 → 현황표 (LLM 없이, cron·launchd 가능)
 python3 scripts/scan.py --dry-run                  # 파일을 쓰지 않고 수집 결과만 보기
-python3 scripts/tracker.py report --alive          # 평가·선별 공고 한 표로 (마감 여부 포함)
+python3 scripts/report_html.py                     # 공고 현황표 HTML (data/search/reports/postings.html)
+python3 scripts/tracker.py report --alive          # 같은 내용을 텍스트 표로 (마감 여부 포함)
 python3 scripts/tracker.py set 3 지원함             # 지원 기록
 python3 scripts/render.py examples/example.yaml \
   --profile data/profile/profile.example.yaml --offline   # 예시 이력서 빌드

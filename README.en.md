@@ -43,16 +43,13 @@
 
 ## 🖼 Preview
 
-### Posting overview (`scripts/tracker.py report --alive`)
+### Posting report (`scripts/report_html.py`)
 
-Fictional companies. Translated here; the actual output is in Korean.
+A sample built from fictional companies (`python3 scripts/report_html.py --demo`). It is laid out like a Korean certificate form: a ruled ledger per verdict band, a red seal on recommended postings, D-day marks for deadlines, and an itemised-score attachment per row. It is one HTML file, so any browser or AI agent can open it; in Claude the `--fragment` version is published as an Artifact. Design rules live in [`DESIGN.md`](DESIGN.md).
 
-| Company | Role | Location | Score | Verdict | Applied | New | Open | Reason |
-|---|---|---|---|---|---|---|---|---|
-| Ganada Commerce | Backend Developer | Seoul Gangnam | 4.3/5 | Apply | No |  | Open | Meets all 3 required items on payment/settlement consistency |
-| Ramaba Pay | Server Engineer | Pangyo | 3.9/5 | Triage PASS | No | ✓ | Open | Any language, 3y+, high traffic, team uses Kotlin (preferred) |
-| Saaja Labs | Platform Engineer | Seoul Seongdong | 3.6/5 | Consider | No |  | Open | K8s ops required, Terraform gap (preferred) |
-| Chakata Soft | Backend Engineer | Seoul Seocho | 4.0/5 | Passed screening | Yes (screening passed) |  | Open | 1st interview Oct 8 |
+<p align="center"><img src="assets/report.ko.png" alt="Posting report sample: verdict ledger, recommended postings with seals, itemised score attachment" width="720"/></p>
+
+Text-only hosts can use `python3 scripts/tracker.py report --alive`, which prints the same rows as a table.
 
 ### Fit evaluation (`data/job_postings/*.eval.md`, translated)
 
@@ -127,7 +124,8 @@ cd ~/resume-builder && git pull   # data/ stays as is
 ```bash
 bash scripts/weekly.sh                             # collect → liveness check → overview (no LLM, cron/launchd friendly)
 python3 scripts/scan.py --dry-run                  # see what would be collected without writing files
-python3 scripts/tracker.py report --alive          # one table of evaluated and triaged postings
+python3 scripts/report_html.py                     # posting report as HTML (data/search/reports/postings.html)
+python3 scripts/tracker.py report --alive          # the same rows as a text table
 python3 scripts/tracker.py set 3 지원함             # record an application
 python3 scripts/render.py examples/example.yaml \
   --profile data/profile/profile.example.yaml --offline   # build the sample resume
