@@ -7,6 +7,7 @@ LLM(Claude)은 공고를 한 줄씩 분류만 해서 판정 파일(yaml)을 채�
   python3 scripts/score.py init <본문.md> [-o 판정.yaml]   본문의 주요업무·자격요건·우대사항을 줄 단위 뼈대로
   python3 scripts/score.py <판정.yaml>...                  점수표 출력
   python3 scripts/score.py --json <판정.yaml>...           한 줄에 하나씩 JSON (다른 스크립트용)
+  python3 scripts/score.py apply <판정.yaml>...            pipeline.md 에 반영 (선별 전·대기 줄을 새 점수로, FAIL 은 제외 섹션으로)
 
 가중치·선호 업무·신호는 data/profile/targets.yaml 의 scoring 절에서 읽는다 (없으면 예시 파일 값).
 """
@@ -55,11 +56,19 @@ def score(j: dict, cfg: dict) -> dict:
     failed = [k for k, v in gates.items() if v == "fail"]
     if failed:
         return dict(total=None, verdict="제외", triage="FAIL", parts={}, caps=[], gate=failed)
+    if not (j.get("work") or j.get("required")):              # 본문을 못 받아 분류할 줄이 없다
+        return dict(total=None, verdict="확인 필요", triage="MARGINAL", parts={}, caps=[], gate=[])
 
     w = {"work": 0.30, "required": 0.30, "preferred": 0.10, "direction": 0.30, **(cfg.get("weights") or {})}
     work = _avg([FIT[x["fit"]] for x in j.get("work") or []], 3.0)
     req_items = j.get("required") or []
-    req = _avg([REQ[_met(x)] if _met(x) in REQ else REQ_NO[x.get("gap", "bridge")] for x in req_items], 3.0)
+    alt = cfg.get("core_alt") or {"value": 1.75, "cap_plus": 0.2}   # 핵심 빈틈이지만 공고가 '이에 준하는 경험'을 인정
+
+    def req_value(x):
+        if _met(x) in REQ:
+            return REQ[_met(x)]
+        return float(alt["value"]) if x.get("gap") == "core" and x.get("alt") else REQ_NO[x.get("gap", "bridge")]
+    req = _avg([req_value(x) for x in req_items], 3.0)
     pref_items = j.get("preferred") or []
     pref = 1 + 4 * _avg([PREF[_met(x)] for x in pref_items], 0.5)
 
@@ -77,13 +86,21 @@ def score(j: dict, cfg: dict) -> dict:
         bonus += float(cfg.get("priority_bonus", 0))
     total = min(5.0, max(1.0, total + bonus))
 
-    caps, core = [], sum(1 for x in req_items if _met(x) == "no" and x.get("gap") == "core")
+    caps = []
+    cores = [x for x in req_items if _met(x) == "no" and x.get("gap") == "core"]
+    core = len(cores)
     for n, cap in sorted(((int(k), v) for k, v in (cfg.get("core_gap_caps") or {1: 3.4, 2: 2.9}).items()), reverse=True):
         if core >= n:
+            if all(x.get("alt") for x in cores):          # 모두 '준하는 경험 인정' 빈틈이면 상한을 조금 올린다
+                cap = round(cap + float(alt["cap_plus"]), 1)
             if total > cap:
                 caps.append(f"필수 핵심 빈틈 {core}개 → 상한 {cap}")
                 total = cap
             break
+    low = cfg.get("low_work_cap") or {"below": 2.5, "cap": 3.9}   # 업무 대부분이 처음이면 지원 권장까지 가지 않는다
+    if work < float(low["below"]) and total > float(low["cap"]):
+        caps.append(f"업무 적합 {work:.1f} < {low['below']} → 상한 {low['cap']}")
+        total = float(low["cap"])
     total = round(total, 1)
     verdict, triage = next((v, t) for lim, v, t in VERDICTS if total >= lim)
     return dict(total=total, verdict=verdict, triage=triage, parts=parts, bonus=bonus, caps=caps, gate=[])
@@ -116,9 +133,80 @@ def init(path: str) -> dict:
     return out
 
 
+PENDING, WAIT = "## 새로 수집 (선별 전)", "## 대기"
+
+
+def _sections(md: str):
+    """[(제목, [줄])] — 제목 없는 머리말은 ("", 줄)."""
+    out = [("", [])]
+    for line in md.split("\n"):
+        if line.startswith("## "):
+            out.append((line, []))
+        else:
+            out[-1][1].append(line)
+    return out
+
+
+def apply(files) -> str:
+    """판정 결과를 pipeline.md 에 반영한다. 선별 전·대기에 있던 줄과 아직 없는 공고만 바꾸고, 다른 섹션(지원 완료·마감·처리 완료)은 건드리지 않는다."""
+    cfg, today = config(), K.TODAY
+    secs = _sections(K.read_text(K.P["pipeline"]) or "# 공고 대기함\n")
+    elsewhere = {u for h, ls in secs if h and not h.startswith((PENDING, WAIT)) for l in ls for u in K.URL_RE.findall(l)}
+    old = {}
+    for h, ls in secs:
+        if h.startswith((PENDING, WAIT)):
+            for l in ls:
+                m = K.URL_RE.search(l)
+                if m and l.lstrip().startswith("- ["):
+                    old[m.group(0)] = l
+    keep_wait, new_wait, new_fail, n = [], [], [], 0
+    touched = set()
+    for f in files:
+        j = K.load_yaml(f)
+        url = j.get("url")
+        if not url or url in elsewhere:
+            continue
+        r = score(j, cfg)
+        prev = re.search(r"triage: (PASS|MARGINAL|FAIL) ?([\d.]+)?", old.get(url, ""))
+        was = f", 이전 {prev.group(1)} {prev.group(2) or ''}".rstrip() if prev else ""
+        src = K.read_text(os.path.join(K.ROOT, j.get("source", ""))) if j.get("source") else ""
+        loc = (re.search(r"^- 근무지: (.*)$", src, re.M) or [None, "?"])[1].strip() or "?"
+        rel = os.path.relpath(f, K.ROOT)
+        if r["triage"] == "FAIL":
+            why = j.get("gate_note") or j.get("note") or ""
+            new_fail.append(f"- [x] {url} | {j.get('company')} | {j.get('title')} | FAIL {r['total'] or ''} (재채점 {today}{was}) | {why}".replace("FAIL  (", "FAIL ("))
+        else:
+            sc = f"{r['total']}/5" if r["total"] is not None else "?/5 본문 확인 필요"
+            new_wait.append((r["total"] or 0, f"- [ ] {url} | {j.get('company')} | {j.get('title')} | {loc} | triage: {r['triage']} {sc} "
+                                              f"(재채점 {today}{was}) | {j.get('note', '')} | 판정: {rel}"))
+        touched.add(url)
+        n += 1
+    out = []
+    for h, ls in secs:
+        if h.startswith((PENDING, WAIT)):
+            rest = [l for l in ls if not any(u in touched for u in K.URL_RE.findall(l))]
+            if h.startswith(WAIT):
+                items = [(float((re.search(r"triage: \w+ ([\d.]+)/5", l) or [0, 0])[1]), l) for l in rest if l.lstrip().startswith("- [")]
+                others = [l for l in rest if not l.lstrip().startswith("- [")]
+                items = sorted(items + new_wait, key=lambda x: -x[0])
+                ls = [""] + [l for _, l in items] + [""] + [l for l in others if l.strip()] + [""]
+            else:
+                ls = rest
+        out.append((h, ls))
+    md = "\n".join((h + "\n" if h else "") + "\n".join(ls) for h, ls in out)
+    md = re.sub(r"\n{3,}", "\n\n", md)
+    if not any(h.startswith(WAIT) for h, _ in secs) and new_wait:
+        md = K.insert_under(md, WAIT, [l for _, l in sorted(new_wait, key=lambda x: -x[0])])
+    if new_fail:
+        md = K.insert_under(md, f"## 제외 (재채점 {today})", new_fail, before="## 지원 완료")
+    K.write_text(K.P["pipeline"], md)
+    return f"pipeline.md 반영 {n}건 (대기 {len(new_wait)} · 제외 {len(new_fail)}, 다른 섹션에 있어 건너뜀 {len([f for f in files]) - n})"
+
+
 def _row(j, r):
     if r["total"] is None:
-        return f"| {j.get('company')} | {j.get('title')} | — | 제외 | 조건: {', '.join(r['gate'])} | {j.get('gate_note', '')} |"
+        why = f"조건: {', '.join(r['gate'])}" if r["gate"] else "분류할 줄 없음"
+        return f"| {j.get('company')} | {j.get('title')} | — | {r['verdict']} | {why} | {j.get('gate_note') or j.get('note', '')} |"
     p = r["parts"]
     detail = f"업무 {p['work']:.1f} · 필수 {p['required']:.1f} · 우대 {p['preferred']:.1f} · 방향 {p['direction']:.1f}"
     if r["bonus"]:
@@ -134,6 +222,9 @@ def main(argv=None):
     ap.add_argument("--json", action="store_true")
     ap.add_argument("-o", "--out")
     a = ap.parse_args(argv)
+    if a.files[0] == "apply":
+        print(apply(a.files[1:]))
+        return 0
     if a.files[0] == "init":
         import yaml
         for f in a.files[1:]:
