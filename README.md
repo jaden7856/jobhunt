@@ -253,3 +253,7 @@ data/                        내 자료 (git 제외, 구조와 예시만 올라�
 ## 🙏 참고
 
 공고 탐색·평가 흐름과 개인화 파일 구조(시스템/사용자 파일 분리, 파일이 원본, 쓸수록 개인화)는 [career-ops](https://github.com/santifer/career-ops)(MIT, © santifer)를 참고했습니다. `modes/_shared.md`의 규칙 일부와 한국 채용 용어 표는 career-ops의 `AGENTS.md`, `modes/ko/_shared.md`를 옮기고 줄인 것입니다.
+
+## 📄 라이선스
+
+[MIT](./LICENSE). career-ops에서 옮긴 부분의 저작권 표기도 같은 파일에 있습니다.

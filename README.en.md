@@ -255,3 +255,7 @@ data/                        Your data (git-ignored; only structure and examples
 ## 🙏 Acknowledgements
 
 The job-search flow and the personalization layout (system vs. user files, files as the source of truth, personalization that compounds) follow [career-ops](https://github.com/santifer/career-ops) (MIT, © santifer). Some rules in `modes/_shared.md` and the Korean hiring-terms table are adapted and condensed from career-ops' `AGENTS.md` and `modes/ko/_shared.md`.
+
+## 📄 License
+
+[MIT](./LICENSE). The copyright notice for the parts adapted from career-ops is in the same file.
