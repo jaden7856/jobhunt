@@ -330,9 +330,10 @@ def blacklist_companies() -> set:
     return out
 
 
-def company_in(company: str, names) -> Optional[str]:
+def company_in(company: str, names, exact: bool = False) -> Optional[str]:
+    """exact=True 면 정규화한 이름이 같을 때만 (쿨다운: '가나다증권' 지원이 '가나다' 공고까지 막지 않게)."""
     n = norm_company(company)
     for x in names:
-        if x and (x in n or n in x):
+        if x and (x == n if exact else (x in n or n in x)):
             return x
     return None

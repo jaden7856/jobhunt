@@ -94,7 +94,7 @@ def main(argv=None):
                 status = "skipped_location"
             elif K.company_in(j.company, black):
                 status = "skipped_blacklist"
-            elif K.company_in(j.company, cool):
+            elif K.company_in(j.company, cool, exact=True):
                 status = "skipped_cooldown"
             elif a.seed:
                 status = "seeded"

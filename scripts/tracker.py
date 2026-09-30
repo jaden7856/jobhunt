@@ -91,7 +91,16 @@ def verdict(score: str) -> str:
     if not m:
         return "—"
     s = float(m.group(1))
-    return "지원 권장" if s >= 4.0 else "지원 고려" if s >= 3.5 else "보류" if s >= 3.0 else "비추천"
+    return "지원 권장" if s >= 4.0 else "지원 고려" if s >= 3.5 else "보류" if s >= 3.0 else "제외"
+
+
+def _label(tri, line: str) -> str:
+    """점수가 있으면 verdict() 이름으로 (references/scoring.md), 본문을 못 받은 줄은 확인 필요."""
+    if not tri:
+        return "선별 전"
+    if "본문 확인 필요" in line:
+        return "확인 필요"
+    return verdict(tri.group(2)) if tri.group(2) else f"1차 {tri.group(1)}"
 
 
 def _loc(text: str) -> str:
@@ -134,10 +143,10 @@ def cmd_report(a):
         tri = re.search(r"(PASS|MARGINAL|FAIL)\s*([\d.]+/5)?", line)
         new = "✓" if a.since and first_seen.get(m.group(0), "0") >= a.since else ""
         rows.append((c[1] if len(c) > 1 else "", c[2] if len(c) > 2 else "", c[3] if len(c) > 3 else "?",
-                     (tri.group(2) or "—") if tri else "—", f"1차 {tri.group(1)}" if tri else "선별 전", "미지원", new,
+                     (tri.group(2) or "—") if tri else "—", _label(tri, line), "미지원", new,
                      mark.get(alive.get(m.group(0)), "?") if a.alive else "", (c[5] if len(c) > 5 else "")[:70]))
 
-    order = {"지원 권장": 0, "지원 고려": 1, "1차 PASS": 2, "보류": 3, "1차 MARGINAL": 4}
+    order = {"지원 권장": 0, "지원 고려": 1, "1차 PASS": 2, "보류": 3, "1차 MARGINAL": 4, "확인 필요": 5}
     score = lambda x: -float(re.match(r"[\d.]+", x[3]).group(0)) if re.match(r"[\d.]+", x[3]) else 0
     rows.sort(key=lambda x: (x[5] != "미지원", order.get(x[4], 5), score(x)))
     pending = sum(1 for l in K.read_text(K.P["pipeline"]).split("## 새로 수집 (선별 전)")[-1].split("\n## ")[0].split("\n")

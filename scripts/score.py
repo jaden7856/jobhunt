@@ -159,6 +159,8 @@ def apply(files) -> str:
                 m = K.URL_RE.search(l)
                 if m and l.lstrip().startswith("- ["):
                     old[m.group(0)] = l
+    targets = K.load_yaml(K.P["targets"]) or {}
+    cool = K.cooldown_companies(int(targets.get("reapply_days", 183)))
     keep_wait, new_wait, new_fail, n = [], [], [], 0
     touched = set()
     for f in files:
@@ -172,6 +174,10 @@ def apply(files) -> str:
         src = K.read_text(os.path.join(K.ROOT, j.get("source", ""))) if j.get("source") else ""
         loc = (re.search(r"^- 근무지: (.*)$", src, re.M) or [None, "?"])[1].strip() or "?"
         rel = os.path.relpath(f, K.ROOT)
+        hit = K.company_in(j.get("company", ""), cool, exact=True)
+        if hit:                                   # 지원한 회사는 쿨다운 동안 대기에 두지 않는다
+            r = dict(r, triage="FAIL")
+            j = dict(j, gate_note=f"재지원 쿨다운 ~{cool[hit]} (점수 {r['total']})")
         if r["triage"] == "FAIL":
             why = j.get("gate_note") or j.get("note") or ""
             new_fail.append(f"- [x] {url} | {j.get('company')} | {j.get('title')} | FAIL {r['total'] or ''} (재채점 {today}{was}) | {why}".replace("FAIL  (", "FAIL ("))
