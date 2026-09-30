@@ -47,7 +47,7 @@ translationese:
 #   CamelCase 이름과 백틱 안 단어 하나짜리 이름을 잡는다. 널리 아는 공개 이름은 allow 에 둔다.
 internal_names:
   patterns:
-    - "\\b[A-Z][a-z0-9]+(?:[A-Z][a-z0-9]+)+\\b"
+    - "(?<![A-Za-z0-9_])[A-Z][a-z0-9]+(?:[A-Z][a-z0-9]+)+(?![A-Za-z0-9_])"   # \\b 는 한글 조사 앞에서 경계로 안 잡힌다
     - "`[A-Za-z_]\\w*`"
   allow: [GitLab, GitHub, OpenStack, WebSocket, WaitGroup, ConfigMap, JavaScript, TypeScript, PowerShell]
   hint: "하는 일로 풀어 쓰기 (예: '발행 함수', '토큰 관리자', '주문 서비스')"
