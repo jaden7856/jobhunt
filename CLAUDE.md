@@ -1,0 +1,62 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## What this repository is
+
+Two things in one folder:
+
+- **A Claude skill** (`resume-pdf-builder`): `SKILL.md` routes a request to a mode file in `modes/` (onboard · scan · evaluate · tailor · track). `scripts/setup.sh` symlinks this repo into `~/.claude/skills/`, so edits here are live in the skill immediately.
+- **LLM-free Python scripts** under `scripts/` that do everything not needing judgment: collecting Korean job postings, closing checks, the application tracker, scoring arithmetic, company discovery, and resume PDF builds.
+
+If the user asks to find/evaluate postings, write a resume, or log an application, that is *using* the skill: follow `SKILL.md` (read `modes/_shared.md` first). If they ask to change the tool itself, you are editing the scripts/modes below.
+
+## Commands
+
+No test suite, linter, or build step. Verify changes by running the affected script. Python 3.9+, deps in `requirements.txt` (PyYAML, playwright, pdf2image, pdfplumber); `bash scripts/setup.sh --no-skill` installs them plus Chromium, Korean fonts (Pretendard, Noto CJK KR), and poppler.
+
+```bash
+# resume build (yaml → HTML → A4 PDF + per-page PNG, then runs check.py)
+python3 scripts/render.py examples/example.yaml --profile data/profile/profile.example.yaml --offline
+python3 scripts/render.py <yaml> --design A|B|C --out DIR --no-png --no-check
+python3 scripts/check.py <resume.yaml> [pdf] [--offline]      # page count, orphan headings, links, placeholders, style
+python3 scripts/check_links.py <url>... | --pdf <pdf>
+
+# posting collection
+python3 scripts/scan.py --dry-run                 # no file writes
+python3 scripts/scan.py --only toss,wanted        # filter by provider module name or sources.yaml board/company name
+python3 scripts/scan.py --no-detail | --seed
+python3 scripts/alive.py [--write] [--json]
+bash scripts/weekly.sh [--since YYYY-MM-DD]       # scan → alive --write → tracker report → data/search/reports/
+
+# scoring / tracking / discovery
+python3 scripts/score.py init <body.md> -o <judgment.yaml>;  python3 scripts/score.py <judgment.yaml>...;  ... apply <judgment.yaml>...
+python3 scripts/tracker.py add|set|report [--alive]
+python3 scripts/discover.py collect|probe|report|missing|set <file.tsv>|promote [--min S] [--dry-run]
+
+python3 assets/src/render.py                      # regenerate README preview PNGs
+```
+
+Most scripts read and write real files under `data/`; use `--dry-run` where offered when experimenting.
+
+## Architecture
+
+**`scripts/jobkit.py` is the shared core** used by scan/alive/tracker/score/discover: repo-relative paths (`P` dict, all under `data/`), `http_get`/`get_json` (browser UA, 1s delay between requests, 308 redirect handling), the `Job` dataclass, title/career/location filters, company alias normalization for cross-site dedup, `scan-history.tsv` I/O, the tracker table format, and `STATES` (Korean status values). Scripts import it via `sys.path` insertion as `import jobkit as K`, not as a package.
+
+**Providers (`scripts/providers/*.py`)** each implement the same module-level contract: `collect(cfg) -> List[Job]`, `detail(job) -> str`, `alive(url) -> Optional[bool]` (None = can't tell), `handles(url) -> bool`. On an unexpected response shape they raise `jobkit.ShapeError`, which is reported as "응답 형식 변경" rather than crashing the run. A new provider must be registered in `providers/__init__.py`: `ALL` (for `for_url`, used by alive), and either `BOARDS` (job boards), `BY_ATS` (generic ATS keyed by `ats:` in sources.yaml), or a URL rule in `for_company`. Document its endpoints and a measurement date in `references/sources.md`.
+
+**Company pipeline:** `discover.py` gathers candidate companies (tech blogs, GitHub orgs, Wanted company info, `references/company_seed.yaml`), scores notability, probes career sites and detects the ATS, stores everything in `data/search/companies.yaml` (preserving user-written `status`/`memo`), and `promote` copies qualifying ones into `data/search/sources.yaml` `companies`, which `scan.py` then collects via `providers.for_company`.
+
+**Judgment vs arithmetic split:** Claude classifies each posting line into a judgment yaml (`data/search/judgments/`); `score.py` computes the score deterministically from it using weights in `data/profile/targets.yaml` `scoring` (falls back to `targets.example.yaml`). Rules: `references/scoring.md`. Keep scoring logic in the script, not in mode prose.
+
+**Resume build:** `render.py` turns a resume yaml (schema: `references/yaml_schema.md`) plus personal info from `data/profile/profile.yaml` into HTML, prints A4 PDF with Playwright Chromium, renders PNGs, then runs `check.py`. `check.py` banned words, translationese, and symbol limits come from `references/style_rules.yaml`, so edit that file, not the code.
+
+**Data flow:** `scan.py` → `data/search/pipeline.md` ("## 새로 수집 (선별 전)") + `inbox/*.md` bodies + `scan-history.tsv` → Claude screens → `evaluate` writes `data/job_postings/*.eval.md` → `tracker.py` manages `data/applications/tracker.md` (setting 지원함 moves the pipeline entry to the re-apply cooldown). Markdown/TSV files are the source of truth, and scripts parse their section headings and table headers literally, so changing a heading in a mode file or script means changing the other side too.
+
+## Conventions
+
+- **Public repo, private `data/`.** `.gitignore` ignores `data/*/*` except `README.md`, `.gitkeep`, `*.example.*`. Personal data must never land in `SKILL.md`, `modes/`, `references/`, `scripts/`, `docs/`, and new data files go inside a `data/` subfolder, never directly under `data/`. Examples use fictional people/companies (`examples/example.yaml`).
+- **Language split:** agent instruction files (`SKILL.md`, `modes/`, `references/*.md`) are English; everything user-facing is Korean: CLI output, script docstrings/comments, `data/` files, resume text, and Korean strings quoted in the instruction files (state values, headings), which must stay verbatim because scripts match them. `README.md` (ko) and `README.en.md` are kept in sync.
+- Scripts are stdlib + PyYAML only for collection (`check_links.py` is stdlib-only by design); keep it that way.
+- Collection endpoints are unofficial: keep the request delay and treat "missing from the public list" as not closed; closing is decided by per-site detail API/HTTP status.
+- `modes/_shared.md` and parts of the workflow are adapted from career-ops (MIT); attribution lives in `THIRD_PARTY_NOTICES.md`, not `LICENSE` (so GitHub detects plain MIT).
