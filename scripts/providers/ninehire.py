@@ -29,10 +29,27 @@ def _base(url: str) -> str:
     return re.match(r"https?://[^/]+", url).group(0)
 
 
+def _company_from_posting(careers_url: str):
+    """첫 화면이 없는 나인하이어(자체 소개 페이지가 공고 링크만 거는 경우): 공고 하나에서 companyId 를 읽는다."""
+    status, body = http_get(careers_url, accept="text/html")
+    m = re.search(r"https://([a-z0-9-]+\.ninehire\.site)/job_posting/([A-Za-z0-9]{4,})", body) if status == 200 else None
+    if not m:
+        return None, None
+    status, page = http_get(m.group(0), accept="text/html")
+    cid = re.search(r'"companyId":"([^"]+)"', page) if status == 200 else None
+    return (cid.group(1) if cid else None), f"https://{m.group(1)}"
+
+
 def collect(cfg: dict) -> List[Job]:
     base = _base(cfg["careers_url"])
-    hp = (((_next_data(base).get("props") or {}).get("pageProps") or {}).get("homepageProps") or {}).get("homepage") or {}
+    try:
+        hp = (((_next_data(base).get("props") or {}).get("pageProps") or {}).get("homepageProps") or {}).get("homepage") or {}
+    except ShapeError:
+        hp = {}
     cid = hp.get("companyId")
+    if not cid:
+        cid, site = _company_from_posting(cfg["careers_url"])
+        base = site or base
     if not cid:
         raise ShapeError(f"나인하이어 companyId 없음: {base}")
     jobs, page = [], 1
