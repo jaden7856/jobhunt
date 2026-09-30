@@ -42,6 +42,21 @@ translationese:
   - { pattern: "격리", hint: "'나눔', '막음'" }
   - { pattern: "일원\\s?관리", hint: "'한 곳에서 관리'" }
 
+# 사내 고유 이름(함수·타입·필드·서비스 이름): 경고. 회사 밖 사람은 뜻을 모른다. 하는 일로 풀어 쓴다 (2026-09-30)
+#   전: gRPC 서버 스트림 `WatchOrderProgress` 하나로 통합  후: gRPC 서버 스트림 함수 하나로 통합
+#   CamelCase 이름과 백틱 안 단어 하나짜리 이름을 잡는다. 널리 아는 공개 이름은 allow 에 둔다.
+internal_names:
+  patterns:
+    - "\\b[A-Z][a-z0-9]+(?:[A-Z][a-z0-9]+)+\\b"
+    - "`[A-Za-z_]\\w*`"
+  allow: [GitLab, GitHub, OpenStack, WebSocket, WaitGroup, ConfigMap, JavaScript, TypeScript, PowerShell]
+  hint: "하는 일로 풀어 쓰기 (예: '발행 함수', '토큰 관리자', '주문 서비스')"
+
+# 쓸데없는 괄호 풀이: 경고. 한국어 뒤에 같은 뜻 영어를 괄호로 붙이지 않는다 (2026-09-30)
+#   전: 점검 시간(maintenance window)  후: 점검 시간  (영어 용어 하나로 통하면 영어만 써도 된다)
+#   뜻을 더해 주는 괄호는 둔다: 결제 로직(SDK)과 호출부(gRPC Client)를 분리
+gloss_parens: "[가-힣]+\\((?:[a-z][a-z-]*)(?: [a-z][a-z-]*)*\\)"
+
 # 남아 있으면 제출 불가 (error)
 placeholders:
   - "【"

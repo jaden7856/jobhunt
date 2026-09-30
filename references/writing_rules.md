@@ -28,6 +28,33 @@
 정확한 기술 용어는 둔다: CAS, gRPC, context, goroutine, lease …
 목록은 `style_rules.yaml` 의 `translationese` 에 더한다.
 
+## 회사 밖 사람이 읽는 글 (자동 검사, 경고)
+
+이력서는 우리 회사를 모르는 사람이 읽는다. 사내에서만 통하는 이름은 하는 일로 풀어 쓴다.
+
+- 함수·타입·필드 이름: `WatchOrderProgress`, `PublishWithAck`, `SessionKeeper`, `LastSyncedAt`
+- 사내 서비스·모듈 이름: orderd, hub, relay
+- 안에서만 쓰는 숫자: 앞뒤 설명 없이 던진 개수("검사 지점 17곳")는 요약에서 뺀다. 본문에서 무엇의 개수인지 설명할 때만 쓴다.
+
+| 전 | 후 |
+|---|---|
+| gRPC 서버 스트림 `WatchOrderProgress` 하나로 통합 | gRPC 서버 스트림 함수 하나로 통합 |
+| orderd가 상태 변경을 발행하고 hub가 메모리에 유지 | 주문 서비스가 상태 변경을 발행하고 조회 서비스가 메모리에 유지 |
+| 전용 SessionKeeper로 모아 | 전용 세션 관리자로 모아 |
+
+공개 라이브러리·표준 이름(`goccy/go-json`, `go/parser`, WaitGroup, ConfigMap, Keystone)은 그대로 둔다. 자동 검사는 CamelCase 이름과 백틱 안 단어 하나짜리 이름을 경고로 잡고, 공개 이름은 `style_rules.yaml` 의 `internal_names.allow` 에 더한다. 소문자 서비스 이름은 사람이 점검한다.
+
+## 괄호 (자동 검사, 경고)
+
+괄호는 뜻을 더해 줄 때만 쓴다. 한국어 뒤에 같은 뜻 영어를 붙이는 괄호는 뺀다. 개발 용어 하나로 통하면 영어만 써도 된다.
+
+| 전 | 후 |
+|---|---|
+| 정해진 점검 시간(maintenance window) 안에 | 정해진 점검 시간 안에 |
+| 공통 설정(configuration) 파일 | 공통 설정 파일 |
+
+둔다: `결제 로직(SDK)과 호출부(gRPC Client)를 분리` — 괄호가 각 부분이 실제로 무엇인지 알려 준다.
+
 ## 사람이 점검할 것
 
 - 한 문장에 수식어를 여러 개 이어 붙이지 않았나.

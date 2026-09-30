@@ -107,6 +107,10 @@ def lint(resume, rules=None):
     trans = [(re.compile(w["pattern"]), w.get("hint", "")) for w in rules["translationese"]]
     limits = rules["symbol_limits"]
     arrow_allow = [re.compile(p) for p in rules.get("arrow_allow", [])]
+    names = rules.get("internal_names") or {}
+    name_pats = [re.compile(p) for p in names.get("patterns", [])]
+    name_allow = set(names.get("allow", []))
+    gloss = re.compile(rules["gloss_parens"]) if rules.get("gloss_parens") else None
 
     for where, raw, kind in iter_texts(resume):
         t = plain(raw)
@@ -123,6 +127,14 @@ def lint(resume, rules=None):
             m = p.search(t)
             if m:
                 add("warn", where, "번역투·개념어", f"'{m.group(0)}' {hint}".strip(), raw)
+        mine = re.sub(r"\[[^\]]+\]\([^)]+\)", "LINK", str(raw))        # 외부 글 제목·주소는 내 문장이 아니다
+        found = [m.group(0).strip("`") for p in name_pats for m in p.finditer(mine)]
+        found = [x for x in found if x not in name_allow]
+        if found:
+            add("warn", where, "사내 고유 이름", f"{', '.join(dict.fromkeys(found))} {names.get('hint', '')}".strip(), raw)
+        m = gloss.search(plain(mine)) if gloss else None
+        if m:
+            add("warn", where, "괄호 풀이", f"'{m.group(0)}' 같은 뜻 영어 괄호는 빼기", raw)
         if kind in ("sentence", "lead"):
             # 허용한 '→'(버전·라이브러리 교체)는 개수와 용도 검사에서 뺀다
             ok_arrows = {m.start() + m.group(0).index("→") for p in arrow_allow for m in p.finditer(t)}
