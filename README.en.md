@@ -258,4 +258,4 @@ The job-search flow and the personalization layout (system vs. user files, files
 
 ## 📄 License
 
-[MIT](./LICENSE). The copyright notice for the parts adapted from career-ops is in the same file.
+[MIT](./LICENSE). The copyright notice for the parts adapted from career-ops is in [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md).

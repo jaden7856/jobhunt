@@ -256,4 +256,4 @@ data/                        내 자료 (git 제외, 구조와 예시만 올라�
 
 ## 📄 라이선스
 
-[MIT](./LICENSE). career-ops에서 옮긴 부분의 저작권 표기도 같은 파일에 있습니다.
+[MIT](./LICENSE). career-ops에서 옮긴 부분의 저작권 표기는 [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md)에 있습니다.

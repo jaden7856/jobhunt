@@ -1,6 +1,12 @@
+# Third-party notices
+
+Portions of this project (some rules in modes/_shared.md and the Korean
+hiring-terms table) are adapted from career-ops
+(https://github.com/santifer/career-ops), used under the MIT License:
+
 MIT License
 
-Copyright (c) 2026 jaden7856
+Copyright (c) 2026 Santiago Fernández de Valderrama
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
