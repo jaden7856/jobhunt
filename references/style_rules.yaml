@@ -49,7 +49,7 @@ internal_names:
   patterns:
     - "(?<![A-Za-z0-9_])[A-Z][a-z0-9]+(?:[A-Z][a-z0-9]+)+(?![A-Za-z0-9_])"   # \\b 는 한글 조사 앞에서 경계로 안 잡힌다
     - "`[A-Za-z_]\\w*`"
-  allow: [GitLab, GitHub, OpenStack, WebSocket, WaitGroup, ConfigMap, JavaScript, TypeScript, PowerShell]
+  allow: [GitLab, GitHub, OpenStack, WebSocket, WaitGroup, ConfigMap, OpenShift, JavaScript, TypeScript, PowerShell]
   hint: "하는 일로 풀어 쓰기 (예: '발행 함수', '토큰 관리자', '주문 서비스')"
 
 # 쓸데없는 괄호 풀이: 경고. 한국어 뒤에 같은 뜻 영어를 괄호로 붙이지 않는다 (2026-09-30)
