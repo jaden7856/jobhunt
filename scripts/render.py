@@ -15,6 +15,7 @@
 개인정보(이름·연락처)는 코드에 적지 않는다. 모두 profile yaml에서 읽는다.
 """
 import argparse
+import glob
 import html
 import os
 import re
@@ -457,6 +458,9 @@ def render_pdf(html_path, pdf_path):
 def render_png(pdf_path, stem, dpi=110):
     from pdf2image import convert_from_path
     imgs = convert_from_path(pdf_path, dpi=dpi)
+    for old in glob.glob(f"{glob.escape(stem)}_p*.png"):     # 쪽수가 줄었을 때 이전 빌드의 뒤쪽 PNG가 남지 않게
+        if re.fullmatch(r"_p\d+\.png", old[len(stem):]) and int(old[len(stem) + 2:-4]) > len(imgs):
+            os.remove(old)
     paths = []
     for i, im in enumerate(imgs):
         pth = f"{stem}_p{i + 1}.png"

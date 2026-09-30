@@ -106,6 +106,7 @@ def lint(resume, rules=None):
     banned = [(re.compile(w["pattern"]), w.get("hint", "")) for w in rules["banned"]]
     trans = [(re.compile(w["pattern"]), w.get("hint", "")) for w in rules["translationese"]]
     limits = rules["symbol_limits"]
+    arrow_allow = [re.compile(p) for p in rules.get("arrow_allow", [])]
 
     for where, raw, kind in iter_texts(resume):
         t = plain(raw)
@@ -123,11 +124,20 @@ def lint(resume, rules=None):
             if m:
                 add("warn", where, "번역투·개념어", f"'{m.group(0)}' {hint}".strip(), raw)
         if kind in ("sentence", "lead"):
+            # 허용한 '→'(버전·라이브러리 교체)는 개수와 용도 검사에서 뺀다
+            ok_arrows = {m.start() + m.group(0).index("→") for p in arrow_allow for m in p.finditer(t)}
+            counted = "".join("⇢" if i in ok_arrows else ch for i, ch in enumerate(t))
+            for title in re.findall(r"\[([^\]]+)\]\([^)]+\)", str(raw)):
+                counted = counted.replace(title, "LINK")                    # 외부 글 제목은 내 문장이 아니다
+            if rules.get("symbol_ignore_parens"):
+                counted = re.sub(r"\([^)]*\)", "", counted)     # 괄호 안 기술 나열은 세지 않는다
             for sym, lim in limits.items():
-                n = t.count(sym)
+                n = counted.count(sym)
                 if n > lim:
                     add("error", where, "기호 개수", f"'{sym}' {n}개 (한 불릿 {lim}개까지)", raw)
             for m in re.finditer("→", t):
+                if m.start() in ok_arrows:
+                    continue
                 left, right = t[max(0, m.start() - 12):m.start()], t[m.end():m.end() + 12]
                 if not (re.search(r"\d", left) and re.search(r"\d", right)):
                     add("error", where, "화살표 용도", "'→'는 수치 전후 비교에만 사용", raw)

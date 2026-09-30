@@ -7,6 +7,14 @@ symbol_limits:
   "·": 1
   "→": 1
 
+# 괄호 안의 기술 나열(instance·network·router …)은 기호 개수에서 뺀다 (2026-09-29)
+symbol_ignore_parens: true
+
+# 수치가 아니어도 허용하는 '→': ASCII 이름끼리의 전환(버전·라이브러리 교체). 허용한 '→'는 개수에서도 뺀다 (2026-09-29)
+#   예: Go 1.14 → 1.19, go-micro v2 → v4, jinzhu/gorm → gorm.io v2, streadway/amqp → amqp091
+arrow_allow:
+  - "[A-Za-z0-9_./-]+(?: [vV]?[0-9][\\w.]*)? → [A-Za-z0-9_./-]+(?: [vV]?[0-9][\\w.]*)?"
+
 # 상투어: 걸리면 오류(error). 본인이 면접에서 말로 쓰지 않는 단어.
 banned:
   - { pattern: "고도화", hint: "무엇을 어떻게 바꿨는지로" }
