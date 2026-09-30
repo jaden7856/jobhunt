@@ -32,7 +32,8 @@
 
 ### Highlights
 
-- 🔎 **Find postings:** Collects from Wanted, Jumpit, LinkedIn, Greenhouse boards (Daangn, Coupang, KRAFTON …), Toss, NHN, Kakao and greetinghr companies in one run. It filters by title, required years, location, duplicates across sites (company aliases unify Korean and English names), blocked companies and re-apply cooldowns.
+- 🏢 **Widen the company list:** Finds companies that post mainly on their own career sites. It ranks them by reputation and size using tech-blog and GitHub-org lists, Wanted company data (pay band, headcount) and a list of well-known companies, then locates each career site and its hiring system (greetinghr, Ninehire, Greenhouse …) and adds it to the scan.
+- 🔎 **Find postings:** Collects from Wanted, Jumpit, LinkedIn, Greenhouse boards (Daangn, Coupang, KRAFTON …), Toss, NHN, Kakao, greetinghr and Ninehire companies in one run. It filters by title, required years, location, duplicates across sites (company aliases unify Korean and English names), blocked companies and re-apply cooldowns.
 - 📊 **Score the fit:** Checks your location, English and tech-stack rules against quoted posting text, maps every requirement to your own experience, and scores 1–5. Required vs. preferred is told apart by Korean sentence endings ("~필요해요" vs. "~좋아요").
 - 📝 **Tailor the resume:** Turns the evaluation's plan (projects to lead with, skill overlap, wording) into a per-posting YAML, then builds it in one of three designs as an A4 PDF. Every build is checked automatically.
 - 📋 **Track applications:** Shows evaluated and triage-passed postings in a single table with "applied?" and "still open?" columns.
@@ -141,7 +142,7 @@ python3 scripts/render.py examples/example.yaml \
 | Wanted, Jumpit | Public JSON list and detail | `scan.py` |
 | LinkedIn | Public guest API, Korean-language postings only (English-only JDs excluded) | `scan.py` |
 | Greenhouse companies (Daangn, Coupang, KRAFTON …) | Official public API | `scan.py` |
-| Toss (all affiliates), NHN, Kakao, greetinghr companies | Career-site JSON | `scan.py` |
+| Toss (all affiliates), NHN, Kakao, greetinghr and Ninehire companies | Career-site JSON | `scan.py` (companies found by `discover.py`) |
 | Saramin, JobKorea, Remember, other career sites | HTML / browser | Claude, following [`references/sources.md`](references/sources.md) |
 
 - **What gets filtered out:** title keywords, required years (when the posting states them), location, postings you've already seen (including the same posting on another site), blocked companies, companies you applied to recently (6-month cooldown by default), and English-only JDs (when enabled).
@@ -224,6 +225,7 @@ SKILL.md                     Skill entry point, routes requests to modes
 modes/                       Shared rules and per-mode procedures (onboard · scan · evaluate · tailor · track)
 scripts/
   scan.py · providers/       Posting collection (one module per site)
+  discover.py                Company discovery (find career sites and hiring systems, add them to the scan)
   alive.py                   Open/closed check
   tracker.py                 Application tracker and combined overview
   weekly.sh                  Weekly scan (scan → alive → report)

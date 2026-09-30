@@ -8,10 +8,11 @@
 
 방법과 실측 날짜는 references/sources.md. 형식이 바뀌면 ShapeError 를 올려 "응답 형식 변경"으로 보고한다.
 """
-from . import greenhouse, greetinghr, jumpit, kakao, linkedin, nhn, toss, wanted
+from . import greenhouse, greetinghr, jumpit, kakao, linkedin, nhn, ninehire, toss, wanted
 
 BOARDS = {"wanted": wanted, "jumpit": jumpit, "linkedin": linkedin}
-ALL = [wanted, jumpit, linkedin, greenhouse, toss, nhn, kakao, greetinghr]
+ALL = [wanted, jumpit, linkedin, greenhouse, toss, nhn, kakao, greetinghr, ninehire]
+BY_ATS = {"greetinghr": greetinghr, "ninehire": ninehire, "greenhouse": greenhouse}   # sources.yaml 의 ats: (discover.py 가 적음)
 
 
 def for_company(c: dict):
@@ -19,6 +20,8 @@ def for_company(c: dict):
     api, url = c.get("api") or "", c.get("careers_url") or ""
     if c.get("method") == "browser":
         return None
+    if c.get("ats") in BY_ATS and (c["ats"] != "greenhouse" or "greenhouse.io" in api):
+        return BY_ATS[c["ats"]]                      # 회사 도메인에 붙인 채용 시스템 (예: careers.회사.com 이 greetinghr)
     if "greenhouse.io" in api:
         return greenhouse
     if "toss.im" in url:

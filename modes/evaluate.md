@@ -8,7 +8,7 @@
 - 공고 원문: 사용자가 준 URL·본문. 원문은 `data/job_postings/<YYYY-MM-DD>_<회사>_<포지션>.md`에 저장한다(링크, 수집일, 수집 방법, 본문 전체).
 - `data/profile/targets.yaml`, `data/experience/*`, `data/resumes/base_*.yaml`, `data/preferences/standing.md`
 - scan으로 들어온 공고면 `data/search/inbox/`의 본문부터 쓴다.
-- 마감 여부는 `scripts/alive.py`가 다루는 사이트(원티드·점핏·LinkedIn·Greenhouse·토스·NHN·greetinghr)면 그 결과를, 아니면 `references/sources.md`의 방법으로 확인한다. 확인 못 하면 헤더에 `확인: 못 함`.
+- 마감 여부는 `scripts/alive.py`가 다루는 사이트(원티드·점핏·LinkedIn·Greenhouse·토스·NHN·greetinghr·나인하이어)면 그 결과를, 아니면 `references/sources.md`의 방법으로 확인한다. 확인 못 하면 헤더에 `확인: 못 함`.
 
 ## 블록
 

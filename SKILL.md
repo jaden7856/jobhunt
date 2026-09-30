@@ -26,14 +26,16 @@ scripts/check.py            페이지 수 · 제목 홀로 남음 · 링크 · �
 scripts/check_links.py      링크 접속 확인 (표준 라이브러리만, 어디서나 실행)
 scripts/git_log.sh          로컬 git 저장소에서 작성자 기준 커밋 로그 추출
 scripts/setup.sh            스킬 연결(~/.claude/skills 링크) + Playwright Chromium, 폰트(Pretendard, Noto Sans/Serif CJK KR), poppler 설치
-scripts/scan.py             공고 수집 (원티드·점핏·LinkedIn·Greenhouse·토스·NHN·카카오·greetinghr) → 거르기 → pipeline.md
+scripts/scan.py             공고 수집 (원티드·점핏·LinkedIn·Greenhouse·토스·NHN·카카오·greetinghr·나인하이어) → 거르기 → pipeline.md
 scripts/alive.py            추적 공고 마감 확인
 scripts/tracker.py          지원 현황 기록(add/set)과 통합 보고표(report)
 scripts/score.py            공고 점수 계산 (줄 단위 판정 파일 → 항목별 점수)
+scripts/discover.py         회사 찾기 (기술 블로그·GitHub·원티드·알려진 회사 → 채용 사이트·채용 시스템 판별 → sources.yaml)
 scripts/weekly.sh           주간 스캔의 LLM 없는 부분 (scan → alive → report)
 scripts/providers/          사이트별 수집 모듈
 references/sources.md       채용 사이트별 수집 방법 (엔드포인트, 본문 위치, 마감 판정)
 references/scoring.md       공고 점수 기준 (분류 방법, 계산, 교정)
+references/company_seed.yaml 회사 찾기의 기본 후보 (잘 알려진 국내 개발 회사)
 references/yaml_schema.md   yaml 형식
 references/writing_rules.md 문장 규칙과 점검 방법
 references/style_rules.yaml 금지어·번역투·기호 한도 (check.py 가 읽음)
@@ -60,6 +62,7 @@ data/                       사용자 자료 (git 제외, 구조만 올라감)
 |---|---|
 | "처음 설정", "내 조건 바꿀래", "목표 역할 추가" | `modes/onboard.md` |
 | "공고 찾아줘", "새 공고 있어?", "주간 스캔" | `modes/scan.md` (`bash scripts/weekly.sh` 먼저) |
+| "회사 더 찾아줘", "수집 회사 넓혀줘" | `modes/scan.md` 0단계 (`scripts/discover.py`) |
 | "새로 수집한 공고 선별해줘" | `modes/scan.md` 4단계부터 |
 | "공고 현황 보여줘", "표로 보여줘" | `python3 scripts/tracker.py report --alive` 출력 |
 | 공고 URL·본문을 줌, "이 공고 어때?", "평가해줘" | `modes/evaluate.md` |

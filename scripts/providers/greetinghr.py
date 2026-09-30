@@ -33,7 +33,14 @@ def base_of(url: str) -> str:
 
 def collect(cfg: dict) -> List[Job]:
     base = base_of(cfg["careers_url"])
-    ops = _query(_next_data(f"{base}/ko/home"), '"openings"')
+    ops = None
+    for url in (f"{base}/ko/home", cfg["careers_url"], base):   # 회사 도메인에 붙인 greetinghr 는 첫 화면에 openings 가 있기도 하다
+        try:
+            ops = _query(_next_data(url), '"openings"')
+        except ShapeError:
+            continue
+        if isinstance(ops, list):
+            break
     if not isinstance(ops, list):
         raise ShapeError(f"greetinghr openings 없음: {base}")
     jobs = []

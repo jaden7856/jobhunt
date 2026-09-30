@@ -2,7 +2,8 @@
 
 사이트 공통 사실만 적는다(엔드포인트, 본문 위치, 마감 판정). 개인 검색 조건은 `data/search/sources.yaml`.
 실측 날짜를 붙인다. 형식이 바뀌면 여기를 고치고 날짜를 갱신한다.
-`scripts/providers/`가 자동으로 다루는 곳: 원티드, 점핏, LinkedIn, Greenhouse, 토스, NHN, 카카오, greetinghr(`__NEXT_DATA__` 있는 곳). 나머지는 Claude가 이 문서대로 직접 수집한다.
+`scripts/providers/`가 자동으로 다루는 곳: 원티드, 점핏, LinkedIn, Greenhouse, 토스, NHN, 카카오, greetinghr(`__NEXT_DATA__` 있는 곳, 회사 도메인에 붙인 것 포함), 나인하이어. 나머지는 Claude가 이 문서대로 직접 수집한다.
+수집할 회사를 넓히는 방법은 아래 "회사 찾기".
 
 ## 공통 규칙
 
@@ -37,7 +38,38 @@
 | 두나무 | `careers.dunamu.com` 메인 HTML의 `/detail/{n}` 링크 | 공고 수 적음 | 2026-09-23 |
 | SK텔레콤 | `skcareers.com/Recruit?corpCode=10005` | `careers.sktelecom.com`은 이관 안내만 있음 | 2026-09-23 |
 | 카카오 | `https://careers.kakao.com/public/api/job-list?part=TECHNOLOGY&company=ALL&page=N` | 공동체(`S-`) 공고는 자격요건이 비어 있음(외부 사이트) | 2026-09-23 |
-| greetinghr (`*.career.greetinghr.com`) | `https://{slug}.career.greetinghr.com/ko/home` HTML의 `__NEXT_DATA__`에 공고 목록, 본문은 `/ko/o/{id}` | bucketplace·kakaopay·kakaoenterprise는 `__NEXT_DATA__`가 없어 브라우저로 읽는다 | 2026-09-23 |
+| greetinghr (`*.career.greetinghr.com`, 또는 `recruit.회사.com` 같은 회사 도메인) | `{채용 사이트}/ko/home` 또는 첫 화면 HTML의 `__NEXT_DATA__` 쿼리 `["openings"]`에 공고 목록, 본문은 `/ko/o/{id}`. 회사 도메인이면 `sources.yaml`에 `ats: greetinghr` | bucketplace·kakaopay·kakaoenterprise는 `__NEXT_DATA__`가 없어 브라우저로 읽는다. 페이지 아래 "powered by greetinghr" 링크(`www.greetinghr.com/?utm_source=career_page`)가 있으면 그 페이지가 greetinghr 채용 사이트 | 2026-09-30 |
+| 나인하이어 (`*.ninehire.site`, 또는 회사 도메인) | 첫 화면 `__NEXT_DATA__` 의 `homepageProps.homepage.companyId` → `https://api.ninehire.com/identity-access/homepage/recruitments?companyId={id}&page=N&countPerPage=50` (`status: in_progress`만). 본문은 `{채용 사이트}/job_posting/{addressKey}` 의 `__NEXT_DATA__` `pageProps.jobPosting.content`(HTML) | 연차는 `career.range.{over, below}` | 2026-09-30 |
+| recruiter.co.kr (`*.recruiter.co.kr`) | 브라우저 | — | 미확인 |
 | roundhr (`*.recruit.roundhr.com`) | 브라우저 | — | 미확인 |
 
 새 회사를 추가할 때: Greenhouse·Lever·Ashby 공개 API가 있는지 먼저 확인하고, 없으면 채용 사이트 URL이 열리는지 확인한 뒤에만 `data/search/sources.yaml`에 넣는다. 확인하지 않은 URL은 넣지 않는다.
+
+## 회사 찾기
+
+잡보드에 공고를 거의 안 올리고 자체 채용 사이트에만 올리는 회사(대기업·인지도 높은 회사)를 찾아 `sources.yaml` companies 에 넣는다. `scripts/discover.py`.
+
+**정보원**
+
+| 정보원 | 무엇을 주나 | 방법 |
+|---|---|---|
+| `references/company_seed.yaml` | 잘 알려진 개발 회사(대기업 IT·플랫폼·핀테크·게임·클라우드·AI)와 홈페이지 | 레포에 적은 목록. 개인 추가분은 `data/search/company_seed.yaml` |
+| [awesome-korean-techblog](https://github.com/maczniak/awesome-korean-techblog) | 기술 블로그를 운영하는 회사 (개발 문화 신호) | README "기업 블로그" 절 |
+| [korea-devculture](https://github.com/channy/korea-devculture) | GitHub 조직을 운영하는 회사와 팔로워 수 | `github.json` |
+| 원티드 회사 정보 | 개발 직군 공고를 낸 회사의 연봉 수준(연봉상위 1% · 6~10% · 11~20%), 인원 구간, 설립 연도, 홈페이지 | 목록 API의 `company.id` → `/api/v4/companies/{id}` 의 `company_tags`, `detail.link` |
+
+**쓰지 않는 곳:** 잡플래닛·크레딧잡은 `robots.txt`가 모든 크롤러를 막고(`Disallow: /`), 캐치는 기업 페이지(`/Company`)를 막는다. 사람이 브라우저로 보고 `company_seed.yaml`에 적는 것은 괜찮다.
+
+**점수(인지도·규모):** 연봉상위 1% 3.5 · 6~10% 2.0 · 11~20% 1.0, 인원 1,001명 이상 2.0 · 301~1,000명 1.5 · 51~300명 0.5, 알려진 회사 목록 2.0, 기술 블로그 1.5, GitHub 조직 1.0(팔로워 100 이상 +0.5). 기본은 2.5 이상을 조사하고 3.0 이상을 추가한다.
+
+**채용 사이트 찾기(probe):** 홈페이지에서 "채용·Careers·Recruit·Jobs" 링크를 찾아 열고, URL과 HTML로 채용 시스템(greetinghr·나인하이어·Greenhouse·Lever·recruiter.co.kr·Notion·자체)을 판별한다. 스크립트가 다루는 시스템이면 공고 목록을 실제로 받아 보고(`verified: 공고 수`) 검증된 것만 자동 수집으로 넣는다. 나머지는 `method: browser`.
+
+```bash
+python3 scripts/discover.py collect            # 후보 모으기 (원티드 포함 20분 안팎, --skip-wanted 면 수 초)
+python3 scripts/discover.py probe --top 150    # 점수 높은 후보의 채용 사이트 찾기
+python3 scripts/discover.py report             # 후보 표
+python3 scripts/discover.py promote --dry-run  # 추가될 회사 미리 보기 → 사용자 확인 후 --dry-run 없이
+```
+
+`data/search/companies.yaml` 의 `status`(후보·추가·제외)와 `memo`는 손으로 고쳐도 다음 실행에 남는다. 지원하지 않을 회사(`blacklist.md`)와 이미 수집하는 채용 사이트를 쓰는 계열사는 추가하지 않는다.
+

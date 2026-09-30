@@ -1,0 +1,123 @@
+# 회사 찾기(scripts/discover.py)의 기본 후보. 채용 공고를 잡보드보다 자체 채용 사이트에 주로 올리는 국내 개발 회사.
+# 잡플래닛·크레딧잡·캐치는 robots.txt 가 크롤러를 막아 자동 수집하지 않는다 → 알려진 회사를 여기 적고,
+# 채용 사이트는 discover.py probe 가 홈페이지에서 직접 찾아 확인한다(주소가 틀리면 probe 결과에 드러난다).
+# 더하고 싶은 회사는 { name, home } 한 줄로. aka 는 영문명·다른 이름. group 은 보고표 정렬용.
+companies:
+  # 대기업 IT 계열사
+  - { name: 삼성SDS, home: https://www.samsungsds.com, group: 대기업 IT, aka: [Samsung SDS] }
+  - { name: LG CNS, home: https://www.lgcns.com, group: 대기업 IT }
+  - { name: SK AX, home: https://www.skax.co.kr, group: 대기업 IT, aka: [SK C&C] }
+  - { name: 현대오토에버, home: https://www.hyundai-autoever.com, group: 대기업 IT, aka: [Hyundai AutoEver] }
+  - { name: 롯데이노베이트, home: https://www.lotteinnovate.com, group: 대기업 IT, aka: [롯데정보통신] }
+  - { name: CJ올리브네트웍스, home: https://www.cjolivenetworks.co.kr, group: 대기업 IT }
+  - { name: 신세계아이앤씨, home: https://www.shinsegae-inc.com, group: 대기업 IT, aka: [신세계I&C] }
+  - { name: KT DS, home: https://www.ktds.com, group: 대기업 IT }
+  - { name: 포스코DX, home: https://www.poscodx.com, group: 대기업 IT }
+  - { name: 한화시스템, home: https://www.hanwhasystems.com, group: 대기업 IT }
+  - { name: SK텔레콤, home: https://www.sktelecom.com, group: 통신, aka: [SK Telecom, SKT] }
+  - { name: KT, home: https://www.kt.com, group: 통신 }
+  - { name: LG유플러스, home: https://www.lguplus.com, group: 통신, aka: [LG U+] }
+  - { name: 42dot, home: https://42dot.ai, group: 모빌리티 }
+  - { name: 현대자동차, home: https://www.hyundai.com, group: 모빌리티, aka: [현대자동차그룹] }
+  - { name: 카카오모빌리티, home: https://www.kakaomobility.com, group: 모빌리티, aka: [Kakao Mobility] }
+  # 플랫폼·커머스
+  - { name: 네이버, home: https://www.navercorp.com, group: 플랫폼, aka: [NAVER] }
+  - { name: 카카오, home: https://www.kakaocorp.com, group: 플랫폼, aka: [Kakao] }
+  - { name: 쿠팡, home: https://www.coupang.jobs, group: 커머스, aka: [Coupang] }
+  - { name: 우아한형제들, home: https://www.woowahan.com, group: 플랫폼, aka: [Woowa Brothers, 배달의민족] }
+  - { name: 당근, home: https://about.daangn.com, group: 플랫폼, aka: [Daangn, 당근마켓] }
+  - { name: 토스, home: https://toss.im, group: 핀테크, aka: [Toss, 비바리퍼블리카] }
+  - { name: 야놀자, home: https://www.yanolja.in, group: 플랫폼, aka: [Yanolja] }
+  - { name: 여기어때, home: https://www.gccompany.co.kr, group: 플랫폼, aka: [GC Company] }
+  - { name: 직방, home: https://www.zigbang.com, group: 플랫폼, aka: [Zigbang] }
+  - { name: 쏘카, home: https://www.socarcorp.kr, group: 모빌리티, aka: [SOCAR] }
+  - { name: 무신사, home: https://www.musinsa.com, group: 커머스, aka: [MUSINSA] }
+  - { name: 컬리, home: https://www.kurly.com, group: 커머스, aka: [Kurly, 마켓컬리] }
+  - { name: 오늘의집, home: https://www.bucketplace.com, group: 커머스, aka: [버킷플레이스, Bucketplace] }
+  - { name: 11번가, home: https://www.11stcorp.com, group: 커머스, aka: [11st] }
+  - { name: SSG닷컴, home: https://www.ssg.com, group: 커머스, aka: [SSG.COM, 에스에스지닷컴] }
+  - { name: G마켓, home: https://www.gmarket.co.kr, group: 커머스, aka: [지마켓, Gmarket] }
+  - { name: 에이블리, home: https://www.a-bly.com, group: 커머스, aka: [ABLY, 에이블리코퍼레이션] }
+  - { name: 지그재그, home: https://www.kakaostyle.com, group: 커머스, aka: [카카오스타일] }
+  - { name: 29CM, home: https://www.29cm.co.kr, group: 커머스 }
+  - { name: 번개장터, home: https://www.bunjang.co.kr, group: 커머스, aka: [Bungae] }
+  - { name: 리디, home: https://ridicorp.com, group: 콘텐츠, aka: [RIDI, 리디북스] }
+  - { name: 티빙, home: https://www.tving.com, group: 콘텐츠, aka: [TVING] }
+  - { name: 왓챠, home: https://watcha.team, group: 콘텐츠, aka: [WATCHA] }
+  - { name: 네이버웹툰, home: https://www.webtoonscorp.com, group: 콘텐츠, aka: [NAVER WEBTOON] }
+  - { name: 카카오엔터테인먼트, home: https://www.kakaoent.com, group: 콘텐츠 }
+  - { name: 하이브, home: https://hybecorp.com, group: 콘텐츠, aka: [HYBE, 위버스컴퍼니] }
+  - { name: 라인, home: https://linecorp.com, group: 플랫폼, aka: [LINE, 라인플러스, LINE Plus] }
+  - { name: 하이퍼커넥트, home: https://hyperconnect.com, group: 플랫폼, aka: [Hyperconnect] }
+  - { name: 센드버드, home: https://sendbird.com, group: B2B SaaS, aka: [Sendbird] }
+  - { name: 채널코퍼레이션, home: https://channel.io, group: B2B SaaS, aka: [채널톡] }
+  - { name: 플렉스, home: https://flex.team, group: B2B SaaS, aka: [flex, 플렉스코리아] }
+  - { name: 리멤버앤컴퍼니, home: https://rememberapp.co.kr, group: 플랫폼, aka: [드라마앤컴퍼니, 리멤버] }
+  - { name: 마이리얼트립, home: https://www.myrealtrip.com, group: 플랫폼, aka: [MyRealTrip] }
+  - { name: 트리플, home: https://triple.guide, group: 플랫폼, aka: [인터파크트리플] }
+  - { name: 강남언니, home: https://www.gangnamunni.com, group: 플랫폼, aka: [힐링페이퍼] }
+  - { name: 숨고, home: https://soomgo.com, group: 플랫폼, aka: [브레이브모바일] }
+  - { name: 클래스101, home: https://class101.net, group: 플랫폼 }
+  - { name: 뤼튼테크놀로지스, home: https://wrtn.io, group: AI }
+  # 핀테크·금융 IT
+  - { name: 카카오뱅크, home: https://www.kakaobank.com, group: 핀테크, aka: [KakaoBank] }
+  - { name: 카카오페이, home: https://www.kakaopay.com, group: 핀테크, aka: [KakaoPay] }
+  - { name: 네이버파이낸셜, home: https://www.naverfincorp.com, group: 핀테크, aka: [NAVER Financial] }
+  - { name: 두나무, home: https://www.dunamu.com, group: 핀테크, aka: [Dunamu, 업비트] }
+  - { name: 빗썸, home: https://www.bithumbcorp.com, group: 핀테크, aka: [Bithumb] }
+  - { name: 뱅크샐러드, home: https://corp.banksalad.com, group: 핀테크, aka: [Banksalad, 레이니스트] }
+  - { name: 핀다, home: https://finda.co.kr, group: 핀테크 }
+  - { name: 코인원, home: https://coinone.co.kr, group: 핀테크 }
+  - { name: 케이뱅크, home: https://www.kbanknow.com, group: 핀테크, aka: [K bank] }
+  - { name: 한국신용데이터, home: https://www.kcd.co.kr, group: 핀테크, aka: [KCD, 캐시노트] }
+  - { name: 페이히어, home: https://www.payhere.in, group: 핀테크 }
+  - { name: 코리아크레딧뷰로, home: https://www.koreacb.com, group: 핀테크, aka: [KCB] }
+  - { name: 미래에셋증권, home: https://securities.miraeasset.com, group: 금융 }
+  - { name: 키움증권, home: https://www.kiwoom.com, group: 금융 }
+  # 게임
+  - { name: 넥슨, home: https://www.nexon.com, group: 게임, aka: [NEXON, 넥슨코리아] }
+  - { name: 엔씨소프트, home: https://www.ncsoft.com, group: 게임, aka: [NCSOFT] }
+  - { name: 넷마블, home: https://company.netmarble.com, group: 게임, aka: [Netmarble] }
+  - { name: 크래프톤, home: https://www.krafton.com, group: 게임, aka: [KRAFTON] }
+  - { name: 스마일게이트, home: https://www.smilegate.com, group: 게임, aka: [Smilegate] }
+  - { name: 펄어비스, home: https://www.pearlabyss.com, group: 게임, aka: [Pearl Abyss] }
+  - { name: 컴투스, home: https://www.com2us.com, group: 게임, aka: [Com2uS] }
+  - { name: 위메이드, home: https://www.wemade.com, group: 게임, aka: [WEMADE] }
+  - { name: 카카오게임즈, home: https://www.kakaogamescorp.com, group: 게임 }
+  - { name: 데브시스터즈, home: https://www.devsisters.com, group: 게임, aka: [Devsisters] }
+  - { name: 시프트업, home: https://shiftup.co.kr, group: 게임, aka: [SHIFT UP] }
+  - { name: 네오위즈, home: https://www.neowiz.com, group: 게임 }
+  - { name: 그라비티, home: https://www.gravity.co.kr, group: 게임 }
+  - { name: 베이글코드, home: https://www.bagelcode.com, group: 게임, aka: [Bagelcode] }
+  # 클라우드·인프라·보안·B2B
+  - { name: 네이버클라우드, home: https://www.navercloudcorp.com, group: 클라우드, aka: [NAVER Cloud] }
+  - { name: NHN, home: https://www.nhn.com, group: 클라우드 }
+  - { name: NHN Cloud, home: https://www.nhncloud.com, group: 클라우드, aka: [NHN클라우드] }
+  - { name: KT클라우드, home: https://www.ktcloud.com, group: 클라우드, aka: [kt cloud] }
+  - { name: 카카오엔터프라이즈, home: https://www.kakaoenterprise.com, group: 클라우드, aka: [Kakao Enterprise] }
+  - { name: 가비아, home: https://www.gabia.com, group: 클라우드 }
+  - { name: 메가존클라우드, home: https://www.megazone.com, group: 클라우드, aka: [Megazone] }
+  - { name: 베스핀글로벌, home: https://www.bespinglobal.com, group: 클라우드, aka: [BESPIN GLOBAL] }
+  - { name: 티맥스소프트, home: https://www.tmax.co.kr, group: 인프라 SW, aka: [TmaxSoft] }
+  - { name: 래블업, home: https://www.lablup.com, group: 인프라 SW, aka: [Lablup] }
+  - { name: 안랩, home: https://www.ahnlab.com, group: 보안, aka: [AhnLab] }
+  - { name: 지니언스, home: https://www.genians.co.kr, group: 보안 }
+  - { name: 파수, home: https://www.fasoo.com, group: 보안, aka: [Fasoo] }
+  - { name: 스패로우, home: https://www.sparrowfasoo.com, group: 보안 }
+  - { name: 와탭랩스, home: https://www.whatap.io, group: 인프라 SW, aka: [WhaTap] }
+  - { name: 엑셈, home: https://www.ex-em.com, group: 인프라 SW, aka: [EXEM] }
+  - { name: 몰로코, home: https://www.moloco.com, group: 애드테크, aka: [Moloco] }
+  - { name: 버즈빌, home: https://www.buzzvil.com, group: 애드테크, aka: [Buzzvil] }
+  - { name: 데이블, home: https://dable.io, group: 애드테크, aka: [Dable] }
+  - { name: 에이비일팔공, home: https://ab180.co, group: 애드테크, aka: [AB180] }
+  # AI
+  - { name: 업스테이지, home: https://www.upstage.ai, group: AI, aka: [Upstage] }
+  - { name: 뤼이드, home: https://riiid.com, group: AI, aka: [Riiid] }
+  - { name: 루닛, home: https://www.lunit.io, group: AI, aka: [Lunit] }
+  - { name: 뷰노, home: https://www.vuno.co, group: AI, aka: [VUNO] }
+  - { name: 트웰브랩스, home: https://www.twelvelabs.io, group: AI, aka: [TwelveLabs] }
+  - { name: 스캐터랩, home: https://scatterlab.co.kr, group: AI, aka: [Scatter Lab] }
+  - { name: 퓨리오사AI, home: https://furiosa.ai, group: AI, aka: [FuriosaAI] }
+  - { name: 리벨리온, home: https://rebellions.ai, group: AI, aka: [Rebellions] }
+  - { name: 마키나락스, home: https://www.makinarocks.ai, group: AI, aka: [MakinaRocks] }
+  - { name: 베슬에이아이, home: https://vessl.ai, group: AI, aka: [VESSL AI] }
