@@ -62,7 +62,7 @@ Find companies that rarely post on job boards and post only on their own career 
 
 **Not used:** JobPlanet and Kreditjob block all crawlers in `robots.txt` (`Disallow: /`), and Catch blocks company pages (`/Company`). A person browsing them and writing into `company_seed.yaml` is fine.
 
-**Score (recognition · size):** salary top 1% 3.5 · 6–10% 2.0 · 11–20% 1.0; headcount 1,001+ 2.0 · 301–1,000 1.5 · 51–300 0.5; known-company list 2.0; tech blog 1.5; GitHub org 1.0 (+0.5 at 100+ followers). By default probe at 2.5+ and add at 3.0+.
+**Score (recognition · size):** salary top 1% 3.5 · 6–10% 2.0 · 11–20% 1.0; headcount 1,001+ 2.0 · 301–1,000 1.5 · 51–300 0.5; known-company list 2.0; tech blog 1.5; GitHub org 1.0 (+0.5 at 100+ followers). By default probe at 2.5+. `promote` adds auto-collected companies (verified ATS) at 2.5+ and browser-only ones at 4.0+, since each browser site costs manual work every scan. Companies in the known-company list are added regardless of score: firms that post only on their own site have no Wanted salary/headcount data, so their score runs low exactly where they matter most.
 
 **Finding the career site (probe):** (Python 3.9 urllib doesn't follow 308 redirects, so `jobkit.http_get` handles them itself.) Find a "채용 · Careers · Recruit · Jobs" link on the homepage, open it, and identify the ATS from URL and HTML (greetinghr · ninehire · Greenhouse · Lever · recruiter.co.kr · Notion · in-house). For an ATS the scripts handle, actually fetch the posting list (`verified: posting count`) and add only verified ones to automatic collection. The rest get `method: browser`.
 
@@ -73,6 +73,6 @@ python3 scripts/discover.py report             # candidate table
 python3 scripts/discover.py promote --dry-run  # preview companies to add → after user confirmation, run without --dry-run
 ```
 
-**Not found from the homepage:** for sites whose links are drawn by script or that block bots (403), list them with `discover.py missing`, find the career site URL with Firecrawl (`firecrawl_search "{회사} 채용"`, or WebSearch without it), and feed a `회사<TAB>URL<TAB>출처` file to `discover.py set <file>`. The script does ATS detection and list verification. For a company with no career site, put `-` in the URL slot.
+**Not found from the homepage:** for sites whose links are drawn by script or that block bots (403), list them with `discover.py missing`, find the career site URL with Firecrawl (`firecrawl_search "{회사} 채용"`, or WebSearch without it; the free plan returns 429 past ~3 requests at once, so send 2–3 at a time), and feed a `회사<TAB>URL<TAB>출처` file to `discover.py set <file>`. The script does ATS detection and list verification. For a company with no career site, put `-` in the URL slot.
 
 `status` (후보 · 추가 · 제외) and `memo` in `data/search/companies.yaml` may be edited by hand and survive the next run. Skip companies the user won't apply to (`blacklist.md`) and affiliates that use a career site already being collected.

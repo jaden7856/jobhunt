@@ -357,7 +357,8 @@ def cmd_promote(a):
     supported = {n: prov for n, _, prov in ATS if prov}
     add = []
     for c in sorted(reg.values(), key=lambda c: -c.get("tier", 0)):
-        if c["status"] != "후보" or c.get("tier", 0) < a.min or not c.get("careers") or c["key"] in have:
+        known = bool(c["signals"].get("known"))   # company_seed.yaml 의 유명 회사는 점수와 상관없이 넣는다
+        if c["status"] != "후보" or (c.get("tier", 0) < a.min and not known) or not c.get("careers") or c["key"] in have:
             continue
         if K.company_in(c["name"], black, exact=True):     # 지원하지 않을 회사 (blacklist.md)
             c["status"] = "제외"
@@ -366,7 +367,7 @@ def cmd_promote(a):
             c["status"] = "추가"
             continue
         auto = c.get("verified") is not None or (c.get("ats") == "greenhouse" and "greenhouse.io" in c["careers"])
-        if not auto and c.get("tier", 0) < a.min_browser:
+        if not auto and c.get("tier", 0) < a.min_browser and not known:
             continue
         e = dict(name=c["name"], careers_url=c["careers"], priority=True, found_by="discover.py " + K.TODAY)
         if c.get("ats") == "greenhouse":
@@ -401,7 +402,7 @@ def main(argv=None):
     p = sub.add_parser("missing"); p.add_argument("--min", type=float, default=2.5)
     p = sub.add_parser("set"); p.add_argument("file")
     p = sub.add_parser("promote"); p.add_argument("--min", type=float, default=2.5, help="자동 수집(검증된 채용 시스템) 최소 점수")
-    p.add_argument("--min-browser", type=float, default=4.0, help="브라우저 수집 최소 점수 (매번 손이 가서 더 높게)")
+    p.add_argument("--min-browser", type=float, default=4.0, help="브라우저 수집 최소 점수 (매번 손이 가서 더 높게, 유명 회사 목록은 예외)")
     p.add_argument("--dry-run", action="store_true")
     a = ap.parse_args(argv)
     return {"collect": cmd_collect, "probe": cmd_probe, "report": cmd_report, "promote": cmd_promote,
