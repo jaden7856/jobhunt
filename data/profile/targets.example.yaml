@@ -23,6 +23,7 @@ location:
 
 gates:            # 하나라도 걸리면 제외. 근거 문장을 남긴다
   english_required: exclude     # 영어 필수·영어 면접·영어 전용 공고
+  foreign_language_required: exclude   # 일본어 등 다른 외국어 필수
   stack: "경험 없는 언어(예: Go, Python)를 '필수'로 요구하면 제외. 우대에만 있으면 통과"
   employment: [SI, 파견, 고객사 상주]
   years: { min: 2, max: 8 }     # 요구 연차가 이 범위를 벗어나면 제외
@@ -47,3 +48,4 @@ scoring:
   core_gap_caps: { 1: 3.4, 2: 2.9 }   # 필수 요건 핵심 빈틈 개수 → 점수 상한
   core_alt: { value: 1.75, cap_plus: 0.2 }   # 핵심 빈틈이지만 공고가 '이에 준하는 경험'을 인정할 때
   low_work_cap: { below: 2.5, cap: 3.9 }     # 업무 대부분이 처음이면 지원 권장까지 가지 않음
+  avoid_cap: 3.4                             # 주 업무 방향이 avoid_work 면 보류까지

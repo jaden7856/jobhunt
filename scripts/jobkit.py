@@ -258,6 +258,22 @@ def pipeline_urls() -> set:
     return set(URL_RE.findall(read_text(P["pipeline"])))
 
 
+def dup_keys(company: str, title: str) -> set:
+    """같은 공고를 다른 사이트에서 만났는지 보는 (회사, 포지션) 키들.
+    회사는 괄호 안·밖 표기를 모두 후보로 ("에이비일팔공(AB180)" ↔ "AB180").
+    포지션은 기호·공백과 '채용·모집·영입', 맨 앞 [회사명] 꼬리표만 뗀다 — 괄호 안 팀 이름은 남겨 다른 공고가 합쳐지지 않게."""
+    s = company or ""
+    parts = re.findall(r"\((.*?)\)", s) + re.split(r"\s+[-–|/]\s+", re.sub(r"\(.*?\)", "", s))   # "AB180 - 에이비일팔공" (LinkedIn)
+    cos = {norm_company(s)} | {norm_company(p) for p in parts}
+    cos.discard("")
+    t = title or ""
+    m = re.match(r"\s*\[([^\]]+)\]\s*", t)
+    if m and (norm_company(m.group(1)) in cos or _norm_raw(m.group(1)) in _norm_raw(s)):
+        t = t[m.end():]
+    t = re.sub(r"[^0-9a-z가-힣]", "", re.sub(r"채용|모집|영입", "", t.lower()))
+    return {(c, t) for c in cos}
+
+
 def pipeline_keys() -> set:
     """pipeline.md 체크리스트 줄의 (회사, 포지션). 다른 사이트에 같은 공고가 올라온 경우를 거른다."""
     keys = set()
@@ -265,7 +281,7 @@ def pipeline_keys() -> set:
         if line.lstrip().startswith("- ["):
             c = [x.strip() for x in line.split(" | ")]
             if len(c) > 2:
-                keys.add((norm_company(c[1]), c[2].lower()))
+                keys |= dup_keys(c[1], c[2])
     return keys
 
 

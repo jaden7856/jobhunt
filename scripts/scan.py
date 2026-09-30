@@ -65,7 +65,7 @@ def main(argv=None):
     cf = sources.get("career_filter") or {}
 
     seen = {r["url"] for r in K.read_history()} | K.pipeline_urls()
-    tracked = {(K.norm_company(r["company"]), r["role"].lower()) for r in K.read_tracker()} | K.pipeline_keys()
+    tracked = {k for r in K.read_tracker() for k in K.dup_keys(r["company"], r["role"])} | K.pipeline_keys()
     cool = K.cooldown_companies(int(targets.get("reapply_days", 183)))
     black = K.blacklist_companies()
 
@@ -82,9 +82,9 @@ def main(argv=None):
         n_new = 0
         for j in jobs:
             status = None
-            key = (K.norm_company(j.company), j.title.lower())
+            keys = K.dup_keys(j.company, j.title)
             url_seen = j.url in seen
-            if url_seen or key in tracked or key in batch_keys:
+            if url_seen or keys & tracked or keys & batch_keys:
                 status = "skipped_dup"      # 다른 사이트에 올라온 같은 공고도 URL은 기록해 둔다 (다음 실행에서 다시 안 나오게)
             elif K.title_ok(j.title, tf):
                 status = "skipped_title"
@@ -98,7 +98,7 @@ def main(argv=None):
                 status = "skipped_cooldown"
             elif a.seed:
                 status = "seeded"
-            batch_keys.add(key)
+            batch_keys |= keys
             if not url_seen:
                 seen.add(j.url)
                 hist.append(dict(url=j.url, first_seen=K.TODAY, portal=j.source, title=j.title, company=j.company,

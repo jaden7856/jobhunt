@@ -82,7 +82,7 @@ note: "한 줄 근거"
 
 ```
 score = work×0.30 + required×0.30 + preferred×0.10 + direction×0.30 + sum of signals (+ priority bonus)
-      → clamp to 1–5 → cap for required core gaps → cap 3.9 if work fit is below 2.5 → one decimal
+      → clamp to 1–5 → cap for required core gaps → cap 3.9 if work fit is below 2.5 → cap 3.4 if `direction.primary` is an `avoid_work` key (`avoid_cap`; a product-API job whose generic requirements all read "met" shouldn't reach a recommendation) → one decimal
 ```
 
 Change weights, bonuses, and caps in `scoring` of `targets.yaml`.

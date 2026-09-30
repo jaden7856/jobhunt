@@ -22,7 +22,7 @@ Collect postings from job sites, screen them once, and queue them in `data/searc
 2. **First filter** (the script does this; do it by hand, from title and metadata only, just for channels collected by hand):
    - Title: must contain one of `title_filter.positive`; contains a `negative` → exclude.
    - Location: `location_filter.block` → exclude. If unclear, pass it and mark `[근무지 확인 필요]`.
-   - Duplicates: skip if the url is in `scan-history.tsv`, `pipeline.md`, or `tracker.md`. The same company + same position title also counts as a duplicate.
+   - Duplicates: skip if the url is in `scan-history.tsv`, `pipeline.md`, or `tracker.md`. The same company + same position title also counts as a duplicate (`jobkit.dup_keys`: company matched by any of its spellings — inside/outside parentheses, `A - B`; title compared without symbols, spaces, 채용·모집·영입, or a leading `[company]` tag. Team names in parentheses are kept so different openings don't merge).
    - Excluded companies (`blacklist.md`); reapply cooldown (a company within `reapply_days` of `targets.yaml` after a `지원함` in `tracker.md`).
    - Years: if the posting states a number of years, apply `career_filter` from `sources.yaml`.
 3. **Fetch bodies.** Fetch the full detail (qualifications, preferred, main tasks) of the remaining postings. Expand umbrella postings down to their sub-positions (for Toss the script gathers sub-links at the end of the body).

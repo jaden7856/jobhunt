@@ -101,6 +101,10 @@ def score(j: dict, cfg: dict) -> dict:
     if work < float(low["below"]) and total > float(low["cap"]):
         caps.append(f"업무 적합 {work:.1f} < {low['below']} → 상한 {low['cap']}")
         total = float(low["cap"])
+    avoid_cap = float(cfg.get("avoid_cap", 3.4))                 # 주 업무가 피하고 싶은 일이면 요건이 다 맞아도 보류까지
+    if kind(d.get("primary")) < 0 and total > avoid_cap:
+        caps.append(f"주 업무 방향 '{d.get('primary')}' → 상한 {avoid_cap}")
+        total = avoid_cap
     total = round(total, 1)
     verdict, triage = next((v, t) for lim, v, t in VERDICTS if total >= lim)
     return dict(total=total, verdict=verdict, triage=triage, parts=parts, bonus=bonus, caps=caps, gate=[])
