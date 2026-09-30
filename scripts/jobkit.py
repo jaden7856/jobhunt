@@ -336,7 +336,7 @@ def cooldown_companies(reapply_days: int) -> Dict[str, str]:
     """지원 이후 reapply_days 가 지나지 않은 회사 → 쿨다운 종료일."""
     out = {}
     for r in read_tracker():
-        if r["state"] in ("지원함", "서류합격", "면접", "불합격"):
+        if r["state"] in ("지원함", "서류합격", "면접", "불합격") and "쿨다운 제외" not in r["memo"]:   # 다른 직무 재지원이 되는지 확인 중인 회사
             try:
                 d = datetime.strptime(r["date"], "%Y-%m-%d").date()
             except ValueError:

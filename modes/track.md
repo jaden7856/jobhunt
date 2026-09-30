@@ -44,6 +44,6 @@ The state cell holds the state value alone (no bold, date, or explanation). Expl
 ## Rules
 
 - When the user says they applied, run `tracker.py set <번호> 지원함` immediately. The script moves that posting in pipeline.md to "지원 완료 — 재지원 쿨다운".
-- Reapply cooldown: within `reapply_days` of `targets.yaml` (default 183 days) after `지원함`, the same company's postings are dropped from scan (`scan.py` does it automatically).
+- Reapply cooldown: within `reapply_days` of `targets.yaml` (default 183 days) after `지원함`, the same company's postings are dropped from scan (`scan.py` does it automatically). If the user was rejected for one role and doesn't yet know whether the company accepts applications to a different role, write `쿨다운 제외` in that row's memo — the company's other postings stay in the queue — and add "재지원 가능 여부 확인 필요" to those postings' judgment notes.
 - When a result (`서류합격`, `불합격`, …) comes in, compare it with that posting's `.eval.md` score. Once mismatches pile up (high score but rejected, low score but passed; 3+ cases), propose adjusting the screening criteria, and if accepted write it into `targets.yaml` and `brief.md`.
 - Rows are permanent. A row added by mistake gets state `제외` with the reason in the memo.
