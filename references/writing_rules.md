@@ -1,79 +1,79 @@
-# 문장 규칙
+# Sentence rules
 
-기계로 잡을 수 있는 항목은 `scripts/check.py` 가 `style_rules.yaml` 을 읽어 검사한다. 나머지는 작성 후 사람이 읽고 점검한다.
+What a machine can catch, `scripts/check.py` checks by reading `style_rules.yaml`. The rest is checked by reading after writing.
 
-## 말투
+## Tone
 
-| 위치 | 말투 | 예 |
+| Where | Tone | Example |
 |---|---|---|
-| SUMMARY 첫 문단 | `~합니다`체 | "Go 백엔드 개발자 5년차입니다. … 외부 API 연동 최적화를 담당하고 있습니다." |
-| SUMMARY 불릿, 프로젝트 본문, OTHER | 짧게 끊는 말투 (명사형, `~함`) | "외부 API 호출 2,000회 → 20회. 인증 세션 중앙화" |
+| SUMMARY first paragraph | `~합니다` style | "Kotlin 백엔드 개발자 4년차입니다. … 주문·정산 서버 개발을 담당하고 있습니다." |
+| SUMMARY bullets, project text, OTHER | clipped style (noun endings, `~함`) | "주문 API p99 820ms → 240ms. 재고 조회 N+1 제거" |
 
-전: "Go 백엔드 개발자 5년차. … 외부 API 연동 최적화를 담당."
-후: "Go 백엔드 개발자 5년차입니다. … 외부 API 연동 최적화를 담당하고 있습니다."
+Before: "Kotlin 백엔드 개발자 4년차. … 주문·정산 서버 개발을 담당."
+After: "Kotlin 백엔드 개발자 4년차입니다. … 주문·정산 서버 개발을 담당하고 있습니다."
 
-## 기호 (자동 검사)
+## Symbols (auto-checked)
 
-- `—`, `·`, `→` 는 한 불릿에 각각 1개까지.
-- `→` 는 수치 전후 비교에만 쓴다 (`2,000회 → 20회`). 흐름·순서 설명에 쓰지 않는다.
-- SKILLS 나열과 기술 칩은 예외.
+- `—`, `·`, `→` at most once each per bullet.
+- `→` only for before/after numbers (`820ms → 240ms`); describe flow and sequence in words.
+- SKILLS lists and tech chips are exempt.
 
-## 금지어 (자동 검사, 오류)
+## Banned words (auto-checked, error)
 
 고도화, 극대화, 체계적, 효율적, 원활한, 다양한, 핵심, 혁신, 견고한, 선제적, 확보, ~을 통해, ~기반으로, 단순히 ~가 아니라
 
-## 번역투·영어 개념어 (자동 검사, 경고)
+## Translationese and English concept words (auto-checked, warning)
 
-쉬운 우리말이 있으면 바꾼다: fence, durable claim, 성립, 봉인, 격리, 일원 관리 …
-정확한 기술 용어는 둔다: CAS, gRPC, context, goroutine, lease …
-목록은 `style_rules.yaml` 의 `translationese` 에 더한다.
+Where plain Korean exists, switch to it: fence, durable claim, 성립, 봉인, 격리, 일원 관리 …
+Keep precise technical terms: CAS, gRPC, context, goroutine, lease …
+Add to the list under `translationese` in `style_rules.yaml`.
 
-## 회사 밖 사람이 읽는 글 (자동 검사, 경고)
+## Writing for readers outside the company (auto-checked, warning)
 
-이력서는 우리 회사를 모르는 사람이 읽는다. 사내에서만 통하는 이름은 하는 일로 풀어 쓴다.
+A resume is read by people who don't know the user's company. Rewrite names that only mean something in-house as what the thing does.
 
-- 함수·타입·필드 이름: `WatchOrderProgress`, `PublishWithAck`, `SessionKeeper`, `LastSyncedAt`
-- 사내 서비스·모듈 이름: orderd, hub, relay
-- 안에서만 쓰는 숫자: 앞뒤 설명 없이 던진 개수("검사 지점 17곳")는 요약에서 뺀다. 본문에서 무엇의 개수인지 설명할 때만 쓴다.
+- function · type · field names: `WatchOrderProgress`, `PublishWithAck`, `SessionKeeper`, `LastSyncedAt`
+- in-house service and module names: orderd, hub, relay
+- in-house-only numbers: a count thrown in without context ("검사 지점 17곳") comes out of the summary. Use it only in the body where it says what is being counted.
 
-| 전 | 후 |
+| Before | After |
 |---|---|
 | gRPC 서버 스트림 `WatchOrderProgress` 하나로 통합 | gRPC 서버 스트림 함수 하나로 통합 |
 | orderd가 상태 변경을 발행하고 hub가 메모리에 유지 | 주문 서비스가 상태 변경을 발행하고 조회 서비스가 메모리에 유지 |
 | 전용 SessionKeeper로 모아 | 전용 세션 관리자로 모아 |
 
-공개 라이브러리·표준 이름(`goccy/go-json`, `go/parser`, WaitGroup, ConfigMap, Keystone)은 그대로 둔다. 자동 검사는 CamelCase 이름과 백틱 안 단어 하나짜리 이름을 경고로 잡고, 공개 이름은 `style_rules.yaml` 의 `internal_names.allow` 에 더한다. 소문자 서비스 이름은 사람이 점검한다.
+Public library and standard names (`jackson-databind`, `kotlinx.coroutines`, WebSocket, GitHub) stay as they are. The auto-check warns on CamelCase names and single-word names in backticks; add public names to `internal_names.allow` in `style_rules.yaml`. Lowercase service names are checked by reading.
 
-## 괄호 (자동 검사, 경고)
+## Parentheses (auto-checked, warning)
 
-괄호는 뜻을 더해 줄 때만 쓴다. 한국어 뒤에 같은 뜻 영어를 붙이는 괄호는 뺀다. 개발 용어 하나로 통하면 영어만 써도 된다.
+Use parentheses only when they add meaning. Drop parentheses that append the same meaning in English after Korean. If one developer term carries it, English alone is fine.
 
-| 전 | 후 |
+| Before | After |
 |---|---|
 | 정해진 점검 시간(maintenance window) 안에 | 정해진 점검 시간 안에 |
 | 공통 설정(configuration) 파일 | 공통 설정 파일 |
 
-둔다: `결제 로직(SDK)과 호출부(gRPC Client)를 분리` — 괄호가 각 부분이 실제로 무엇인지 알려 준다.
+Keep: `결제 모듈(PG사 SDK)과 호출부(주문 서비스)를 분리` — the parentheses say what each part actually is.
 
-## 사람이 점검할 것
+## Checked by reading
 
-- 한 문장에 수식어를 여러 개 이어 붙이지 않았나.
-- 항상 셋씩 나열하는 리듬이 되지 않았나 ("A, B, C로 D, E, F를").
-- 모든 불릿이 같은 길이·같은 구조가 아닌가. 길이와 모양을 섞는다.
-- 판단 기준: 본인이 면접에서 말로 설명할 때 실제로 쓰는 단어인가.
+- One modifier per phrase, not a chain of them.
+- Vary list lengths instead of a steady rhythm of three ("A, B, C로 D, E, F를").
+- Vary bullet length and shape.
+- Test: is it a word the user would actually say when explaining this aloud in an interview?
 
-## 점검 결과 보여주기
+## Showing check results
 
-걸린 문장은 사용자에게 수정 전·후를 나란히 보여주고 확인을 받는다.
+Show the user every flagged sentence before and after, side by side, and get confirmation.
 
 ```
 [projects[0].rows[3].bullets[1]] 상투어 '확보'
-  전: 분산 락 없이 cross-pod 정합성 확보
-  후: 분산 락 없이 여러 Pod 사이 상태를 맞춤
+  전: 분산 락 없이 여러 서버 간 재고 정합성 확보
+  후: 분산 락 없이 여러 서버의 재고 수량을 맞춤
 ```
 
-## 사실 규칙
+## Fact rules
 
-- 자료에 없는 수치나 사실은 만들지 않는다.
-- 추론으로 채운 문장은 앞에 `[확인 필요]` 를 붙인다. 사용자가 확인하면 태그를 지우고, 틀리면 고치거나 뺀다.
-- `[확인 필요]` 가 하나라도 남으면 검사에서 오류로 잡혀 확정본이 되지 않는다.
+- No number or fact that isn't in the material.
+- Prefix sentences filled by inference with `[확인 필요]`. When the user confirms, remove the tag; if wrong, fix or drop the sentence.
+- Any remaining `[확인 필요]` is an error in the check, so the resume can't be finalized.

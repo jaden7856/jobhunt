@@ -7,11 +7,11 @@ symbol_limits:
   "·": 1
   "→": 1
 
-# 괄호 안의 기술 나열(instance·network·router …)은 기호 개수에서 뺀다 (2026-09-29)
+# 괄호 안의 기술 나열(Redis·Kafka·MySQL …)은 기호 개수에서 뺀다 (2026-09-29)
 symbol_ignore_parens: true
 
 # 수치가 아니어도 허용하는 '→': ASCII 이름끼리의 전환(버전·라이브러리 교체). 허용한 '→'는 개수에서도 뺀다 (2026-09-29)
-#   예: Go 1.14 → 1.19, go-micro v2 → v4, jinzhu/gorm → gorm.io v2, streadway/amqp → amqp091
+#   예: Java 8 → 17, Spring Boot 2 → 3, javax.persistence → jakarta.persistence
 arrow_allow:
   - "[A-Za-z0-9_./-]+(?: [vV]?[0-9][\\w.]*)? → [A-Za-z0-9_./-]+(?: [vV]?[0-9][\\w.]*)?"
 
@@ -54,7 +54,7 @@ internal_names:
 
 # 쓸데없는 괄호 풀이: 경고. 한국어 뒤에 같은 뜻 영어를 괄호로 붙이지 않는다 (2026-09-30)
 #   전: 점검 시간(maintenance window)  후: 점검 시간  (영어 용어 하나로 통하면 영어만 써도 된다)
-#   뜻을 더해 주는 괄호는 둔다: 결제 로직(SDK)과 호출부(gRPC Client)를 분리
+#   뜻을 더해 주는 괄호는 둔다: 결제 모듈(PG사 SDK)과 호출부(주문 서비스)를 분리
 gloss_parens: "[가-힣]+\\((?:[a-z][a-z-]*)(?: [a-z][a-z-]*)*\\)"
 
 # 남아 있으면 제출 불가 (error)

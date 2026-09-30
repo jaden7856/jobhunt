@@ -1,79 +1,78 @@
-# 채용 사이트별 수집 방법
+# Per-site collection methods
 
-사이트 공통 사실만 적는다(엔드포인트, 본문 위치, 마감 판정). 개인 검색 조건은 `data/search/sources.yaml`.
-실측 날짜를 붙인다. 형식이 바뀌면 여기를 고치고 날짜를 갱신한다.
-`scripts/providers/`가 자동으로 다루는 곳: 원티드, 점핏, LinkedIn, Greenhouse, 토스, NHN, 카카오, 네이버 계열, 우아한형제들, 라인, greetinghr(`__NEXT_DATA__` 있는 곳, 회사 도메인에 붙인 것 포함), 나인하이어. 나머지는 Claude가 이 문서대로 직접 수집한다.
-수집할 회사를 넓히는 방법은 아래 "회사 찾기".
+Only site-wide facts go here (endpoints, body location, closing check). Personal search conditions live in `data/search/sources.yaml`.
+Date every measurement. When a format changes, fix it here and update the date.
+Handled automatically by `scripts/providers/`: Wanted, Jumpit, LinkedIn, Greenhouse, Toss, NHN, Kakao, the Naver group, Woowa Brothers, LINE, greetinghr (sites with `__NEXT_DATA__`, including ones on a company domain), ninehire. Claude collects the rest by hand following this document.
+To widen the set of companies collected, see "Company discovery" below.
 
-## 공통 규칙
+## Common rules
 
-- **직군 전체를 받고 본문으로 판정한다.** 검색어를 특정 언어(예: Go)로 좁히면 언어를 특정하지 않은 좋은 공고가 빠진다. 서버·백엔드·플랫폼·DevOps·Systems 같은 직군어로 받고, 언어·연차 조건은 평가 단계에서 자격요건 본문으로 판정한다. (2026-09-23 누락 사고 후)
-- **요청 간격을 둔다.** 같은 사이트에 1초 이상, LinkedIn은 1.5초 이상. 429가 나면 멈추고 다음 실행으로 넘긴다.
-- **마감 판정은 상세 페이지·상세 API로.** "공개 목록에 없다"는 마감이 아니다(우산 공고 기간에는 하위 포지션이 목록에서 숨겨진다).
-- **검색엔진 `site:` 검색은 보조 수단.** 결과가 비거나 목록 페이지만 나오는 경우가 많다. 가능하면 아래 JSON 경로를 쓴다.
-- 비공식 엔드포인트는 개인 용도로만 쓰고, 응답 형식이 바뀌면 조용히 0건이 되지 않도록 "응답 형식 변경"으로 보고한다.
+- **Fetch the whole job family and judge by body.** Narrowing the search to one language (e.g. Go) drops good postings that name no language. Fetch by job-family words (server, backend, platform, DevOps, Systems) and judge language and years conditions from the qualification text at evaluation time. (After the 2026-09-23 miss)
+- **Space out requests.** 1s+ per site, 1.5s+ for LinkedIn. On 429, stop and leave it for the next run.
+- **Judge closing from the detail page or detail API.** "Not in the public list" does not mean closed (during umbrella postings, sub-positions are hidden from the list).
+- **Search-engine `site:` queries are a fallback.** They often come back empty or list-pages only. Prefer the JSON paths below.
+- Use unofficial endpoints for personal use only, and when a response shape changes, report it as "응답 형식 변경" so it never silently turns into 0 results.
 
-## 채용 플랫폼
+## Job platforms
 
-| 사이트 | 목록 | 상세 (자격요건 본문) | 실측 |
+| Site | List | Detail (qualification text) | Measured |
 |---|---|---|---|
-| 원티드 | `https://www.wanted.co.kr/api/chaos/navigation/v1/results?job_group_id=518&job_ids=872\|674\|10110&years={연차}` (872 서버 개발자 · 674 DevOps · 10110 소프트웨어 엔지니어 — 백엔드 공고가 10110에만 달린 경우가 있다, 2026-09-30) 또는 `/api/v4/jobs?country=kr&tag_type_ids=872&job_sort=job.latest_order&limit=..&offset=..` | `/api/v4/jobs/{id}` → `job.detail.{requirements, main_tasks, preferred_points, intro, benefits}`, 마감은 `job.status`(active/close), 연봉은 `annual_from/to`. 키워드 검색(`/api/chaos/search/v1/results?query=`)은 결과가 적어 목록 API를 쓴다 | 2026-09-29 |
-| 점핏 | `https://jumpit-api.saramin.co.kr/api/positions?keyword=..&page=N` (`jobCategory=1` 서버/백엔드) | `/api/position/{id}` → `qualifications`. 마감일 필드로 지난 공고를 거른다 | 2026-09-29 |
-| 사람인 | 검색 페이지 `/zf_user/search/recruit?searchword=..` (HTML) | `relay/view`가 아니라 `/zf_user/jobs/relay/view-detail?rec_idx={id}&rec_seq=0` 을 받아야 본문이 나온다 | 2026-09-23 |
-| 잡코리아 | 검색 페이지 `/Search/?stext=..` (HTML, 목록일 뿐 공고 아님) | `/Recruit/GI_Read/{id}`. 페이지에서 마감일을 정규식으로 뽑으면 엉뚱한 문구가 잡힌다(2026-09-01) → 본문의 접수 기간을 직접 읽는다 | 2026-09-23 |
-| LinkedIn | `linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=..&location=Seoul, South Korea&f_TPR=r2592000&start=N` | `/jobs-guest/jobs/api/jobPosting/{id}`. 숫자 ID만으로 `jobs/view/{id}` URL을 다시 만들면 전부 마감처럼 보인다(2026-09-01) → 검색 결과의 전체 URL을 그대로 쓴다. 한국어 JD만 채택(본문 한글 비율로 판정). 수집 직후엔 429가 잦아 10초 쉬고 재시도. 마감은 상세가 404이거나 "No longer accepting applications" | 2026-09-29 |
-| 리멤버 | `https://career.rememberapp.co.kr/job/postings?search=..` (브라우저로 열어 읽음, 검색엔진 색인 없음) | 브라우저 | 2026-09-01 |
-| 프로그래머스 커리어 | 도메인 없음 | — | 2026-09-29 |
+| Wanted | `https://www.wanted.co.kr/api/chaos/navigation/v1/results?job_group_id=518&job_ids=872\|674\|10110&years={연차}` (872 server developer · 674 DevOps · 10110 software engineer — some backend postings are tagged only 10110, 2026-09-30) or `/api/v4/jobs?country=kr&tag_type_ids=872&job_sort=job.latest_order&limit=..&offset=..` | `/api/v4/jobs/{id}` → `job.detail.{requirements, main_tasks, preferred_points, intro, benefits}`; closing is `job.status` (active/close); salary is `annual_from/to`. Keyword search (`/api/chaos/search/v1/results?query=`) returns few results, so use the list API | 2026-09-29 |
+| Jumpit | `https://jumpit-api.saramin.co.kr/api/positions?keyword=..&page=N` (`jobCategory=1` server/backend) | `/api/position/{id}` → `qualifications`. Filter past postings by the deadline field | 2026-09-29 |
+| Saramin | search page `/zf_user/search/recruit?searchword=..` (HTML) | fetch `/zf_user/jobs/relay/view-detail?rec_idx={id}&rec_seq=0`, not `relay/view`, to get the body | 2026-09-23 |
+| JobKorea | search page `/Search/?stext=..` (HTML; a list, not postings) | `/Recruit/GI_Read/{id}`. Regex-extracting the deadline from the page catches the wrong text (2026-09-01) → read the application period in the body directly | 2026-09-23 |
+| LinkedIn | `linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=..&location=Seoul, South Korea&f_TPR=r2592000&start=N` | `/jobs-guest/jobs/api/jobPosting/{id}`. Rebuilding a `jobs/view/{id}` URL from the numeric ID makes everything look closed (2026-09-01) → use the full URL from the search result as is. Keep Korean JDs only (judged by the Hangul ratio of the body). 429s are frequent right after collection; wait 10s and retry. Closed if the detail is 404 or says "No longer accepting applications" | 2026-09-29 |
+| Remember | `https://career.rememberapp.co.kr/job/postings?search=..` (open and read in a browser; not indexed by search engines) | browser | 2026-09-01 |
+| Programmers Career | domain gone | — | 2026-09-29 |
 
-사람인 공식 OpenAPI(`oapi.saramin.co.kr`)는 접근 키가 필요하다.
+Saramin's official OpenAPI (`oapi.saramin.co.kr`) needs an access key.
 
-## 기업 채용 사이트
+## Company career sites
 
-| 회사 | 방법 | 주의 | 실측 |
+| Company | Method | Notes | Measured |
 |---|---|---|---|
-| Greenhouse 쓰는 회사 (당근, 쿠팡, 크래프톤 등) | `https://boards-api.greenhouse.io/v1/boards/{보드}/jobs?content=true` | 공식 공개 API | 2026-09-29 |
-| 토스 (전 계열사) | 목록 `https://api-public.toss.im/api/v3/ipd-eggnog/career/jobs` | 본문은 `content`가 아니라 `metadata` 중 이름에 "Job Description"이 들어간 필드(마크다운). "집중 채용" 같은 우산 공고는 본문의 하위 포지션 링크(`grnh.se/…`, `job_id=`)를 모두 펼쳐 각각 판정하고, 보통 하위 중 1개만 지원 가능. 마감 판정: `toss.im/career/job-detail?job_id=` 가 200이고 `<title>`에 포지션명이 있으면 활성, 404면 마감. HTML 본문은 `</head>` 뒤 "합류하게 될 팀 / 이런 분과 함께하고 싶어요" 섹션 | 2026-09-23 |
-| NHN | 목록 `GET https://careers.nhn.com/v1/job-postings` (최신 30건만), 상세 `GET /v1/job-postings/{id}` | `finishYn=N`·`postingYn=Y`·`applicationUseYn=Y`면 활성. 추적 중인 공고는 목록이 아니라 상세 API로 확인. `/preview/…` URL은 추천·전환형일 수 있음 | 2026-09-23 |
-| 네이버 계열 (네이버·네이버클라우드·네이버파이낸셜·네이버웹툰) | `https://{recruit.navercorp.com · recruit.navercloudcorp.com · recruit.naverfincorp.com · recruit.webtoonscorp.com}/rcrt/loadJobList.do?annoId=&sw=&…&firstIndex=N` (JSON, 10건씩, `totalSize`) → 본문 `/rcrt/view.do?annoId={id}` 의 `detail_wrap` | 한 공고에 여러 직무가 섹션으로 들어 있으니 해당 섹션만 판정. 네이버클라우드 소개 사이트(`career.navercloudcorp.com`)가 아니라 `recruit.navercloudcorp.com` 이 채용 시스템 | 2026-09-30 |
-| 우아한형제들 | 목록 `https://career.woowahan.com/w1/recruits?page=N&size=50` (JSON), 본문 `/w1/recruits/{recruitNumber}` 의 `recruitContents`, 공고 URL `/recruitment/{recruitNumber}/detail` | 없는 공고는 `code: 9002` | 2026-09-30 |
-| 라인 | `https://careers.linecorp.com/page-data/ko/jobs/page-data.json` 의 `allStrapiJobs` (전 세계) → 도시가 Seoul·Bundang·Gwacheon 이고 `publish: true` 인 것만, 본문 `/page-data/ko/jobs/{id}/page-data.json` 의 `strapiJobs.content` | `publish: false` 는 게시 종료 | 2026-09-30 |
-| 두나무 | `careers.dunamu.com` 메인 HTML의 `/detail/{n}` 링크 | 공고 수 적음 | 2026-09-23 |
-| SK텔레콤 | `skcareers.com/Recruit?corpCode=10005` | `careers.sktelecom.com`은 이관 안내만 있음 | 2026-09-23 |
-| 카카오 | `https://careers.kakao.com/public/api/job-list?part=TECHNOLOGY&company=ALL&page=N` | 공동체(`S-`) 공고는 자격요건이 비어 있음(외부 사이트) | 2026-09-23 |
-| greetinghr (`*.career.greetinghr.com`, 또는 `recruit.회사.com` 같은 회사 도메인) | `{채용 사이트}/ko/home` 또는 첫 화면 HTML의 `__NEXT_DATA__` 쿼리 `["openings"]`에 공고 목록, 본문은 `/ko/o/{id}`. 회사 도메인이면 `sources.yaml`에 `ats: greetinghr` | bucketplace·kakaopay·kakaoenterprise는 `__NEXT_DATA__`가 없어 브라우저로 읽는다. 페이지 아래 "powered by greetinghr" 링크(`www.greetinghr.com/?utm_source=career_page`)가 있으면 그 페이지가 greetinghr 채용 사이트 | 2026-09-30 |
-| 나인하이어 (`*.ninehire.site`, 또는 회사 도메인) | 첫 화면 `__NEXT_DATA__` 의 `homepageProps.homepage.companyId` → `https://api.ninehire.com/identity-access/homepage/recruitments?companyId={id}&page=N&countPerPage=50` (`status: in_progress`만). 본문은 `{채용 사이트}/job_posting/{addressKey}` 의 `__NEXT_DATA__` `pageProps.jobPosting.content`(HTML) | 연차는 `career.range.{over, below}` | 2026-09-30 |
-| recruiter.co.kr (`*.recruiter.co.kr`) | 브라우저 | — | 미확인 |
-| roundhr (`*.recruit.roundhr.com`) | 브라우저 | — | 미확인 |
+| Companies on Greenhouse (Daangn, Coupang, Krafton, etc.) | `https://boards-api.greenhouse.io/v1/boards/{board}/jobs?content=true` | official public API | 2026-09-29 |
+| Toss (all affiliates) | list `https://api-public.toss.im/api/v3/ipd-eggnog/career/jobs` | the body is not `content` but the `metadata` field whose name contains "Job Description" (markdown). Umbrella postings like "집중 채용": expand every sub-position link in the body (`grnh.se/…`, `job_id=`) and judge each; usually only one sub-position can be applied to. Closing: `toss.im/career/job-detail?job_id=` returning 200 with the position name in `<title>` means active, 404 means closed. HTML body is the "합류하게 될 팀 / 이런 분과 함께하고 싶어요" section after `</head>` | 2026-09-23 |
+| NHN | list `GET https://careers.nhn.com/v1/job-postings` (latest 30 only), detail `GET /v1/job-postings/{id}` | active when `finishYn=N` · `postingYn=Y` · `applicationUseYn=Y`. Check tracked postings with the detail API, not the list. `/preview/…` URLs may be referral or conversion postings | 2026-09-23 |
+| Naver group (Naver · Naver Cloud · Naver Financial · Naver Webtoon) | `https://{recruit.navercorp.com · recruit.navercloudcorp.com · recruit.naverfincorp.com · recruit.webtoonscorp.com}/rcrt/loadJobList.do?annoId=&sw=&…&firstIndex=N` (JSON, 10 per page, `totalSize`) → body in `detail_wrap` of `/rcrt/view.do?annoId={id}` | one posting holds several roles as sections; judge only the matching section. For Naver Cloud the hiring system is `recruit.navercloudcorp.com`, not the intro site `career.navercloudcorp.com` | 2026-09-30 |
+| Woowa Brothers | list `https://career.woowahan.com/w1/recruits?page=N&size=50` (JSON), body in `recruitContents` of `/w1/recruits/{recruitNumber}`, posting URL `/recruitment/{recruitNumber}/detail` | a missing posting returns `code: 9002` | 2026-09-30 |
+| LINE | `allStrapiJobs` in `https://careers.linecorp.com/page-data/ko/jobs/page-data.json` (worldwide) → keep only city Seoul · Bundang · Gwacheon with `publish: true`; body in `strapiJobs.content` of `/page-data/ko/jobs/{id}/page-data.json` | `publish: false` means the posting ended | 2026-09-30 |
+| Dunamu | `/detail/{n}` links in the `careers.dunamu.com` main HTML | few postings | 2026-09-23 |
+| SK Telecom | `skcareers.com/Recruit?corpCode=10005` | `careers.sktelecom.com` only shows a migration notice | 2026-09-23 |
+| Kakao | `https://careers.kakao.com/public/api/job-list?part=TECHNOLOGY&company=ALL&page=N` | affiliate (`S-`) postings have empty qualifications (external site) | 2026-09-23 |
+| greetinghr (`*.career.greetinghr.com`, or a company domain like `recruit.회사.com`) | posting list in query `["openings"]` of `__NEXT_DATA__` in `{career site}/ko/home` or the landing HTML; body at `/ko/o/{id}`. On a company domain, set `ats: greetinghr` in `sources.yaml` | bucketplace · kakaopay · kakaoenterprise have no `__NEXT_DATA__`; read them in a browser. A "powered by greetinghr" link at the bottom (`www.greetinghr.com/?utm_source=career_page`) means the page is a greetinghr career site | 2026-09-30 |
+| ninehire (`*.ninehire.site`, or a company domain) | `homepageProps.homepage.companyId` from the landing page's `__NEXT_DATA__` → `https://api.ninehire.com/identity-access/homepage/recruitments?companyId={id}&page=N&countPerPage=50` (`status: in_progress` only). Body is `pageProps.jobPosting.content` (HTML) in `__NEXT_DATA__` of `{career site}/job_posting/{addressKey}` | years in `career.range.{over, below}` | 2026-09-30 |
+| recruiter.co.kr (`*.recruiter.co.kr`) | browser | — | unverified |
+| roundhr (`*.recruit.roundhr.com`) | browser | — | unverified |
 
-새 회사를 추가할 때: Greenhouse·Lever·Ashby 공개 API가 있는지 먼저 확인하고, 없으면 채용 사이트 URL이 열리는지 확인한 뒤에만 `data/search/sources.yaml`에 넣는다. 확인하지 않은 URL은 넣지 않는다.
+When adding a company: first check for a Greenhouse · Lever · Ashby public API; otherwise add it to `data/search/sources.yaml` only after confirming the career site URL opens. Unverified URLs stay out.
 
-## 회사 찾기
+## Company discovery
 
-잡보드에 공고를 거의 안 올리고 자체 채용 사이트에만 올리는 회사(대기업·인지도 높은 회사)를 찾아 `sources.yaml` companies 에 넣는다. `scripts/discover.py`.
+Find companies that rarely post on job boards and post only on their own career site (large or well-known companies), and add them to `companies` in `sources.yaml`. `scripts/discover.py`.
 
-**정보원**
+**Sources**
 
-| 정보원 | 무엇을 주나 | 방법 |
+| Source | What it gives | How |
 |---|---|---|
-| `references/company_seed.yaml` | 잘 알려진 개발 회사(대기업 IT·플랫폼·핀테크·게임·클라우드·AI)와 홈페이지 | 레포에 적은 목록. 개인 추가분은 `data/search/company_seed.yaml` |
-| [awesome-korean-techblog](https://github.com/maczniak/awesome-korean-techblog) | 기술 블로그를 운영하는 회사 (개발 문화 신호) | README "기업 블로그" 절 |
-| [korea-devculture](https://github.com/channy/korea-devculture) | GitHub 조직을 운영하는 회사와 팔로워 수 | `github.json` |
-| 원티드 회사 정보 | 개발 직군 공고를 낸 회사의 연봉 수준(연봉상위 1% · 6~10% · 11~20%), 인원 구간, 설립 연도, 홈페이지 | 목록 API의 `company.id` → `/api/v4/companies/{id}` 의 `company_tags`, `detail.link` |
+| `references/company_seed.yaml` | well-known dev companies (big-tech IT · platform · fintech · games · cloud · AI) and homepages | list kept in the repo. Personal additions go in `data/search/company_seed.yaml` |
+| [awesome-korean-techblog](https://github.com/maczniak/awesome-korean-techblog) | companies running a tech blog (dev-culture signal) | README "기업 블로그" section |
+| [korea-devculture](https://github.com/channy/korea-devculture) | companies running a GitHub org, with follower counts | `github.json` |
+| Wanted company info | for companies that posted dev jobs: salary tier (연봉상위 1% · 6~10% · 11~20%), headcount band, founding year, homepage | `company.id` from the list API → `company_tags`, `detail.link` of `/api/v4/companies/{id}` |
 
-**쓰지 않는 곳:** 잡플래닛·크레딧잡은 `robots.txt`가 모든 크롤러를 막고(`Disallow: /`), 캐치는 기업 페이지(`/Company`)를 막는다. 사람이 브라우저로 보고 `company_seed.yaml`에 적는 것은 괜찮다.
+**Not used:** JobPlanet and Kreditjob block all crawlers in `robots.txt` (`Disallow: /`), and Catch blocks company pages (`/Company`). A person browsing them and writing into `company_seed.yaml` is fine.
 
-**점수(인지도·규모):** 연봉상위 1% 3.5 · 6~10% 2.0 · 11~20% 1.0, 인원 1,001명 이상 2.0 · 301~1,000명 1.5 · 51~300명 0.5, 알려진 회사 목록 2.0, 기술 블로그 1.5, GitHub 조직 1.0(팔로워 100 이상 +0.5). 기본은 2.5 이상을 조사하고 3.0 이상을 추가한다.
+**Score (recognition · size):** salary top 1% 3.5 · 6–10% 2.0 · 11–20% 1.0; headcount 1,001+ 2.0 · 301–1,000 1.5 · 51–300 0.5; known-company list 2.0; tech blog 1.5; GitHub org 1.0 (+0.5 at 100+ followers). By default probe at 2.5+ and add at 3.0+.
 
-**채용 사이트 찾기(probe):** (파이썬 3.9 urllib 은 308 리다이렉트를 따라가지 않아 `jobkit.http_get` 이 직접 처리한다) 홈페이지에서 "채용·Careers·Recruit·Jobs" 링크를 찾아 열고, URL과 HTML로 채용 시스템(greetinghr·나인하이어·Greenhouse·Lever·recruiter.co.kr·Notion·자체)을 판별한다. 스크립트가 다루는 시스템이면 공고 목록을 실제로 받아 보고(`verified: 공고 수`) 검증된 것만 자동 수집으로 넣는다. 나머지는 `method: browser`.
+**Finding the career site (probe):** (Python 3.9 urllib doesn't follow 308 redirects, so `jobkit.http_get` handles them itself.) Find a "채용 · Careers · Recruit · Jobs" link on the homepage, open it, and identify the ATS from URL and HTML (greetinghr · ninehire · Greenhouse · Lever · recruiter.co.kr · Notion · in-house). For an ATS the scripts handle, actually fetch the posting list (`verified: posting count`) and add only verified ones to automatic collection. The rest get `method: browser`.
 
 ```bash
-python3 scripts/discover.py collect            # 후보 모으기 (원티드 포함 20분 안팎, --skip-wanted 면 수 초)
-python3 scripts/discover.py probe --top 150    # 점수 높은 후보의 채용 사이트 찾기
-python3 scripts/discover.py report             # 후보 표
-python3 scripts/discover.py promote --dry-run  # 추가될 회사 미리 보기 → 사용자 확인 후 --dry-run 없이
+python3 scripts/discover.py collect            # gather candidates (~20 min with Wanted, seconds with --skip-wanted)
+python3 scripts/discover.py probe --top 150    # find career sites for top-scoring candidates
+python3 scripts/discover.py report             # candidate table
+python3 scripts/discover.py promote --dry-run  # preview companies to add → after user confirmation, run without --dry-run
 ```
 
-**홈페이지에서 못 찾은 곳:** 링크가 스크립트로 그려지거나 봇을 막는 사이트(403)는 `discover.py missing` 으로 목록을 뽑고, Firecrawl(`firecrawl_search "{회사} 채용"`, 없으면 WebSearch)로 채용 사이트 주소를 찾아 `회사<TAB>URL<TAB>출처` 파일로 `discover.py set <파일>` 에 넣는다. 채용 시스템 판별과 목록 검증은 스크립트가 한다. 채용 사이트가 없는 회사는 URL 자리에 `-`.
+**Not found from the homepage:** for sites whose links are drawn by script or that block bots (403), list them with `discover.py missing`, find the career site URL with Firecrawl (`firecrawl_search "{회사} 채용"`, or WebSearch without it), and feed a `회사<TAB>URL<TAB>출처` file to `discover.py set <file>`. The script does ATS detection and list verification. For a company with no career site, put `-` in the URL slot.
 
-`data/search/companies.yaml` 의 `status`(후보·추가·제외)와 `memo`는 손으로 고쳐도 다음 실행에 남는다. 지원하지 않을 회사(`blacklist.md`)와 이미 수집하는 채용 사이트를 쓰는 계열사는 추가하지 않는다.
-
+`status` (후보 · 추가 · 제외) and `memo` in `data/search/companies.yaml` may be edited by hand and survive the next run. Skip companies the user won't apply to (`blacklist.md`) and affiliates that use a career site already being collected.

@@ -1,10 +1,10 @@
-# 모드: track — 지원 현황
+# Mode: track — application status
 
-지원 현황표 `data/applications/tracker.md`를 관리한다. 먼저 `modes/_shared.md`를 읽는다.
+Manage the application tracker `data/applications/tracker.md`. Read `modes/_shared.md` first.
 
-## 기록 방법
+## How to record
 
-표를 손으로 고치지 않는다. `scripts/tracker.py`로 바꾼다(형식·상태값 검증, pipeline.md 연동).
+Change the table only through `scripts/tracker.py` (it validates format and state values and syncs pipeline.md).
 
 ```bash
 python3 scripts/tracker.py add --company 회사 --role 포지션 --score 4.2/5 --eval data/job_postings/<공고>.eval.md --memo "서울 강남 · 원티드 · <url>"
@@ -12,7 +12,7 @@ python3 scripts/tracker.py set <번호|회사> 지원함 [--note "메모"] [--pd
 python3 scripts/tracker.py report [--alive] [--since YYYY-MM-DD]
 ```
 
-## 형식
+## Format
 
 ```markdown
 | # | 날짜 | 회사 | 포지션 | 점수 | 상태 | PDF | 평가 | 메모 |
@@ -20,28 +20,30 @@ python3 scripts/tracker.py report [--alive] [--since YYYY-MM-DD]
 | 1 | 2026-10-01 | 가나다 | 백엔드 개발자 | 4.2/5 | 평가함 | ❌ | [평가](../job_postings/2026-10-01_가나다_백엔드.eval.md) | 서울 강남 · 원티드 |
 ```
 
-- 번호는 이어서 붙인다. 날짜는 처음 기록한 날.
-- 메모에는 근무지와 출처(원티드·사람인·자체 사이트 …)를 항상 넣는다. 상태가 바뀔 때마다 `; {내용} (YYYY-MM-DD)`를 덧붙인다.
+- Numbers continue from the last row. The date is when the row was first recorded.
+- The memo always includes location and source (원티드 · 사람인 · 자체 사이트 …). On every state change, append `; {내용} (YYYY-MM-DD)`.
 
-## 상태값
+## State values
 
-| 상태 | 언제 |
+Scripts validate these; use them verbatim.
+
+| State | When |
 |---|---|
-| `평가함` | 평가 완료, 지원 여부 미정 |
-| `지원함` | 사용자가 제출했다고 말함 |
-| `서류합격` | 서류 통과 연락 |
-| `면접` | 면접 진행 중 (메모에 차수) |
-| `최종합격` | 제안 받음 |
-| `입사` | 제안 수락 |
-| `불합격` | 회사가 탈락 통보 |
-| `포기` | 사용자가 그만두거나 공고 마감 |
-| `제외` | 맞지 않아 지원하지 않음 |
+| `평가함` | evaluated, application undecided |
+| `지원함` | the user says they submitted |
+| `서류합격` | notified of passing document screening |
+| `면접` | interviews in progress (round in the memo) |
+| `최종합격` | received an offer |
+| `입사` | accepted the offer |
+| `불합격` | the company rejected |
+| `포기` | the user dropped it, or the posting closed |
+| `제외` | not a fit, not applying |
 
-상태 칸에는 상태값만 쓴다(굵게, 날짜, 설명 금지). 설명은 메모에.
+The state cell holds the state value alone (no bold, date, or explanation). Explanations go in the memo.
 
-## 규칙
+## Rules
 
-- 사용자가 "지원했다"고 하면 즉시 `tracker.py set <번호> 지원함`. pipeline.md의 해당 공고는 스크립트가 "지원 완료 — 재지원 쿨다운"으로 옮긴다.
-- 재지원 쿨다운: `지원함` 이후 `targets.yaml`의 `reapply_days`(기본 183일) 안에는 같은 회사 공고를 scan에서 뺀다(`scan.py`가 자동으로).
-- 결과(`서류합격`·`불합격` 등)가 들어오면 그 공고의 `.eval.md` 점수와 비교해 본다. 점수는 높은데 떨어졌거나 낮은데 붙은 경우가 쌓이면(3건 이상) 선별 기준 조정안을 사용자에게 제안하고, 받아들이면 `targets.yaml`·`brief.md`에 적는다.
-- 행을 지우지 않는다. 잘못 넣은 행은 상태를 `제외`로 두고 메모에 이유를 쓴다.
+- When the user says they applied, run `tracker.py set <번호> 지원함` immediately. The script moves that posting in pipeline.md to "지원 완료 — 재지원 쿨다운".
+- Reapply cooldown: within `reapply_days` of `targets.yaml` (default 183 days) after `지원함`, the same company's postings are dropped from scan (`scan.py` does it automatically).
+- When a result (`서류합격`, `불합격`, …) comes in, compare it with that posting's `.eval.md` score. Once mismatches pile up (high score but rejected, low score but passed; 3+ cases), propose adjusting the screening criteria, and if accepted write it into `targets.yaml` and `brief.md`.
+- Rows are permanent. A row added by mistake gets state `제외` with the reason in the memo.

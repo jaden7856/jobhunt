@@ -1,5 +1,5 @@
 name: 홍길동
-role: Backend Developer
+role: Backend Developer   # 이력서 이름 아래 직무명. 공고마다 바꾸려면 이력서 yaml 의 header.role
 email: gildong@example.com
 phone: 010-0000-0000
 education:            # 렌더링하지 않음. 지원서 양식에 적을 때 참고

@@ -356,9 +356,15 @@ def project(num, p):
     return "".join(h)
 
 
+def job_title(resume, profile):
+    """이름 아래 직무명. 공고별 header.role → profile role 순서. 고정 기본값은 두지 않는다."""
+    return (resume.get("header") or {}).get("role") or profile.get("role") or ""
+
+
 def header(profile, resume, design):
     name = esc(profile["name"])
-    role = esc(resume.get("header", {}).get("role") or profile.get("role") or "Backend Developer")
+    role = esc(job_title(resume, profile))
+    role = f'<div class="role">{role}</div>' if role else ""   # 직무명이 없으면 줄을 뺀다
     pf = resume.get("portfolio") or {}
     pf_items = pf.get("items") or []
     link_html = [f'<a href="{i["url"]}">{esc(i.get("label") or i["url"])}</a>' for i in pf_items]
@@ -372,16 +378,16 @@ def header(profile, resume, design):
 
     if design == "C":
         contact = "".join(f"<span>{x}</span>" for x in basic + link_html)
-        return (f'<div class="mast"><div class="name">{name}</div><div class="role">{role}</div>'
+        return (f'<div class="mast"><div class="name">{name}</div>{role}'
                 f'<div class="contact">{contact}</div></div>{pf_box}')
     if design == "B":
         lines = " · ".join(basic)
         if link_html:
             lines += "<br>" + " · ".join(link_html)
-        return (f'<div class="hd"><div><div class="name">{name}</div><div class="role">{role}</div></div>'
+        return (f'<div class="hd"><div><div class="name">{name}</div>{role}</div>'
                 f'<div class="contact">{lines}</div></div>{pf_box}')
     contact = "".join(f"<span>{x}</span>" for x in basic + link_html)
-    return (f'<div class="hd"><div class="name">{name}</div><div class="role">{role}</div>'
+    return (f'<div class="hd"><div class="name">{name}</div>{role}'
             f'<div class="contact">{contact}</div>{pf_box}</div>')
 
 
@@ -435,9 +441,9 @@ def safe(s):
 
 def out_name(resume, profile):
     meta = resume.get("meta", {})
-    job = meta.get("job") or "Backend"
+    job = meta.get("job") or job_title(resume, profile)
     version = meta.get("version") or "v1"
-    return f"{safe(profile['name'])}_{safe(job)}_{safe(version)}"
+    return "_".join(x for x in (safe(profile["name"]), safe(job), safe(version)) if x)
 
 
 def render_pdf(html_path, pdf_path):

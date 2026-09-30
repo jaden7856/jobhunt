@@ -1,124 +1,125 @@
-# 모드: tailor — 공고 맞춤 이력서
+# Mode: tailor — resume tailored to a posting
 
-공고 하나에 맞춘 이력서 yaml을 만들고 PDF로 빌드한다. 먼저 `modes/_shared.md`를 읽는다.
-평가(`modes/evaluate.md`)를 거친 공고면 `data/job_postings/<공고>.eval.md`의 요구사항 대응표와 강조점을 그대로 쓴다.
+Write a resume yaml tailored to one posting and build it into a PDF. Read `modes/_shared.md` first.
+If the posting went through evaluation (`modes/evaluate.md`), use the requirement map and emphasis in `data/job_postings/<posting>.eval.md` as is.
 
-## 작동 순서
+## Steps
 
-각 단계는 AskUserQuestion으로 묻는다. 한 번에 1~4문항. 이미 `data/`에 답이 있으면 그 값을 추천안으로 먼저 보여 준다.
+Ask each step with AskUserQuestion, 1–4 questions at a time. If `data/` already holds an answer, show that value first as the recommendation.
 
-### 0. 지원 방향
+### 0. Direction
 
-- 목표 포지션: 인프라·플랫폼 / 서비스 백엔드 / 직접 입력.
-- 채용공고 링크나 본문이 있는지.
-  - `data/job_postings/<공고>.eval.md`가 있으면 그 요구사항 대응표·강조할 프로젝트·빈틈 대응을 추천안으로 보여 준다. 다시 뽑지 않는다.
-  - 평가가 없으면 공고에서 핵심 요구사항 3~5개를 뽑아 보여 준다. 이 목록으로 프로젝트 순서, SKILLS(공고와의 교집합), 용어를 맞춘다.
-  - 공고 원문은 `data/job_postings/<YYYY-MM-DD>_<회사>_<포지션>.md`에 링크·원문·요구사항·용어 대응표와 함께 저장한다.
-- 기존 기본본(`data/resumes/base_*.yaml`)이 있으면 가장 가까운 것을 복사해서 시작한다. `cp base_service.yaml 회사_service.yaml`
+- Target position: one of `roles` in `data/profile/targets.yaml` / enter manually.
+- Job title under the name (`header.role`): recommend block E of the evaluation, or else the posting's position name or the chosen target role, and let the user settle the wording. Once they pick a usual wording, write it to `role` in `data/profile/profile.yaml`.
+- Whether there is a posting link or body.
+  - If `data/job_postings/<posting>.eval.md` exists, show its requirement map, projects to emphasize, and gap handling as the recommendation. Reuse them as they are.
+  - With no evaluation, extract 3–5 key requirements from the posting and show them. Use that list to set project order, SKILLS (overlap with the posting), and terms.
+  - Save the posting to `data/job_postings/<YYYY-MM-DD>_<회사>_<포지션>.md` with the link, full text, requirements, and term map.
+- If base versions (`data/resumes/base_*.yaml`) exist, copy the closest one to start. `cp base_service.yaml 회사_service.yaml`
 
-### 1. 자료 수집 (여러 개 선택)
+### 1. Material collection (multiple choice)
 
-- 경험을 정리한 문서 / 로컬 git 저장소(작성자 기준 커밋 로그) / GitLab / 기존 이력서(pdf, py, docx).
-  - git: `bash scripts/git_log.sh <저장소> "<이메일|이름>" [시작일] [종료일]` → `data/experience/git_<저장소>.md`. revert·하향·폐기 커밋(⟲ 표시)은 시행착오 서사 후보.
-  - GitLab: 연결된 GitLab 도구가 있으면 MR·커밋을 작성자 기준으로 읽는다. 없으면 사용자에게 내보낸 목록을 받는다.
-  - 기존 이력서: 문구를 yaml로 옮긴다. py 빌드 스크립트면 함수 인자·상수에서 문구를 뽑는다.
-- 아무것도 없으면 직접 입력받는다. 이 순서로 묻는다.
-  1. 회사·기간·역할 (회사가 여럿이면 최근부터)
-  2. 프로젝트마다: 문제 → 원인(어떻게 찾았나) → 선택지(검토한 대안과 버린 이유) → 실행 → 결과 수치(전후)
-- 수집이 끝나면 프로젝트 후보 목록을 만든다. 후보마다 한 줄 근거(문서 위치, 커밋·MR, 수치 출처)를 붙인다. `data/experience/project_index.yaml`에 저장.
-- 넣을 프로젝트는 최대 5개. 공고 요구사항과 겹치는 정도로 추천안을 먼저 보여 주고(순서 포함), 사용자가 고르게 한다(multiSelect). 빠진 후보 중 한 줄로 남길 것은 OTHER 후보로 둔다.
+- A document summarizing experience / a local git repository (author-filtered commit log) / GitLab / an existing resume (pdf, py, docx).
+  - git: `bash scripts/git_log.sh <repo> "<email|name>" [since] [until]` → `data/experience/git_<repo>.md`. Revert, downgrade, and abandoned commits (marked ⟲) are trial-and-error story candidates.
+  - GitLab: if a GitLab tool is connected, read MRs and commits by author. Otherwise ask the user for an exported list.
+  - Existing resume: move its wording into yaml. For a py build script, pull wording from function arguments and constants.
+- If there is nothing, take it as direct input, asking in this order:
+  1. Company, period, role (most recent first if several companies)
+  2. Per project: problem → cause (how it was found) → options (alternatives considered and why they were dropped) → execution → result numbers (before/after)
+- When collection is done, build a list of project candidates, each with a one-line evidence note (document location, commit or MR, source of the number). Save to `data/experience/project_index.yaml`.
+- At most 5 projects go in. Show a recommendation first (with order) based on overlap with the posting's requirements, then let the user pick (multiSelect). Keep dropped candidates worth one line as OTHER candidates.
 
-### 2. 추가 요구사항
+### 2. Extra requirements
 
-- 강조하고 싶은 강점, 빼고 싶은 내용, 목표 페이지 수(기본 2~3), 추가하거나 뺄 섹션, 연차 표기 방식(예: "5년차", "4년 9개월", 표기 안 함).
-- 이번 공고에만 적용할 것은 `data/preferences/<공고>_requests.md`, 앞으로도 적용할 것은 `data/preferences/standing.md`에 날짜와 함께 적는다. 어느 쪽인지 애매하면 묻는다.
+- Strengths to emphasize, content to leave out, target page count (default 2–3), sections to add or remove, how to show years (e.g. "N년차", "N년 M개월", none).
+- Write what applies only to this posting to `data/preferences/<posting>_requests.md`, and what applies from now on to `data/preferences/standing.md`, with the date. When it's unclear which, ask.
 
-### 3. 개인 포트폴리오
+### 3. Personal portfolio
 
-- GitHub, 블로그 등이 있는지 묻는다.
-- 있으면 `portfolio.items`(헤더 연락처와 PORTFOLIO 박스에 들어감)에 넣는다.
-- 글 목록을 읽어 프로젝트마다 관련 글 1~2개를 골라 제안하고, 사용자가 확인한 것만 `links`에 넣는다.
-- 링크는 실제로 열리는지 확인한다(아래 "링크 확인").
-- 없으면 `portfolio`를 비운다 → PORTFOLIO 박스가 빠진다.
-- 결과는 `data/portfolio/portfolio.yaml`에 저장(글 목록, 고른 글, 확인 날짜).
+- Ask whether there is a GitHub, blog, etc.
+- If so, put it in `portfolio.items` (goes into the header contact line and the PORTFOLIO box).
+- Read the post list, propose 1–2 related posts per project, and put only the user-confirmed ones in `links`.
+- Check that every link actually opens ("Link check" below).
+- If none, leave `portfolio` empty → the PORTFOLIO box is dropped.
+- Save the result to `data/portfolio/portfolio.yaml` (post list, chosen posts, check date).
 
-### 4. 작성과 빌드
+### 4. Write and build
 
-1. 아래 "구조와 디자인", "문장 규칙"대로 yaml을 쓴다. 파일은 `data/resumes/<회사>_<포지션>.yaml`.
-2. 추론으로 채운 문장 앞에는 `[확인 필요]`를 붙인다.
-3. 빌드:
+1. Write the yaml following "Structure and design" and "Sentence rules" below. File: `data/resumes/<회사>_<포지션>.yaml`.
+2. Prefix every sentence filled by inference with `[확인 필요]`.
+3. Build:
    ```
-   python3 scripts/render.py data/resumes/<파일>.yaml
+   python3 scripts/render.py data/resumes/<file>.yaml
    ```
-   `--design A|C` 로 다른 시안, `--offline` 으로 링크 접속 검사 생략.
-   산출물: `data/output/이름_직무_버전.pdf`, `_p1.png …`, `.html`. 파일명은 profile의 `name`, yaml `meta.job`, `meta.version`.
-4. 빌드 환경이 없으면 `bash scripts/setup.sh`부터. 사용자 PC 셸에서 빌드가 안 되면 클라우드 작업공간에 `scripts/`, `references/`, yaml, profile만 올려 빌드하고 PDF·PNG를 `data/output/`으로 돌려보낸다.
+   `--design A|C` for the other designs, `--offline` to skip link reachability checks.
+   Output: `data/output/이름_직무_버전.pdf`, `_p1.png …`, `.html`. The filename is profile `name`, yaml `meta.job` (if empty, the header job title), `meta.version`.
+4. Without a build environment, start with `bash scripts/setup.sh`. If building fails in the user's local shell, upload only `scripts/`, `references/`, the yaml, and the profile to a cloud workspace, build there, and bring the PDF and PNGs back into `data/output/`.
 
-### 5. 검수와 수정
+### 5. Review and revise
 
-1. 빌드 후 검사 결과를 정리해 보여 준다(아래 "빌드 후 검사").
-2. 문체 자체 점검 결과를 보여 준다. 걸린 문장은 수정 전·후를 나란히 보여 주고 확인받는다.
-3. `[확인 필요]` 문장을 모아 하나씩 확인받는다. 확인되면 태그를 지우고 사실은 `data/experience/facts.md`에 적는다.
-4. PNG 미리보기를 페이지별로 보여 주고 수정 요청을 받는다. 확정될 때까지 4~5단계를 반복한다.
-5. 확정되면:
-   - 완성본 PDF를 연결된 폴더(기본 `data/output/`)에 둔다.
-   - 확정 yaml을 `data/resumes/`에 두고, Claude 프로젝트가 연결되어 있으면 프로젝트에도 저장한다.
-   - `data/job_postings/` 공고 파일에 사용한 yaml 이름을 적는다.
-   - `data/applications/tracker.md`의 해당 행 PDF 칸과 메모를 갱신한다. 제출은 사용자가 직접 하고, 제출했다고 하면 `modes/track.md`대로 상태를 바꾼다.
+1. Summarize and show the post-build check results ("Post-build checks" below).
+2. Show the style self-check results. Show every flagged sentence before and after, side by side, and get confirmation.
+3. Collect the `[확인 필요]` sentences and confirm them one by one. Once confirmed, remove the tag and write the fact to `data/experience/facts.md`.
+4. Show the PNG previews page by page and take revision requests. Repeat steps 4–5 until final.
+5. When final:
+   - Put the final PDF in the connected folder (default `data/output/`).
+   - Put the final yaml in `data/resumes/`, and if a Claude project is connected, save it there too.
+   - Write the yaml name used into the posting file in `data/job_postings/`.
+   - Update the PDF cell and memo of the row in `data/applications/tracker.md`. The user submits; when they say they did, change the state per `modes/track.md`.
 
-## 구조와 디자인
+## Structure and design
 
-- 디자인 기본은 B안(스위스 그리드, 코발트). 사용자가 원하면 A안(에디토리얼, 세리프+녹색), C안(다크 마스트헤드, 카퍼). yaml `meta.design`.
-- 섹션 순서: 헤더 → PORTFOLIO → SUMMARY → SKILLS → EXPERIENCE → PROJECTS → OTHER. 사용자가 추가한 섹션은 `extra_sections`.
-- EDUCATION 섹션은 넣지 않는다. 학력은 profile에 참고로만 보관.
-- 헤더: 이름 아래 "Backend Developer"만. 뒤에 붙는 부제 없음. 직무명은 `header.role`(또는 profile `role`)로 바꿀 수 있다.
-- 프로젝트 블록: 번호·제목 / 기간·역할·기술 칩 / 요약 바 / 문제 / 원인 규명 / 선택지(채택 표시) / 실행 / 결과 KPI / 관련 글. 형식은 `references/yaml_schema.md`.
-- 프로젝트 5개 이하. 첫 페이지에 SUMMARY·SKILLS와 대표 프로젝트 시작이 보이도록 한다.
+- Default design is B (Swiss grid, cobalt). A (editorial, serif + green) and C (dark masthead, copper) on request. yaml `meta.design`.
+- Section order: header → PORTFOLIO → SUMMARY → SKILLS → EXPERIENCE → PROJECTS → OTHER. User-added sections go in `extra_sections`.
+- No EDUCATION section. Education stays in profile for reference only.
+- Header: one job-title line under the name, no subtitle after it. `header.role` for this resume, else profile `role`; with neither, the line is dropped.
+- Project block: number and title / period · role · tech chips / summary bar / problem / root cause / options (adopted marked) / execution / result KPIs / related posts. Format in `references/yaml_schema.md`.
+- At most 5 projects. Page 1 should show SUMMARY, SKILLS, and the start of the lead project.
 
-## 문장 규칙
+## Sentence rules
 
-- SUMMARY 첫 문단은 `~합니다`체.
-  - 전: "Go 백엔드 개발자 5년차. … 외부 API 연동 최적화를 담당."
-  - 후: "Go 백엔드 개발자 5년차입니다. … 외부 API 연동 최적화를 담당하고 있습니다."
-- SUMMARY 불릿과 프로젝트 본문은 짧게 끊는 말투(명사형, `~함`).
-- AI가 쓴 것 같은 문체를 피한다.
-  - `—`, `·`, `→`는 한 불릿에 각각 1개까지. `→`는 수치 전후 비교에만.
-  - 쉬운 우리말이 있으면 영어 개념어·번역투를 쓰지 않는다: fence, durable claim, 성립, 봉인, 격리, 일원 관리 …
-  - 정확한 기술 용어는 둔다: CAS, gRPC, context …
-  - 상투어 금지: 고도화, 극대화, 체계적, 효율적, 원활한, 다양한, 핵심, 혁신, 견고한, 선제적, 확보, ~을 통해, ~기반으로, 단순히 ~가 아니라
-  - 한 문장에 수식어를 여러 개 이어 붙이지 않는다. 늘 셋씩 나열하지 않는다. 모든 불릿을 같은 길이·같은 구조로 맞추지 않는다.
-  - 판단 기준: 본인이 면접에서 말로 설명할 때 실제로 쓰는 단어인가.
-- 행동 동사 + 방법 + 결과. "참여/담당/노력/기여"로 끝내지 않는다(SUMMARY 첫 문단의 "담당하고 있습니다"는 예외).
-- 작성이 끝나면 위 목록으로 스스로 점검한다. 자동 검사(`check.py`)가 잡지 못하는 항목(수식어 나열, 셋씩 나열, 같은 구조 반복)은 직접 읽고 판단한다. 걸린 문장은 수정 전·후를 보여 준다.
-- 사실 규칙
-  - 자료에 없는 수치나 사실은 만들지 않는다.
-  - 추론으로 채운 문장은 `[확인 필요]`로 표시하고 사용자 확인을 받은 뒤 확정한다.
+- SUMMARY first paragraph in `~합니다` style.
+  - Before: "Kotlin 백엔드 개발자 4년차. … 주문·정산 서버 개발을 담당."
+  - After: "Kotlin 백엔드 개발자 4년차입니다. … 주문·정산 서버 개발을 담당하고 있습니다."
+- SUMMARY bullets and project text in clipped style (noun endings, `~함`).
+- Write like a person, not like AI.
+  - `—`, `·`, `→` at most once each per bullet. `→` only for before/after numbers.
+  - Where plain Korean exists, use it over English concept words and translationese: fence, durable claim, 성립, 봉인, 격리, 일원 관리 …
+  - Keep precise technical terms: CAS, gRPC, context …
+  - Banned clichés: 고도화, 극대화, 체계적, 효율적, 원활한, 다양한, 핵심, 혁신, 견고한, 선제적, 확보, ~을 통해, ~기반으로, 단순히 ~가 아니라
+  - One modifier per phrase; vary list lengths instead of always three; vary bullet length and structure.
+  - Test: is it a word the user would actually say when explaining this aloud in an interview?
+- Action verb + method + result. End on what was done, not on "참여/담당/노력/기여" (except "담당하고 있습니다" in the SUMMARY first paragraph).
+- After writing, self-check against the list above. Items the automatic check (`check.py`) cannot catch (stacked modifiers, lists of three, repeated structure) need a direct read and judgment. Show flagged sentences before and after.
+- Fact rules
+  - No number or fact that isn't in the material.
+  - Mark sentences filled by inference with `[확인 필요]` and finalize only after the user confirms.
 
-## 이력서 일반 규칙 (요약, 자세히는 references/resume_guide.md)
+## General resume rules (summary; details in references/resume_guide.md)
 
-- 프로젝트 5개 이하. 공고와 먼 것은 OTHER 한 줄로.
-- 수치는 전후 비교와 원인을 함께 쓴다. 확정 안 된 수치는 쓰지 않는다.
-- 선택지는 기각안의 장점을 먼저 인정하고 단점으로 기각, 채택안은 근거와 약점 통제 방법까지.
-- 기술 스택은 공고와의 교집합 8~12개, 숙련도 표시 없음, 안 써본 기술 금지.
-- 링크는 프로젝트당 1~2개.
-- 지원동기는 넣지 않는다. 따로 요구할 때만 5~7줄 별도 작성.
-- 플레이스홀더를 남기고 내지 않는다.
-- 이 파일과 references 문서가 부딪히면 이 파일을 따른다.
+- At most 5 projects. Ones far from the posting become a single OTHER line.
+- Write numbers as before/after with the cause. Leave out unconfirmed numbers.
+- Options: acknowledge the rejected option's strength before rejecting it on its weakness; for the adopted one, give the reasoning and how its weakness is controlled.
+- Tech stack: 8–12 items overlapping with the posting, no proficiency markers, only technologies actually used.
+- 1–2 links per project.
+- No motivation statement. Write a separate 5–7 lines only when asked.
+- Ship with every placeholder resolved.
+- When this file and a references document conflict, follow this file.
 
-## 빌드 후 검사
+## Post-build checks
 
-`render.py`가 끝에 `check.py`를 부른다. 따로 돌릴 때: `python3 scripts/check.py <yaml> <pdf>`
+`render.py` calls `check.py` at the end. To run it alone: `python3 scripts/check.py <yaml> <pdf>`
 
-| 항목 | 기준 | 수준 |
+| Item | Criterion | Level |
 |---|---|---|
-| 페이지 수 | `meta.target_pages` (기본 2~3) | 오류 |
-| 제목 홀로 남음 | 섹션·프로젝트·소제목 뒤 같은 쪽 본문 3줄 미만 (마지막 쪽 제외) | 오류 |
-| 링크 | PDF 안 모든 링크 접속 | 열리지 않음=오류, 확인 불가=경고 |
-| 플레이스홀더 | 【 】, TODO, TBD, N건, `[확인 필요]` … | 오류 |
-| 금지어 · 기호 | `references/style_rules.yaml` | 오류 |
-| 번역투 · 개념어 | 같은 파일 `translationese` | 경고 |
-| SUMMARY 말투 | 첫 문단 문장마다 `~니다`로 끝남 | 오류 |
+| Page count | `meta.target_pages` (default 2–3) | error |
+| Orphaned heading | fewer than 3 body lines after a section, project, or subheading on the same page (last page excepted) | error |
+| Links | every link in the PDF reachable | unreachable = error, uncheckable = warning |
+| Placeholders | 【 】, TODO, TBD, N건, `[확인 필요]` … | error |
+| Banned words · symbols | `references/style_rules.yaml` | error |
+| Translationese · concept words | `translationese` in the same file | warning |
+| SUMMARY tone | every sentence of the first paragraph ends in `~니다` | error |
 
-- 오류가 0이 될 때까지 고친다. 경고는 사용자에게 보여 주고 판단을 맡긴다.
-- 제목 홀로 남음이나 페이지 초과는 내용을 줄이거나(불릿 합치기, 프로젝트를 OTHER로 내리기) 순서를 바꿔 해결한다. CSS로 억지로 줄이지 않는다.
-- 링크 확인: 클라우드 환경은 외부 접속이 막혀 "확인 불가"가 나올 수 있다. 그때는 사용자 PC에서 `python3 scripts/check_links.py --pdf <pdf>`를 실행하거나 브라우저로 열어 확인한다. 결과는 `data/portfolio/portfolio.yaml`의 `last_link_check`에 적는다.
+- Fix until errors are 0. Show warnings to the user and let them decide.
+- Resolve orphaned headings and page overflow by cutting content (merge bullets, demote a project to OTHER) or reordering. Keep the CSS as is.
+- Link check: cloud environments may block outbound access and report "확인 불가". Then run `python3 scripts/check_links.py --pdf <pdf>` on the user's machine or open the links in a browser. Record the result in `last_link_check` of `data/portfolio/portfolio.yaml`.
