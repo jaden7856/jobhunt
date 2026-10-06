@@ -30,5 +30,5 @@ Write the answers to `targets.yaml`, then build `brief.md` with 3–8 key achiev
 
 ## Keep learning
 
-- Apply the user's corrections after evaluation or screening right away, per `_shared.md` section 4.
+- Apply the user's corrections after evaluation or screening right away, per `_shared.md` "Getting sharper".
 - Once a month, or once 3+ application results have come in, offer to check whether `targets.yaml` and `brief.md` still match recent judgments.

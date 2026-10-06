@@ -2,9 +2,9 @@
 
 목표: 한국 개발자 채용 공고를 찾고, 내 경력에 맞는 공고를 골라, 공고마다 최적화한 이력서를 만든다. 쓸수록 `data/`에 개인 기준이 쌓여 선별이 정확해진다.
 
-작동 방식과 개인화 저장 구조는 [career-ops](https://github.com/santifer/career-ops)(MIT, © santifer)를 참고했다. career-ops는 해외 ATS 중심이고 한국 채용 사이트용 코드는 없다. 이 저장소는 한국 공고 수집과 이력서 빌드(`scripts/render.py`)에 집중한다.
+모드로 나눈 구성과 개인화 저장 구조는 [career-ops](https://github.com/santifer/career-ops)의 아이디어를 참고했다. 이 저장소는 한국 공고 수집·평가, 이력서 빌드(`scripts/render.py`), 지원과 면접 준비에 집중한다.
 
-## 원칙 (career-ops에서 가져옴)
+## 원칙
 
 | 원칙 | 이 저장소에서 |
 |---|---|

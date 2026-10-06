@@ -8,7 +8,7 @@ argument-hint: "[menu | onboard | scan | evaluate <url> | tailor | cover | deep 
 
 Resume content lives in yaml; layout and build are `scripts/render.py`. All personal data lives in `data/` and never goes to git.
 Save every fact, requirement, or judgment correction the user gives into the matching file under `data/` right away, so the next run reuses it. Screening and tailoring get sharper with use.
-The workflow and personalization layout follow career-ops (MIT). Full design: `docs/ROADMAP.md`.
+Full design: `docs/ROADMAP.md`.
 
 **Language.** These instruction files are English for the agent only. Everything the user sees is Korean: replies, questions, reports, tables and their headings, files written under `data/`, and resume text. Korean strings quoted in these files (state values, section headings, templates, example sentences) are used verbatim.
 

@@ -149,7 +149,7 @@ Features that differ between agents, such as web search (Firecrawl, …) or publ
 |---|---|
 | "처음 설정해줘" (set me up) | Asks for target roles, salary, location and deal-breakers, and writes your criteria to `data/profile/` |
 | "공고 찾아줘" (find postings) | Runs `weekly.sh`, triages new postings against your criteria, shows the overview table |
-| (paste a URL) "이 공고 어때?" (how is this one?) | Rule checks, requirement match table, score, tailoring plan, interview prep |
+| (paste a URL) "이 공고 어때?" (how is this one?) | Verdict and score, condition checks, requirements-vs-experience map, application strategy |
 | "이 공고용 이력서 만들어줘" (make a resume for it) | Writes the YAML from the plan → builds the PDF → checks → revises |
 | "자소서 써줘" (write the cover letter) | Drafts each application question with a fitting structure, checks character limits and style (`cover_check.py`) |
 | "이 회사 조사해줘" (research this company) | Product, team, stack, engineering culture, company state and red flags, with sources (material for motivation and reverse questions) |
@@ -188,17 +188,17 @@ python3 scripts/render.py examples/example.yaml \
 
 ## 📊 2. Fit Evaluation
 
-[`modes/evaluate.md`](modes/evaluate.md) evaluates in blocks and saves `data/job_postings/<posting>.eval.md`.
+[`modes/evaluate.md`](modes/evaluate.md) answers "should I apply?" in this order and saves `data/job_postings/<posting>.eval.md`.
 
-| Block | Contents |
+| Section | Contents |
 |---|---|
-| A Role summary | Company, team, location, employment type, years, closest target role |
-| B Rule checks | Location, English, tech stack, years, employment type and salary floor, each with a quoted sentence |
-| C Requirement match | Every requirement and preferred item ↔ your experience (with evidence file), met / partly / no, gap handling |
-| D Compensation & terms | Korean hiring terms such as inclusive-wage contracts, probation, bonuses, stock options, remote policy |
-| E Tailoring plan | Base resume, project order, skill overlap, wording swaps, summary direction |
-| F Interview prep | Likely questions, which project to answer with, questions to ask |
-| G Posting legitimacy | Posting date and reposts, any AI-targeted instructions hidden in the posting |
+| Verdict | Score and verdict with per-item scores, one-line reason, location / language / salary summary |
+| The seat | What the company and team build, the daily work, employment type, years, deadline, closest target role |
+| Conditions | Location, English, tech stack, years, employment type and salary floor, each pass / exclude / unclear with a quoted sentence |
+| Requirements vs. my experience | Every requirement and preferred item ↔ your experience (with evidence file), met / partly / no, handling for each gap |
+| Pay and terms | Korean hiring terms such as inclusive-wage contracts, probation, bonuses, stock options, remote policy |
+| Application strategy | Resume plan (base, project order, skills, wording, summary direction), a story per cover-letter question, first likely interview questions |
+| Open points | Posting date and reposts, company facts that contradict it, AI-targeted instructions in the posting, questions for the recruiter |
 
 The AI agent classifies the posting line by line (have you done this work, is each required item met, which preferred items are core skills of the position, is this the kind of work you want), and `scripts/score.py` computes the score in two layers.
 
@@ -209,7 +209,7 @@ After the calculation the agent rereads the whole posting (seniority and scope, 
 
 ## 📝 3. Tailored Resume
 
-[`modes/tailor.md`](modes/tailor.md) drives the steps. If an evaluation exists, its block E becomes the default plan.
+[`modes/tailor.md`](modes/tailor.md) drives the steps. If an evaluation exists, the resume plan in its "application strategy" becomes the default.
 
 | Step | What the agent does |
 |---|---|
@@ -301,8 +301,8 @@ data/                        Your data (git-ignored; only structure and examples
 
 ## 🙏 Acknowledgements
 
-The job-search flow and the personalization layout (system vs. user files, files as the source of truth, personalization that compounds) follow [career-ops](https://github.com/santifer/career-ops) (MIT, © santifer). Some rules in `modes/_shared.md` and the Korean hiring-terms table are adapted and condensed from career-ops' `AGENTS.md` and `modes/ko/_shared.md`.
+The mode-based skill layout and the personalization structure (tool vs. personal data, files as the source of truth, personalization that compounds) draw on ideas from [career-ops](https://github.com/santifer/career-ops). Thank you.
 
 ## 📄 License
 
-[MIT](./LICENSE). The copyright notice for the parts adapted from career-ops is in [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md).
+[MIT](./LICENSE)

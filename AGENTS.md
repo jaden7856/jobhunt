@@ -79,4 +79,3 @@ Most scripts read and write real files under `data/`; use `--dry-run` where offe
 - **Language split:** agent instruction files (`SKILL.md`, `modes/`, `references/*.md`) are English; everything user-facing is Korean: CLI output, script docstrings/comments, `data/` files, resume text, and Korean strings quoted in the instruction files (state values, headings), which must stay verbatim because scripts match them. `README.md` (ko) and `README.en.md` are kept in sync.
 - Scripts are stdlib + PyYAML only for collection (`check_links.py` is stdlib-only by design); keep it that way.
 - Collection endpoints are unofficial: keep the request delay and treat "missing from the public list" as not closed; closing is decided by per-site detail API/HTTP status.
-- `modes/_shared.md` and parts of the workflow are adapted from career-ops (MIT); attribution lives in `THIRD_PARTY_NOTICES.md`, not `LICENSE` (so GitHub detects plain MIT).

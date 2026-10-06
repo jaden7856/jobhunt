@@ -10,7 +10,7 @@ Ask each step 1–4 questions at a time (the host's choice UI if it has one, oth
 ### 0. Direction
 
 - Target position: one of `roles` in `data/profile/targets.yaml` / enter manually.
-- Job title under the name (`header.role`): recommend block E of the evaluation, or else the posting's position name or the chosen target role, and let the user settle the wording. Once they pick a usual wording, write it to `role` in `data/profile/profile.yaml`.
+- Job title under the name (`header.role`): recommend the title from the evaluation's "지원 전략", or else the posting's position name or the chosen target role, and let the user settle the wording. Once they pick a usual wording, write it to `role` in `data/profile/profile.yaml`.
 - Whether there is a posting link or body.
   - If `data/job_postings/<posting>.eval.md` exists, show its requirement map, projects to emphasize, and gap handling as the recommendation. Reuse them as they are.
   - With no evaluation, extract 3–5 key requirements from the posting and show them. Use that list to set project order, SKILLS (overlap with the posting), and terms.

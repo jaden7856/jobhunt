@@ -11,7 +11,7 @@ From a document pass to an offer: prepare each hiring stage, rehearse the questi
 
 ## Sources
 
-- Facts: only primary files (`_shared.md` §2). An answer never claims more than `data/experience/` supports.
+- Facts: only primary files (`_shared.md` "Facts and evidence"). An answer never claims more than `data/experience/` supports.
 - The user's study notes, if any: path under "면접 공부 노트" in `data/preferences/standing.md`. Read the parts that match the posting's stack and the resume. They hold the user's own answers and follow-ups — use that wording as the baseline, quiz from it, and point out anything that looks wrong or outdated instead of silently replacing it.
 - Method: `references/interview_questions.md`.
 - Stories: `data/interview/stories.md` — behavioral stories (incident, deadline cut, unknown technology, disagreement, a reverted decision, why leaving), one `## ` heading each, told as situation → my actions in time order → result → follow-up. Build it once from `data/experience/`, reuse it for every company.
@@ -30,7 +30,7 @@ From a document pass to an offer: prepare each hiring stage, rehearse the questi
      | 과제 | code quality, judgment | README with decisions and trade-offs, tests, commits that read as steps |
      | 직무 / 기술 인터뷰 | depth behind every resume line | the questions below, two follow-ups deep |
      | 임원 / 대표 | ownership, direction | impact in business terms, first 3 months |
-     | 처우 협의 | — | `targets.yaml` floor and target; total-package terms (`_shared.md` §5) |
+     | 처우 협의 | — | `targets.yaml` floor and target; total-package terms (`_shared.md` "Reading Korean postings") |
 
    - **이력서에서 나올 질문** — for every project: the hardest part and how the cause was narrowed; why the adopted option and why the rejected one lost; how each number was measured and what produced it; my part vs the team's and team size; what I would change, and the monitoring or prevention afterwards. For every technology on the resume: why this one, how it differs from the alternative. Phrase them in the styles of `interview_questions.md` ("Resume check", "Number check"), each with two likely follow-ups.
    - **기술 질문** — from the posting's stack and the resume, pick questions across the styles (concept + design reason, internals, compare and choose, symptom → diagnosis, failure/extreme, integrated). Take them from the user's notes where they exist; add what the notes lack. Mark the ones most likely ("단골") first.
