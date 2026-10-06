@@ -32,22 +32,17 @@ priority_companies: "자체 채용 사이트로 주로 뽑는 국내 IT 기업 (
 reapply_days: 183               # 지원한 회사는 이 기간 동안 scan에서 뺀다
 
 # 점수 (scripts/score.py, 기준: references/scoring.md). 근무지·보상은 점수가 아니라 위 조건으로만 본다
-scoring:
-  weights: { work: 0.30, required: 0.30, preferred: 0.10, direction: 0.30 }
+scoring:                    # 개인 선호만. 공통 기준(필수·우대 충족 등급, 상한)은 scripts/score.py 와 references/scoring.md
   prefer_work:              # 하고 싶은 일. 판정 파일 direction 에 이 키를 쓴다
     payment_settlement: "결제·정산처럼 돈이 맞아야 하는 시스템"
     large_scale_product: "사용자가 많은 B2C 서비스의 API·도메인"
   avoid_work:               # 점수를 깎는 일
     admin_only: "어드민·백오피스 화면용 API 위주"
     ops_only: "운영·온콜 위주 (개발 비중이 작음)"
+  avoid_cap: 3.4            # 주 업무 방향이 avoid_work 면 보류까지
   signals:                  # 판정 파일 signals 에 적힌 키만 더한다
+    b2c: 0.3                # 일반 사용자 대상 서비스 (더 원하는 쪽에 가점)
     self_service: 0.2       # 자체 서비스를 계속 고도화하는 조직
     crunch: -0.2            # 포괄임금제 + 야근 암시
     tiny_startup: -0.3      # 5인 미만
   priority_bonus: 0.2       # 우선 기업 가점 (자동 PASS 없음)
-  core_gap_caps: { 1: 3.4, 2: 2.9 }   # 필수 요건 핵심 빈틈 개수 → 점수 상한
-  core_alt: { value: 1.75, cap_plus: 0.2 }   # 핵심 빈틈이지만 공고가 '이에 준하는 경험'을 인정할 때
-  low_work_cap: { below: 2.5, cap: 3.9 }     # 업무 대부분이 처음이면 지원 권장까지 가지 않음
-  avoid_cap: 3.4                             # 주 업무 방향이 avoid_work 면 보류까지
-  domain_new_cap: 3.9                        # 팀 제품의 핵심 도메인(예: LLM 서빙)이 처음이면 지원 고려까지
-  top_band: { required: 4.5, preferred: 4.0, cap: 4.4 }   # 4.5 이상은 필수·우대를 둘 다 대부분 채울 때만, 아니면 4.4

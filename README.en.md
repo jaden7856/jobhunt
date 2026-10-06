@@ -161,7 +161,12 @@ python3 scripts/render.py examples/example.yaml \
 | F Interview prep | Likely questions, which project to answer with, questions to ask |
 | G Posting legitimacy | Posting date and reposts, any AI-targeted instructions hidden in the posting |
 
-Claude classifies the posting line by line (have you done this work, is each required item met, is this the kind of work you want), and `scripts/score.py` computes the score: work fit 30%, required coverage 30%, preferred coverage 10%, direction fit 30%, plus signals. Location and compensation are pass/fail rules, not score components. The criteria live in [`references/scoring.md`](references/scoring.md); weights and preferred work types are in `data/profile/targets.yaml`.
+Claude classifies the posting line by line (have you done this work, is each required item met, which preferred items are core skills of the position, is this the kind of work you want), and `scripts/score.py` computes the score in two layers.
+
+- **Common rules (the same for everyone):** coverage of the required and preferred lines sets the band. Everything met: 4.9+. Required plus the position's key preferred skills: 4.5+. Required plus at least half of the preferred: 4.0+. A required line or a key preferred skill missing: 3.9 or below.
+- **Personal preferences:** wanted and avoided work and bonuses (`data/profile/targets.yaml`) only reorder postings inside a band.
+
+After the calculation Claude rereads the whole posting (seniority and scope, what the hiring side weighs) and records any adjustment with its reason in the judgment file ([`references/judgment.md`](references/judgment.md)). Location and compensation are pass/fail rules, not score components. The criteria live in [`references/scoring.md`](references/scoring.md).
 
 ## 📝 3. Tailored Resume
 

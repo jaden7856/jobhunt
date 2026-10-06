@@ -59,7 +59,7 @@ def collect(today: date, since: str) -> dict:
             location=_short_loc(c[3] if len(c) > 3 else ""), score=total, verdict=verdict,
             reason=(j.get("note") if j else "") or (c[5] if len(c) > 5 else ""),
             parts={k: round(v, 1) for k, v in (r["parts"] if r else {}).items()},
-            bonus=round(r.get("bonus", 0), 1) if r else 0, caps=(r["caps"] if r else []),
+            bonus=round(r.get("bonus", 0), 1) if r else 0, caps=(r["caps"] if r else []), band=(r.get("band", "") if r else ""),
             closes=_closes(j.get("source", "")) if j else "", seen=seen,
             new=bool(seen) and seen >= since,
             judgment=jf.group(1) if jf else ""))
@@ -424,7 +424,7 @@ def body(data: dict) -> str:
                 items = "".join(f'<li><span>{name}</span><i></i><b>{r["parts"].get(key, 0):.1f}</b></li>' for key, name in PART_NAMES)
                 items += f'<li><span>신호·가점</span><i></i><b>{r["bonus"]:+.1f}</b></li>'
                 caps = " · ".join(_e(c) for c in r["caps"])
-                meta = (f'상한: {caps}<br>' if caps else "") + f'판정 파일 <code>{_e(r["judgment"])}</code>' + \
+                meta = (f'등급 {_e(r["band"])}<br>' if r.get("band") else "") + (f'상한·검토: {caps}<br>' if caps else "") + f'판정 파일 <code>{_e(r["judgment"])}</code>' + \
                        (f'<br>처음 찾은 날 {_e(r["seen"])}' if r["seen"] else "")
                 out.append(f'<tr class="att" id="{att_id}" hidden><td colspan="8"><div class="att-doc">'
                            f'<p class="att-no">붙임 {n}. 항목별 점수 (1–5)</p><ul class="leaders">{items}</ul>'

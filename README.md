@@ -159,7 +159,12 @@ python3 scripts/render.py examples/example.yaml \
 | F 면접 준비 | 예상 질문, 답에 쓸 프로젝트, 역질문 |
 | G 공고 신뢰도 | 게시일·재게시, 공고 안의 AI 대상 지시문 |
 
-Claude가 공고를 한 줄씩 분류하면(해 본 일인지, 필수 요건을 채웠는지, 원하는 방향의 일인지) `scripts/score.py`가 업무 적합 30%, 필수 충족 30%, 우대 충족 10%, 방향 적합 30%에 신호를 더해 계산합니다. 근무지와 보상은 점수가 아니라 조건으로만 봅니다. 기준은 [`references/scoring.md`](references/scoring.md), 가중치와 선호 업무는 `data/profile/targets.yaml`에서 바꿀 수 있어요.
+Claude가 공고를 한 줄씩 분류하면(해 본 일인지, 필수 요건을 채웠는지, 우대 중 포지션의 핵심 기술은 무엇인지, 원하는 방향의 일인지) `scripts/score.py`가 계산합니다. 점수는 두 층으로 나뉩니다.
+
+- **공통 기준 (누구에게나 같음):** 필수·우대를 얼마나 채웠는지로 등급이 정해집니다. 모두 충족하면 4.9 이상, 필수와 포지션 핵심 우대를 채우면 4.5 이상, 필수와 우대 절반 이상이면 4.0 이상, 필수나 핵심 우대를 못 채우면 3.9 이하입니다.
+- **개인 선호:** 하고 싶은 일·피하는 일·가점(`data/profile/targets.yaml`)은 등급 안에서 순서만 바꿉니다.
+
+계산 뒤에는 Claude가 공고 전체를 다시 읽고(연차·범위, 채용 측이 무겁게 볼 요건) 조정 이유를 판정 파일에 남깁니다([`references/judgment.md`](references/judgment.md)). 근무지와 보상은 점수가 아니라 조건으로만 봅니다. 기준은 [`references/scoring.md`](references/scoring.md).
 
 ## 📝 3. 맞춤 이력서
 

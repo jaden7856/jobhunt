@@ -37,6 +37,7 @@ scripts/weekly.sh           the LLM-free part of the weekly scan (scan → alive
 scripts/providers/          per-site collectors
 references/sources.md       per-site collection method (endpoints, body location, closing check)
 references/scoring.md       posting scoring (classification, calculation, calibration)
+references/judgment.md      what the agent judges beyond the scripts (score review, searching where scripts can't reach)
 references/company_seed.yaml default candidates for company discovery (well-known Korean dev companies)
 references/yaml_schema.md   resume yaml format
 references/writing_rules.md sentence rules and how to check them

@@ -7,6 +7,7 @@ Collect postings from job sites, screen them once, and queue them in `data/searc
 - `data/search/sources.yaml`: channels, title and location filters, priority companies
 - `data/profile/brief.md`: first-pass screening criteria (if missing or still the template, build it via `modes/onboard.md` first)
 - `references/scoring.md`: scoring (classification and calculation); `data/profile/calibration.md`: judgment cases the user corrected
+- `references/judgment.md`: what the agent judges on top of the scripts (score review, searching where the scripts don't reach)
 - `data/search/scan-history.tsv`, `data/search/pipeline.md`, `data/applications/tracker.md`, `data/search/blacklist.md`: duplicates, cooldown, exclusions
 - `references/sources.md`: per-site endpoints, body location, closing check
 
@@ -16,6 +17,7 @@ Collect postings from job sites, screen them once, and queue them in `data/searc
 
 1. **Collect.** Run `python3 scripts/scan.py` first. It fetches Wanted · Jumpit · LinkedIn · Greenhouse · Toss · NHN · Kakao · greetinghr · ninehire, finishes steps 2–3 and the logging, puts new postings under "새로 수집 (선별 전)" in `pipeline.md`, and puts bodies in `data/search/inbox/`.
    - Collect only the channels the output lists as "스크립트 미지원" (Saramin, JobKorea, Remember, browser-only companies) by hand, using `references/sources.md`. Add the results under "새로 수집 (선별 전)" in the same format and log them in `scan-history.tsv`.
+   - Then widen the search by hand per `references/judgment.md` §2 (browser-only companies, new companies, titles the filter missed), leaning toward the user's preferences in `brief.md`.
    - A channel marked `✗` means its response shape changed. Report it instead of passing it off as 0 results; once confirmed, fix `scripts/providers/` and `references/sources.md`.
    - If a first run piles up too many postings, ask the user about `--seed` (record current postings as seen only).
    - Priority companies (`priority: true`) are always scanned in full.
@@ -27,10 +29,10 @@ Collect postings from job sites, screen them once, and queue them in `data/searc
    - Years: if the posting states a number of years, apply `career_filter` from `sources.yaml`.
 3. **Fetch bodies.** Fetch the full detail (qualifications, preferred, main tasks) of the remaining postings. Expand umbrella postings down to their sub-positions (for Toss the script gathers sub-links at the end of the body).
 4. **First-pass screening.** For each posting under "새로 수집 (선별 전)", follow `references/scoring.md` in order. Never estimate a score.
-   - Scaffold with `python3 scripts/score.py init <inbox body> -o data/search/judgments/<source>_<id>.yaml`, then fill every line's classification (fit · met · gap) plus direction, gates, signals, and `domain_new` (a specialised technical domain the team's product is built around that the user has never worked in, e.g. LLM serving). The `언어:` hint at the end of a line is only a hint; judge conditions from the qualification sentences.
+   - Scaffold with `python3 scripts/score.py init <inbox body> -o data/search/judgments/<source>_<id>.yaml`, then fill every line's classification (fit · met · gap) plus `key: true` on preferred lines that are core skills of the position, direction, gates, signals, and `domain_new` (a specialised technical domain the team's product is built around that the user has never worked in, e.g. LLM serving). The `언어:` hint at the end of a line is only a hint; judge conditions from the qualification sentences.
    - If an exclusion gate hits, write only `fail` and the evidence sentence under `gates` and skip line classification.
    - If a posting resembles a case in `calibration.md`, classify it the same way.
-   - Use the score and verdict from `python3 scripts/score.py data/search/judgments/<file>.yaml` as is. 3.5+ `PASS`, 3.0–3.4 `MARGINAL`, below `FAIL`.
+   - Score with `python3 scripts/score.py data/search/judgments/<file>.yaml`, then review it with `references/judgment.md` §1; record any adjustment as `review` in the judgment file and re-run. Use the resulting score and verdict as is. 3.5+ `PASS`, 3.0–3.4 `MARGINAL`, below `FAIL`.
    - Priority companies get `priority: true` in the judgment file (bonus only, no automatic PASS).
 5. **Record.**
    - Remove screened lines from "새로 수집 (선별 전)". Move PASS and MARGINAL to "대기" (replace `선별 전` with `triage: PASS 3.8/5`, followed by a one-line reason and `판정: data/search/judgments/<file>.yaml`); move FAIL to "제외 (YYYY-MM-DD)" with the reason.

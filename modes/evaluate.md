@@ -44,7 +44,7 @@ Structure adapted from career-ops `modes/ko/gonggo.md` (blocks A–F) for Korean
 
 ## Score
 
-`scripts/score.py` calculates it with the same criteria as first-pass screening (`references/scoring.md`). Never estimate by hand.
+`scripts/score.py` calculates it with the same criteria as first-pass screening (`references/scoring.md`). Never estimate by hand. Then review the result against the whole posting with `references/judgment.md` §1 (seniority, what the hiring side weighs, `key` preferred lines) and record any adjustment as `review` in the judgment file.
 - If the first pass left a judgment file in `data/search/judgments/`, re-check and fix its classification against the block C map; otherwise create one.
 - `충족`/`부분`/`없음` in block C must match `yes`/`partial`/`no` in the judgment file. For `없음`, also give the gap type (`bridge`/`core`).
 - 4.0+ "지원 권장", 3.5–3.9 "지원 고려", 3.0–3.4 "보류", below "제외". Put `score.py`'s per-item scores (업무 · 필수 · 우대 · 방향 · 신호) verbatim on the first line of the report.
