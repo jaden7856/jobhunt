@@ -79,7 +79,7 @@ Python 3.9 이상과 다음 중 하나가 필요합니다.
 - **Windows** (WSL2 + Ubuntu): 아래 [Windows (WSL2)](#windows-wsl2) 참고
 
 ```bash
-git clone https://github.com/jaden7856/jobhunt.git ~/jobhunt
+git clone https://github.com/jojaden/jobhunt.git ~/jobhunt
 cd ~/jobhunt
 bash scripts/setup.sh
 ```
