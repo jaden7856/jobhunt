@@ -50,3 +50,4 @@ scoring:
   low_work_cap: { below: 2.5, cap: 3.9 }     # 업무 대부분이 처음이면 지원 권장까지 가지 않음
   avoid_cap: 3.4                             # 주 업무 방향이 avoid_work 면 보류까지
   domain_new_cap: 3.9                        # 팀 제품의 핵심 도메인(예: LLM 서빙)이 처음이면 지원 고려까지
+  top_band: { required: 4.5, preferred: 4.0, cap: 4.4 }   # 4.5 이상은 필수·우대를 둘 다 대부분 채울 때만, 아니면 4.4

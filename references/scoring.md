@@ -85,8 +85,10 @@ note: "한 줄 근거"
 
 ```
 score = work×0.30 + required×0.30 + preferred×0.10 + direction×0.30 + sum of signals (+ priority bonus)
-      → clamp to 1–5 → cap for required core gaps → cap 3.9 if work fit is below 2.5 → cap 3.4 if `direction.primary` is an `avoid_work` key (`avoid_cap`; a product-API job whose generic requirements all read "met" shouldn't reach a recommendation) → cap 3.9 if `domain_new` is set (`domain_new_cap`) → one decimal
+      → clamp to 1–5 → cap for required core gaps → cap 3.9 if work fit is below 2.5 → cap 3.4 if `direction.primary` is an `avoid_work` key (`avoid_cap`; a product-API job whose generic requirements all read "met" shouldn't reach a recommendation) → cap 3.9 if `domain_new` is set (`domain_new_cap`) → cap 4.4 unless required ≥ 4.5 and preferred ≥ 4.0 (`top_band`; preferred is skipped when the posting lists none) → one decimal
 ```
+
+4.5 and above means the user meets most of both the required and the preferred lines. A posting that fits the direction but misses something the hiring side weighs (public cloud, English communication) stays at 4.4, still 지원 권장.
 
 Change weights, bonuses, and caps in `scoring` of `targets.yaml`.
 

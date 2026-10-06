@@ -109,6 +109,11 @@ def score(j: dict, cfg: dict) -> dict:
     if j.get("domain_new") and total > domain_cap:
         caps.append(f"핵심 도메인 처음 ({j['domain_new']}) → 상한 {domain_cap}")
         total = domain_cap
+    top = {"required": 4.5, "preferred": 4.0, "cap": 4.4, **(cfg.get("top_band") or {})}   # 4.5 이상은 필수·우대를 둘 다 대부분 채울 때만
+    weak = req < float(top["required"]) or (pref_items and pref < float(top["preferred"]))
+    if weak and total > float(top["cap"]):
+        caps.append(f"필수·우대 대부분 충족 아님 (필수 {req:.1f} · 우대 {pref:.1f}) → 상한 {top['cap']}")
+        total = float(top["cap"])
     total = round(total, 1)
     verdict, triage = next((v, t) for lim, v, t in VERDICTS if total >= lim)
     return dict(total=total, verdict=verdict, triage=triage, parts=parts, bonus=bonus, caps=caps, gate=[])
