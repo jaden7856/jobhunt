@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "generatedAt": "2026-09-30T00:00:00+09:00",
-  "title": "Design System: resume-builder posting report (공고 현황)",
+  "title": "Design System: jobhunt posting report (공고 현황)",
   "extensions": {
     "source": "scripts/report_html.py (CSS constant; body(), fragment(), document())",
     "colorMeta": {

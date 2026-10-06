@@ -1,7 +1,7 @@
-<h1 align="center">resume-builder</h1>
+<h1 align="center">jobhunt</h1>
 
 <p align="center">
-  Find Korean developer job postings, score how well each one fits you, and build a resume tailored to each posting as an A4 PDF.<br/>
+  Find Korean developer job postings, score how well each one fits you, write a tailored resume and cover letter for each, then prepare the interviews and track every application.<br/>
   An agent skill for Codex, Claude Code, Grok and any other AI agent — it gets sharper the more you use it.
 </p>
 
@@ -23,7 +23,7 @@
 
 <p align="center"><img src="assets/flow.en.png" alt="Find → Evaluate → Tailor → Track &amp; learn workflow" width="820"/></p>
 
-**resume-builder** is an AI agent skill (`SKILL.md` and `AGENTS.md`) plus Python scripts. It is not tied to one AI: Codex, Claude Code, Grok, Gemini, Cursor, or any agent that can read files in this folder and run commands follows the same steps.
+**jobhunt** is an AI agent skill (`SKILL.md` and `AGENTS.md`) plus Python scripts. It is not tied to one AI: Codex, Claude Code, Grok, Gemini, Cursor, or any agent that can read files in this folder and run commands follows the same steps.
 
 - **Scripts:** Mechanical work (collecting postings, checking whether they're still open, updating the tracker) runs without an LLM.
 - **AI agent:** Handles the judgment calls (does this posting fit you? what should the resume lead with?) by following the procedures in `modes/`.
@@ -81,8 +81,8 @@ Requires Python 3.9+ and one of:
 - **Windows** (WSL2 + Ubuntu): see [Windows (WSL2)](#windows-wsl2) below
 
 ```bash
-git clone https://github.com/jaden7856/resume-builder.git ~/resume-builder
-cd ~/resume-builder
+git clone https://github.com/jaden7856/jobhunt.git ~/jobhunt
+cd ~/jobhunt
 bash scripts/setup.sh
 ```
 
@@ -97,12 +97,12 @@ The scripts use bash and apt, so on Windows they run inside Ubuntu on WSL2.
    wsl --install -d Ubuntu
    ```
 2. Open **Ubuntu** from the Start menu, create a user and password, then run the install commands above as they are. `setup.sh` installs pip, Chromium's system libraries, Korean fonts (Noto CJK, Pretendard) and poppler with apt, so it may ask for your sudo password.
-3. **Run the AI agent inside WSL too.** Install Codex, Claude Code, etc. in the Ubuntu terminal and start it in `~/resume-builder`, so the skill links (`~/.codex/skills`, `~/.claude/skills`) and `data/` paths line up. With VS Code or Cursor, open the folder through the WSL extension (`code ~/resume-builder`).
+3. **Run the AI agent inside WSL too.** Install Codex, Claude Code, etc. in the Ubuntu terminal and start it in `~/jobhunt`, so the skill links (`~/.codex/skills`, `~/.claude/skills`) and `data/` paths line up. With VS Code or Cursor, open the folder through the WSL extension (`code ~/jobhunt`).
 
 Good to know:
 - **Clone into the WSL home (`~`).** Under `/mnt/c/...` (the Windows drive) file access is slow and the skill links can break; `setup.sh` warns about it.
-- **Opening the output:** resume PDFs and the posting report HTML are written inside WSL. Run `explorer.exe .` to open the current folder in Windows Explorer, or type `\\wsl$\Ubuntu\home\<user>\resume-builder` into the Explorer address bar.
-- **Scheduled scans:** WSL only runs while you are signed in to Windows. To run `weekly.sh` regularly, use cron inside WSL, or register `wsl -d Ubuntu -- bash -lc "~/resume-builder/scripts/weekly.sh"` in Windows Task Scheduler.
+- **Opening the output:** resume PDFs and the posting report HTML are written inside WSL. Run `explorer.exe .` to open the current folder in Windows Explorer, or type `\\wsl$\Ubuntu\home\<user>\jobhunt` into the Explorer address bar.
+- **Scheduled scans:** WSL only runs while you are signed in to Windows. To run `weekly.sh` regularly, use cron inside WSL, or register `wsl -d Ubuntu -- bash -lc "~/jobhunt/scripts/weekly.sh"` in Windows Task Scheduler.
 
 </details>
 
@@ -130,15 +130,15 @@ If a folder or a link to somewhere else already exists under that name, it's lef
 Update:
 
 ```bash
-cd ~/resume-builder && git pull   # data/ stays as is
+cd ~/jobhunt && git pull   # data/ stays as is
 ```
 
 Starting it in each agent:
 
 | Agent | Start |
 |---|---|
-| Codex | `cd ~/resume-builder && codex` — reads `AGENTS.md`, and the skill is linked into `~/.codex/skills` |
-| Claude Code | `cd ~/resume-builder && claude` — `CLAUDE.md` imports `AGENTS.md`, and the skill is linked into `~/.claude/skills` |
+| Codex | `cd ~/jobhunt && codex` — reads `AGENTS.md`, and the skill is linked into `~/.codex/skills` |
+| Claude Code | `cd ~/jobhunt && claude` — `CLAUDE.md` imports `AGENTS.md`, and the skill is linked into `~/.claude/skills` |
 | Grok, Gemini, Cursor, others | open the agent in this folder and say "read `AGENTS.md` and start" |
 
 Features that differ between agents, such as web search (Firecrawl, …) or publishing HTML pages (Claude Artifacts, …), are used when present; without them the agent gives you the file path or reports that channel as not scanned.

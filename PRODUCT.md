@@ -16,7 +16,7 @@ One developer running their own job search with an AI agent: a Korean backend en
 
 ## Product Purpose
 
-resume-builder finds Korean developer job postings (job boards and companies' own career sites), scores each against the user's experience and conditions, and builds a tailored resume PDF per posting. The posting report is where the user decides what to apply to next and keeps track of applications and deadlines. Success: the user can pick this week's applications and spot anything closing soon in a couple of minutes, and trusts why each posting got its score.
+jobhunt finds Korean developer job postings (job boards and companies' own career sites), scores each against the user's experience and conditions, and builds a tailored resume PDF per posting. The posting report is where the user decides what to apply to next and keeps track of applications and deadlines. Success: the user can pick this week's applications and spot anything closing soon in a couple of minutes, and trusts why each posting got its score.
 
 ## Positioning
 

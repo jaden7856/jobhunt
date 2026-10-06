@@ -1,5 +1,5 @@
 ---
-name: resume-builder posting report (공고 현황)
+name: jobhunt posting report (공고 현황)
 description: The weekly posting queue issued as one ruled Korean official certificate — 발급 번호, 결재란, 판정 도장.
 colors:
   paper: "#ffffff"
@@ -122,7 +122,7 @@ components:
     padding: "0 0.3em"
 ---
 
-# Design System: resume-builder posting report (공고 현황)
+# Design System: jobhunt posting report (공고 현황)
 
 ## Overview
 

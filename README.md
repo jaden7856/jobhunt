@@ -1,7 +1,7 @@
-<h1 align="center">resume-builder</h1>
+<h1 align="center">jobhunt</h1>
 
 <p align="center">
-  한국 개발자 채용 공고를 찾고, 나와 얼마나 맞는지 평가하고, 공고마다 맞춘 이력서를 A4 PDF로 만듭니다.<br/>
+  한국 개발자 채용 공고를 찾고, 나와 얼마나 맞는지 평가하고, 공고마다 맞춘 이력서·자기소개서를 만들고, 면접 준비와 지원 관리까지 합니다.<br/>
   Codex·Claude Code·Grok 등 어떤 AI 에이전트에서도 쓰는, 쓸수록 내 기준이 쌓여 선별과 이력서가 정확해지는 스킬입니다.
 </p>
 
@@ -23,7 +23,7 @@
 
 <p align="center"><img src="assets/flow.ko.png" alt="공고 찾기 → 맞춤도 평가 → 맞춤 이력서 → 기록·학습 흐름" width="820"/></p>
 
-**resume-builder**는 AI 에이전트용 스킬(`SKILL.md`·`AGENTS.md`)과 Python 스크립트로 이루어져 있습니다. 특정 AI에 묶여 있지 않아 Codex, Claude Code, Grok, Gemini, Cursor 등 이 폴더의 파일을 읽고 명령을 실행할 수 있는 에이전트라면 같은 절차로 씁니다.
+**jobhunt**는 AI 에이전트용 스킬(`SKILL.md`·`AGENTS.md`)과 Python 스크립트로 이루어져 있습니다. 특정 AI에 묶여 있지 않아 Codex, Claude Code, Grok, Gemini, Cursor 등 이 폴더의 파일을 읽고 명령을 실행할 수 있는 에이전트라면 같은 절차로 씁니다.
 
 - **스크립트:** 공고 수집, 마감 확인, 지원 현황 기록처럼 판단이 필요 없는 일은 LLM 없이 처리합니다.
 - **AI 에이전트:** 공고가 나와 맞는지, 이력서에 무엇을 앞세울지처럼 판단이 필요한 일을 맡고, 모드 문서(`modes/`)의 절차대로 진행합니다.
@@ -79,8 +79,8 @@ Python 3.9 이상과 다음 중 하나가 필요합니다.
 - **Windows** (WSL2 + Ubuntu): 아래 [Windows (WSL2)](#windows-wsl2) 참고
 
 ```bash
-git clone https://github.com/jaden7856/resume-builder.git ~/resume-builder
-cd ~/resume-builder
+git clone https://github.com/jaden7856/jobhunt.git ~/jobhunt
+cd ~/jobhunt
 bash scripts/setup.sh
 ```
 
@@ -95,12 +95,12 @@ bash scripts/setup.sh
    wsl --install -d Ubuntu
    ```
 2. 시작 메뉴에서 **Ubuntu**를 열고 사용자 이름·암호를 만든 뒤, 위 설치 명령을 그대로 실행합니다. `setup.sh`가 pip, Chromium 실행용 라이브러리, 한글 폰트(Noto CJK·Pretendard), poppler를 apt로 설치하므로 중간에 sudo 암호를 물을 수 있습니다.
-3. **AI 에이전트도 WSL 안에서 실행합니다.** Codex·Claude Code 등을 Ubuntu 터미널에 설치해 `~/resume-builder`에서 시작해야 스킬 연결(`~/.codex/skills`, `~/.claude/skills`)과 `data/` 경로가 맞습니다. VS Code·Cursor를 쓴다면 WSL 확장으로 이 폴더를 엽니다(`code ~/resume-builder`).
+3. **AI 에이전트도 WSL 안에서 실행합니다.** Codex·Claude Code 등을 Ubuntu 터미널에 설치해 `~/jobhunt`에서 시작해야 스킬 연결(`~/.codex/skills`, `~/.claude/skills`)과 `data/` 경로가 맞습니다. VS Code·Cursor를 쓴다면 WSL 확장으로 이 폴더를 엽니다(`code ~/jobhunt`).
 
 알아 둘 점:
 - **clone은 WSL 홈(`~`)에 하세요.** `/mnt/c/...`(Windows 드라이브)에 두면 파일 접근이 느리고 스킬 링크가 깨질 수 있습니다. `setup.sh`가 이 경우 경고합니다.
-- **결과물 열기:** 이력서 PDF·공고 현황표 HTML은 WSL 안에 만들어집니다. `explorer.exe .`로 지금 폴더를 Windows 탐색기에서 열거나, 탐색기 주소창에 `\\wsl$\Ubuntu\home\<사용자>\resume-builder`를 넣으면 됩니다.
-- **주간 수집 예약:** WSL은 Windows에 로그인해 있을 때만 돌아갑니다. `weekly.sh`를 정기 실행하려면 WSL의 cron, 또는 Windows 작업 스케줄러에서 `wsl -d Ubuntu -- bash -lc "~/resume-builder/scripts/weekly.sh"`를 등록합니다.
+- **결과물 열기:** 이력서 PDF·공고 현황표 HTML은 WSL 안에 만들어집니다. `explorer.exe .`로 지금 폴더를 Windows 탐색기에서 열거나, 탐색기 주소창에 `\\wsl$\Ubuntu\home\<사용자>\jobhunt`를 넣으면 됩니다.
+- **주간 수집 예약:** WSL은 Windows에 로그인해 있을 때만 돌아갑니다. `weekly.sh`를 정기 실행하려면 WSL의 cron, 또는 Windows 작업 스케줄러에서 `wsl -d Ubuntu -- bash -lc "~/jobhunt/scripts/weekly.sh"`를 등록합니다.
 
 </details>
 
@@ -128,15 +128,15 @@ bash scripts/setup.sh
 업데이트:
 
 ```bash
-cd ~/resume-builder && git pull   # data/ 는 그대로
+cd ~/jobhunt && git pull   # data/ 는 그대로
 ```
 
 에이전트별로 시작하는 법:
 
 | 에이전트 | 시작 |
 |---|---|
-| Codex | `cd ~/resume-builder && codex` — `AGENTS.md`를 읽고, 스킬(`~/.codex/skills`)로도 연결됩니다 |
-| Claude Code | `cd ~/resume-builder && claude` — `CLAUDE.md`가 `AGENTS.md`를 불러오고, 스킬(`~/.claude/skills`)로도 연결됩니다 |
+| Codex | `cd ~/jobhunt && codex` — `AGENTS.md`를 읽고, 스킬(`~/.codex/skills`)로도 연결됩니다 |
+| Claude Code | `cd ~/jobhunt && claude` — `CLAUDE.md`가 `AGENTS.md`를 불러오고, 스킬(`~/.claude/skills`)로도 연결됩니다 |
 | Grok·Gemini·Cursor 등 | 이 폴더에서 에이전트를 열고 "`AGENTS.md`를 읽고 시작해줘"라고 하면 됩니다 |
 
 웹 검색(Firecrawl 등)이나 HTML 페이지 게시(Claude Artifact 등)처럼 에이전트마다 다른 기능은 있으면 쓰고, 없으면 파일 경로를 알려 주거나 해당 채널을 "미수집"으로 보고합니다.

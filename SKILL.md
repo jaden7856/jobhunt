@@ -1,5 +1,5 @@
 ---
-name: resume-pdf-builder
+name: jobhunt
 description: Korean developer job search, end to end — finds postings (Wanted, Jumpit, LinkedIn, Saramin, JobKorea, company career sites), scores them against the user's experience, builds a tailored resume A4 PDF, writes cover-letter answers, researches the company, prepares and drills interviews, and logs results. Use for finding or evaluating postings, a company-specific resume or cover letter, interview prep or mock interviews, and application status.
 argument-hint: "[menu | onboard | scan | evaluate <url> | tailor | cover | deep | interview [plan|practice|debrief] | track | outcome | report]"
 ---
@@ -68,7 +68,7 @@ data/                       user data (git-ignored; only the structure is commit
 
 ## Modes
 
-This skill is one router over several modes; they share `data/`, so one entry point keeps the steps connected. Pick the mode from the argument when the host passes one (`/resume-pdf-builder interview practice`), otherwise from the request. Hosts without slash commands get the same result from "resume-pdf-builder 의 interview 모드로 …".
+This skill is one router over several modes; they share `data/`, so one entry point keeps the steps connected. Pick the mode from the argument when the host passes one (`/jobhunt interview practice`), otherwise from the request. Hosts without slash commands get the same result from "jobhunt 의 interview 모드로 …".
 
 | Argument | Example request | Mode |
 |---|---|---|

@@ -6,7 +6,7 @@ Guidance for any AI coding agent working in this repository — Codex, Claude Co
 
 Two things in one folder:
 
-- **An agent skill** (`resume-pdf-builder`, the open `SKILL.md` format): `SKILL.md` is a router: a mode argument or the request picks a mode file in `modes/` (onboard · scan · evaluate · tailor · cover · deep · interview · track · outcome). Agents that load skills get it through `scripts/setup.sh`, which symlinks this repo into their skill folders; agents that don't simply run in this folder and follow this file. Either way edits here are live immediately.
+- **An agent skill** (`jobhunt`, the open `SKILL.md` format): `SKILL.md` is a router: a mode argument or the request picks a mode file in `modes/` (onboard · scan · evaluate · tailor · cover · deep · interview · track · outcome). Agents that load skills get it through `scripts/setup.sh`, which symlinks this repo into their skill folders; agents that don't simply run in this folder and follow this file. Either way edits here are live immediately.
 - **LLM-free Python scripts** under `scripts/` that do everything not needing judgment: collecting Korean job postings, closing checks, the application tracker, scoring arithmetic, company discovery, and resume PDF builds.
 
 If the user asks to find/evaluate postings, write a resume or cover letter, prepare for an interview, or log an application, that is *using* the skill: follow `SKILL.md` (read `modes/_shared.md` first). If they ask to change the tool itself, you are editing the scripts/modes below.
