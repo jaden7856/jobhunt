@@ -76,6 +76,7 @@ note: "한 줄 근거"
 | `core` | the career or core domain itself is missing (e.g. N years in payments required, expert in a field never touched) | 1.0 | 3.4 with one, 2.9 with two |
 | `core` + `alt: true` | a core gap, but the posting accepts substitute experience ("또는 이에 준하는 경험") | 1.75 | above cap +0.2 (when every core gap is alt) |
 
+- A required line that names a specific language or framework other than the user's (Python/Django, Kotlin/Spring …) is `met: no, gap: bridge` even when it adds "또는 이에 준하는 역량" or is phrased as "…을 사용합니다" inside the qualifications. The substitute clause only keeps the stack gate at `pass`; it never makes the line met. Only language-neutral lines ("하나 이상의 언어", "언어 무관") count as met, and a separate tools/tech-stack section outside the qualifications is team stack, not a requirement.
 - Personality and attitude lines ("서비스에 애착", "기술 도전을 즐김", "소통을 잘함") stay out of required. Classify only verifiable experience and skills.
 - Which requirements are core, as decided by the user, is in the `scoring` comments of `targets.yaml` and in `data/profile/calibration.md`. Follow them.
 
