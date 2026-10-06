@@ -63,6 +63,19 @@ def collect(today: date, since: str) -> dict:
             closes=_closes(j.get("source", "")) if j else "", seen=seen,
             new=bool(seen) and seen >= since,
             judgment=jf.group(1) if jf else ""))
+    pipe = K.read_text(K.P["pipeline"]) or ""
+    for a in K.read_tracker():                    # 평가까지 마치고 아직 지원하지 않은 공고도 판정 구간에 함께 둔다
+        if a["state"] != "평가함":
+            continue
+        m = re.search(rf"#{a['num']:03d} \| (\S+)", pipe)
+        sc = re.match(r"([\d.]+)/5", a["score"])
+        total = float(sc.group(1)) if sc else None
+        loc = re.search(r"근무지 ([^·;(]+)", a["memo"])
+        rows.append(dict(
+            url=m.group(1) if m else "", company=a["company"], title=a["role"], location=loc.group(1).strip() if loc else "",
+            score=total, verdict=next(v for lim, v, _ in S.VERDICTS if total >= lim) if total is not None else "확인 필요",
+            reason=f"평가함 ({a['date']} 평가, 이력서 PDF {a['pdf']}) — 아직 지원 전", parts={}, bonus=0, caps=[], band="",
+            closes="", seen=a["date"], new=False, judgment=""))
     apps = [dict(no=a["num"], date=a["date"], company=a["company"], role=a["role"], state=a["state"],
                  memo=re.sub(r"\s+", " ", a["memo"]))
             for a in K.read_tracker() if a["state"] in APPLIED]
