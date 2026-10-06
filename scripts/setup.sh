@@ -64,6 +64,16 @@ if [ "$SKILL" = 1 ]; then
 fi
 [ "$ENV" = 1 ] || exit 0
 
+if grep -qi microsoft /proc/version 2>/dev/null; then   # Windows WSL2
+  case "$(pwd -P)" in
+    /mnt/*) echo "  ⚠ Windows 드라이브(/mnt/...)에 있습니다. 느리고 링크가 깨질 수 있어 WSL 홈(~)에 clone 하는 걸 권합니다." ;;
+  esac
+fi
+if [[ "$(uname)" != "Darwin" ]] && ! python3 -m pip --version >/dev/null 2>&1; then
+  echo "▶ pip"
+  sudo apt-get update -qq && sudo apt-get install -y -qq python3-pip
+fi
+
 PIP_FLAGS=""
 python3 -m pip install --help 2>/dev/null | grep -q -- "--break-system-packages" && PIP_FLAGS="--break-system-packages"
 
@@ -75,6 +85,9 @@ if [ -n "${PLAYWRIGHT_BROWSERS_PATH:-}" ] && ls "$PLAYWRIGHT_BROWSERS_PATH" 2>/d
   echo "  이미 설치됨 ($PLAYWRIGHT_BROWSERS_PATH)"
 else
   python3 -m playwright install chromium
+fi
+if [[ "$(uname)" != "Darwin" ]]; then   # 새로 설치한 Ubuntu(WSL2 포함)에는 Chromium 실행용 시스템 라이브러리가 없다
+  python3 -m playwright install-deps chromium   # 내부에서 sudo apt-get 으로 설치 (암호를 물을 수 있음)
 fi
 
 echo "▶ 폰트 · poppler"

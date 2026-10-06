@@ -73,13 +73,36 @@
 
 ### 1. 설치
 
-Python 3.9 이상, macOS(Homebrew) 또는 Debian/Ubuntu(apt)가 필요합니다.
+Python 3.9 이상과 다음 중 하나가 필요합니다.
+- **macOS** (Homebrew)
+- **Linux** (Debian/Ubuntu, apt)
+- **Windows** (WSL2 + Ubuntu): 아래 [Windows (WSL2)](#windows-wsl2) 참고
 
 ```bash
 git clone https://github.com/jaden7856/resume-builder.git ~/resume-builder
 cd ~/resume-builder
 bash scripts/setup.sh
 ```
+
+<a id="windows-wsl2"></a>
+<details>
+<summary><b>Windows (WSL2)</b></summary>
+
+스크립트는 bash·apt 기반이라 Windows에서는 WSL2의 Ubuntu 안에서 실행합니다.
+
+1. **PowerShell(관리자)**에서 WSL2와 Ubuntu를 설치하고 재부팅합니다.
+   ```powershell
+   wsl --install -d Ubuntu
+   ```
+2. 시작 메뉴에서 **Ubuntu**를 열고 사용자 이름·암호를 만든 뒤, 위 설치 명령을 그대로 실행합니다. `setup.sh`가 pip, Chromium 실행용 라이브러리, 한글 폰트(Noto CJK·Pretendard), poppler를 apt로 설치하므로 중간에 sudo 암호를 물을 수 있습니다.
+3. **AI 에이전트도 WSL 안에서 실행합니다.** Codex·Claude Code 등을 Ubuntu 터미널에 설치해 `~/resume-builder`에서 시작해야 스킬 연결(`~/.codex/skills`, `~/.claude/skills`)과 `data/` 경로가 맞습니다. VS Code·Cursor를 쓴다면 WSL 확장으로 이 폴더를 엽니다(`code ~/resume-builder`).
+
+알아 둘 점:
+- **clone은 WSL 홈(`~`)에 하세요.** `/mnt/c/...`(Windows 드라이브)에 두면 파일 접근이 느리고 스킬 링크가 깨질 수 있습니다. `setup.sh`가 이 경우 경고합니다.
+- **결과물 열기:** 이력서 PDF·공고 현황표 HTML은 WSL 안에 만들어집니다. `explorer.exe .`로 지금 폴더를 Windows 탐색기에서 열거나, 탐색기 주소창에 `\\wsl$\Ubuntu\home\<사용자>\resume-builder`를 넣으면 됩니다.
+- **주간 수집 예약:** WSL은 Windows에 로그인해 있을 때만 돌아갑니다. `weekly.sh`를 정기 실행하려면 WSL의 cron, 또는 Windows 작업 스케줄러에서 `wsl -d Ubuntu -- bash -lc "~/resume-builder/scripts/weekly.sh"`를 등록합니다.
+
+</details>
 
 `setup.sh`가 하는 일:
 - **AI 에이전트 스킬 연결:** 설치된 에이전트를 찾아 스킬 폴더(Claude Code `~/.claude/skills`, Codex `~/.codex/skills`)에 이 폴더를 링크합니다. 복사가 아니라 링크라서, 이 폴더에 쌓이는 개인화가 스킬에 바로 반영됩니다. 스킬을 읽지 않는 에이전트는 이 폴더에서 실행하면 `AGENTS.md`를 따릅니다.

@@ -75,13 +75,36 @@ Rendered from the fictional sample [`examples/example.yaml`](examples/example.ya
 
 ### 1. Install
 
-Requires Python 3.9+, and macOS (Homebrew) or Debian/Ubuntu (apt).
+Requires Python 3.9+ and one of:
+- **macOS** (Homebrew)
+- **Linux** (Debian/Ubuntu, apt)
+- **Windows** (WSL2 + Ubuntu): see [Windows (WSL2)](#windows-wsl2) below
 
 ```bash
 git clone https://github.com/jaden7856/resume-builder.git ~/resume-builder
 cd ~/resume-builder
 bash scripts/setup.sh
 ```
+
+<a id="windows-wsl2"></a>
+<details>
+<summary><b>Windows (WSL2)</b></summary>
+
+The scripts use bash and apt, so on Windows they run inside Ubuntu on WSL2.
+
+1. In **PowerShell (as administrator)**, install WSL2 with Ubuntu and reboot:
+   ```powershell
+   wsl --install -d Ubuntu
+   ```
+2. Open **Ubuntu** from the Start menu, create a user and password, then run the install commands above as they are. `setup.sh` installs pip, Chromium's system libraries, Korean fonts (Noto CJK, Pretendard) and poppler with apt, so it may ask for your sudo password.
+3. **Run the AI agent inside WSL too.** Install Codex, Claude Code, etc. in the Ubuntu terminal and start it in `~/resume-builder`, so the skill links (`~/.codex/skills`, `~/.claude/skills`) and `data/` paths line up. With VS Code or Cursor, open the folder through the WSL extension (`code ~/resume-builder`).
+
+Good to know:
+- **Clone into the WSL home (`~`).** Under `/mnt/c/...` (the Windows drive) file access is slow and the skill links can break; `setup.sh` warns about it.
+- **Opening the output:** resume PDFs and the posting report HTML are written inside WSL. Run `explorer.exe .` to open the current folder in Windows Explorer, or type `\\wsl$\Ubuntu\home\<user>\resume-builder` into the Explorer address bar.
+- **Scheduled scans:** WSL only runs while you are signed in to Windows. To run `weekly.sh` regularly, use cron inside WSL, or register `wsl -d Ubuntu -- bash -lc "~/resume-builder/scripts/weekly.sh"` in Windows Task Scheduler.
+
+</details>
 
 What `setup.sh` does:
 - **Connects the agent skill:** finds the agents you have installed and links this folder into their skill folders (Claude Code `~/.claude/skills`, Codex `~/.codex/skills`). It's a link, not a copy, so the personalization that builds up here reaches the skill immediately. Agents that don't load skills follow `AGENTS.md` when started in this folder.
