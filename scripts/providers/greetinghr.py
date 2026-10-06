@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """greetinghr (*.career.greetinghr.com). 목록은 /ko/home 의 __NEXT_DATA__ ["openings"], 본문은 /ko/o/{id} 의
-getOpeningById.data.openingsInfo (2026-09-29 실측). __NEXT_DATA__ 가 없는 회사는 브라우저로 읽는다."""
+getOpeningById.data.openingsInfo (2026-09-29 실측).
+/ko/home 이 없고 회사 홈페이지에 공고 링크(…/ko/o/{id})만 걸어 둔 곳(오늘의집·쏘카)은 careers_url 에 그 홈페이지를 두고
+ats: greetinghr 로 적으면 링크를 모아 공고마다 상세에서 제목·마감을 읽는다 (2026-10-06)."""
 import json
 import re
 from typing import List, Optional
@@ -42,7 +44,10 @@ def collect(cfg: dict) -> List[Job]:
         if isinstance(ops, list):
             break
     if not isinstance(ops, list):
-        raise ShapeError(f"greetinghr openings 없음: {base}")
+        jobs = _from_links(cfg)
+        if jobs is None:
+            raise ShapeError(f"greetinghr openings 없음: {base}")
+        return jobs
     jobs = []
     for o in ops:
         pos = (o.get("openingJobPosition") or {}).get("openingJobPositions") or [{}]
@@ -51,6 +56,23 @@ def collect(cfg: dict) -> List[Job]:
         jobs.append(Job(f"greetinghr:{base.split('//')[1].split('.')[0]}", str(o["openingId"]), f"{base}/ko/o/{o['openingId']}",
                         cfg.get("name") or base, o["title"], location=" ".join(x for x in (place.get("place"), place.get("location")) if x),
                         closes_at=(o.get("dueDate") or "")[:10] or "상시", extra=dict(occupation=occ)))
+    return jobs
+
+
+def _from_links(cfg: dict) -> Optional[List[Job]]:
+    """회사 홈페이지에 걸린 greetinghr 공고 링크 → 공고별 상세. 링크가 하나도 없으면 None (형식 변경으로 보고)."""
+    status, body = http_get(cfg["careers_url"], accept="text/html")
+    urls = sorted(set(re.findall(r"https://[\w.-]+\.career\.greetinghr\.com/ko/o/\d+", body))) if status == 200 else []
+    if not urls:
+        return None
+    jobs = []
+    for url in urls:
+        oi = ((_query(_next_data(url), "getOpeningById") or {}).get("data") or {}).get("openingsInfo") or {}
+        if oi.get("status") != "OPEN":
+            continue
+        oid = url.rsplit("/", 1)[1]
+        jobs.append(Job(f"greetinghr:{url.split('//')[1].split('.')[0]}", oid, url, cfg.get("name") or base_of(url), oi.get("title") or "",
+                        closes_at=(oi.get("dueDate") or "")[:10] or "상시"))
     return jobs
 
 

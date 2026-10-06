@@ -27,11 +27,23 @@ Rules:
 
 `scan.py` covers the configured boards and companies. The agent widens the net where the scripts cannot reach, guided by the user's preferences in `brief.md` (for example: look harder at B2C services and at infra teams that work with IaC).
 
-- **Browser-only companies.** Companies in `sources.yaml` without an automatic provider: read their career page (browser or `firecrawl_scrape` in markdown; JSON extraction invents posting IDs, see `references/sources.md`). If the page turns out to use greetinghr/ninehire/etc., switch the company to that provider instead of scraping again.
+- **Browser-only companies.** `scan.py` lists every company it cannot collect, each with its reading recipe (`browse` in `sources.yaml`) and the last check. Follow the recipe directly; when a company has none, find its type in the table below, read it, and write the recipe down. Never leave these as "unscanned" when a web tool is available.
+
+  | Page type | How to tell | How to read | Write into `sources.yaml` |
+  |---|---|---|---|
+  | ATS with a public API | URL or HTML names greenhouse, lever, ninehire, greetinghr (`__NEXT_DATA__`), hiworks | the provider does it | `api:` (greenhouse/lever) or `ats:` (+ `company_id` for ninehire) — automatic from then on |
+  | Company page linking to greetinghr postings | `…career.greetinghr.com/ko/o/{id}` links in the page's plain HTML | the greetinghr provider gathers the links | `ats: greetinghr`, `careers_url` = that page |
+  | Server-rendered posting links | plain `http_get` of the list page already contains each posting's link (e.g. `/detail/{n}`) | the `htmllinks` provider | `links: '<posting URL regex>'` |
+  | Other free JSON endpoint | an API seen in the page's JS or a known vendor (Workday `…/wday/cxs/{tenant}/{site}/jobs` POST, Smilegate guest detail API) | fetch it yourself with `jobkit.http_get` or a short script | `browse: {how: <vendor>-api, note: <endpoint>}` |
+  | Script-rendered list, or plain fetch blocked (403/429) | plain HTML has no postings, or answers 403/429 | `firecrawl_scrape` markdown with `excludeTags: [img, header, footer, nav]` on the list or keyword-search URL; `formats: ["links"]` when markdown shows titles without posting URLs; then each posting body in markdown | `browse: {url, how: firecrawl-markdown \| firecrawl-links, note}` |
+  | Career URL broken or only an intro page | 404, redirect to an unrelated page, migration notice, no list | `firecrawl_search "{회사} 경력 채용"` (or a plain web search), then re-probe the found URL from the top of this table | fix `careers_url`; until then `browse: {how: search, note}` |
+
+  Firecrawl budget: markdown and links cost 1 credit per page; `json`, `query` and `summary` cost about 5 and invent posting ids or return nothing, so do not use them for listings. The service allows roughly 10 requests a minute, so send 5 at a time. Before spending credits, try the free rows of the table.
+- **Record each sweep.** Write the result per channel into `data/search/manual-checks.yaml` (format: `data/search/manual-checks.example.yaml`): `checked`, one `result` from 새 공고 · 대기함에 있음 · 맞는 공고 없음 · 일부만 확인 · 주소 깨짐 · 못 봄, a one-line `memo`, and `leads` for postings seen but not judged (no URL, no body). The posting report shows this file as its "직접 확인한 곳" and "판정 못 한 공고" sections, and a check older than 7 days counts as due again.
 - **New companies.** Tech blogs, funding news, conference sponsors, and the user's targets in `brief.md`. Add them with `discover.py set` and `promote`, never by hand-editing `sources.yaml` alone.
 - **Titles the filter missed.** Now and then skim `skipped_title` rows in `scan-history.tsv` for unusual titles that are really backend or platform roles; add the wording to `title_filter.positive` instead of rescuing rows one by one.
 - **Duplicates and liveness.** Before adding a posting found by hand, check it against `pipeline.md` and `tracker.md` with the company's other spellings (`jobkit.dup_keys`) and confirm it is still open on the company's own page.
-- **Write down what was searched.** In the scan report, list the channels checked by hand, what was found, and what could not be read, so the next run does not repeat or skip them.
+- **Write down what was searched.** Channels checked by hand, what was found and what could not be read go into `manual-checks.yaml` (above), so the next run neither repeats nor skips them; the scan report summarises it.
 
 ## 3. Where each judgment is stored
 
@@ -42,3 +54,5 @@ Rules:
 | user corrections and their lesson | `data/profile/calibration.md` |
 | personal preferences and weights | `data/profile/targets.yaml` `scoring`, summary in `brief.md` |
 | new companies and channels | `data/search/companies.yaml` → `sources.yaml` via `discover.py` |
+| how to read a browser-only company | `browse` (or `links` / `ats` / `api` once automatic) in `data/search/sources.yaml` |
+| result of each hand check, postings seen but not judged | `data/search/manual-checks.yaml` |

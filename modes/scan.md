@@ -15,8 +15,8 @@ Collect postings from job sites, screen them once, and queue them in `data/searc
 
 0. **Widen companies (once a month, or when the user says "회사 더 찾아줘").** Run `scripts/discover.py collect → probe → promote --dry-run` per "Company discovery" in `references/sources.md`, show the user the table of companies to add, then `promote`. New companies are collected from the next `scan.py` run (ask about `--seed` the first time).
 
-1. **Collect.** Run `python3 scripts/scan.py` first. It fetches Wanted · Jumpit · LinkedIn · Greenhouse · Toss · NHN · Kakao · greetinghr · ninehire, finishes steps 2–3 and the logging, puts new postings under "새로 수집 (선별 전)" in `pipeline.md`, and puts bodies in `data/search/inbox/`.
-   - Collect only the channels the output lists as "스크립트 미지원" (Saramin, JobKorea, Remember, browser-only companies) by hand, using `references/sources.md`. Add the results under "새로 수집 (선별 전)" in the same format and log them in `scan-history.tsv`.
+1. **Collect.** Run `python3 scripts/scan.py` first. It fetches Wanted · Jumpit · LinkedIn · Saramin · Greenhouse · Lever · Toss · NHN · Kakao · greetinghr · ninehire and plain-HTML career pages, finishes steps 2–3 and the logging, puts new postings under "새로 수집 (선별 전)" in `pipeline.md`, and puts bodies in `data/search/inbox/`.
+   - Collect only the channels the output lists as "스크립트 미지원" (JobKorea, Remember, browser-only companies) by hand. Each line already shows its reading recipe (`browse` in `sources.yaml`) and last check; follow it, or for a company without one use the per-type table in `references/judgment.md` §2 and save the recipe. Add the postings under "새로 수집 (선별 전)" in the same format, log them in `scan-history.tsv`, and write each channel's result to `data/search/manual-checks.yaml`. When a free path turns up, switch the company to automatic collection (`api` / `ats` / `links`) instead.
    - Then widen the search by hand per `references/judgment.md` §2 (browser-only companies, new companies, titles the filter missed), leaning toward the user's preferences in `brief.md`.
    - A channel marked `✗` means its response shape changed. Report it instead of passing it off as 0 results; once confirmed, fix `scripts/providers/` and `references/sources.md`.
    - If a first run piles up too many postings, ask the user about `--seed` (record current postings as seen only).
@@ -38,7 +38,7 @@ Collect postings from job sites, screen them once, and queue them in `data/searc
    - Remove screened lines from "새로 수집 (선별 전)". Move PASS and MARGINAL to "대기" (replace `선별 전` with `triage: PASS 3.8/5`, followed by a one-line reason and `판정: data/search/judgments/<file>.yaml`); move FAIL to "제외 (YYYY-MM-DD)" with the reason.
    - For closing checks run `python3 scripts/alive.py --write` (closed queued postings go to "마감 확인 (날짜)", tracker rows in 평가함 become 포기). Open `확인 불가` ones in a browser.
 6. **Report.** Build the HTML posting report with `python3 scripts/report_html.py` and show it as described in SKILL.md "Showing the posting report" (rows found since the previous report get a 신규 tag). In text-only hosts show `python3 scripts/tracker.py report --since <last scan date>` (table format below) instead, and add per-channel counts and unscanned channels. Full evaluation only for postings the user picks, via `modes/evaluate.md`.
-   - Per-channel counts (including 0), exclusion counts per condition, unscanned channels and why.
+   - Per-channel counts (including 0), exclusion counts per condition, unscanned channels and why. The HTML report carries the hand-checked channels and the postings not yet judged as its own sections (from `manual-checks.yaml` and "새로 수집 (선별 전)").
    - One table: postings newly found this time + postings already evaluated or screened that are still open. Keep evaluated and recommended postings in the same table.
 
      | 회사 | 포지션 | 근무지 | 점수 | 판정 | 지원 여부 | 새로 찾음 | 마감 | 한 줄 근거 |

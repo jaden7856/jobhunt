@@ -8,10 +8,10 @@
 
 방법과 실측 날짜는 references/sources.md. 형식이 바뀌면 ShapeError 를 올려 "응답 형식 변경"으로 보고한다.
 """
-from . import greenhouse, greetinghr, hiworks, jumpit, kakao, line, linkedin, naver, nhn, ninehire, toss, wanted, woowa
+from . import greenhouse, greetinghr, hiworks, htmllinks, jumpit, kakao, lever, line, linkedin, naver, nhn, ninehire, saramin, toss, wanted, woowa
 
-BOARDS = {"wanted": wanted, "jumpit": jumpit, "linkedin": linkedin}
-ALL = [wanted, jumpit, linkedin, greenhouse, toss, nhn, kakao, greetinghr, ninehire, naver, woowa, line, hiworks]
+BOARDS = {"wanted": wanted, "jumpit": jumpit, "linkedin": linkedin, "saramin": saramin}
+ALL = [wanted, jumpit, linkedin, saramin, greenhouse, lever, toss, nhn, kakao, greetinghr, ninehire, naver, woowa, line, hiworks, htmllinks]
 BY_ATS = {"greetinghr": greetinghr, "ninehire": ninehire, "greenhouse": greenhouse, "hiworks": hiworks}   # sources.yaml 의 ats: (discover.py 가 적음)
 
 
@@ -24,6 +24,10 @@ def for_company(c: dict):
         return BY_ATS[c["ats"]]                      # 회사 도메인에 붙인 채용 시스템 (예: careers.회사.com 이 greetinghr)
     if "greenhouse.io" in api:
         return greenhouse
+    if "lever.co" in api:
+        return lever
+    if c.get("links"):
+        return htmllinks                             # 첫 화면 HTML 에 공고 링크가 있는 곳 (예: 두나무 /detail/{번호})
     if "toss.im" in url:
         return toss
     if "careers.nhn.com" in url:

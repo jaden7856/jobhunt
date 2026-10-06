@@ -22,6 +22,13 @@ import jobkit as K  # noqa: E402
 BANDS = [("권장", "지원 권장", "4.0 이상"), ("고려", "지원 고려", "3.5 – 3.9"), ("보류", "보류", "3.0 – 3.4"), ("확인", "확인 필요", "본문을 못 받음")]
 APPLIED = ("지원함", "서류합격", "면접", "합격", "불합격")
 PART_NAMES = [("work", "업무"), ("required", "필수"), ("preferred", "우대"), ("direction", "방향")]
+# 직접 확인 결과 (data/search/manual-checks.yaml result). 앞의 넷은 다시 손봐야 하는 상태라 먼저 보인다.
+RESULTS = ["못 봄", "주소 깨짐", "일부만 확인", "확인 기록 없음", "새 공고", "대기함에 있음", "맞는 공고 없음"]
+TODO = set(RESULTS[:4])
+HOW = {"firecrawl-markdown": "Firecrawl 본문", "firecrawl-links": "Firecrawl 링크", "html": "HTML", "workday-api": "Workday API",
+       "search": "주소 다시 찾기", "browser": "브라우저"}
+BOARD_NAMES = {"jobkorea": "잡코리아", "remember": "리멤버"}
+STALE_DAYS = 7     # 이보다 오래된 확인은 다시 볼 곳으로 센다
 
 
 # ── 데이터 ────────────────────────────────────────────────────────────────
@@ -79,7 +86,37 @@ def collect(today: date, since: str) -> dict:
     apps = [dict(no=a["num"], date=a["date"], company=a["company"], role=a["role"], state=a["state"],
                  memo=re.sub(r"\s+", " ", a["memo"]))
             for a in K.read_tracker() if a["state"] in APPLIED]
-    return dict(rows=rows, apps=apps, today=today.isoformat(), since=since)
+    sites, leads = _manual(pipe)
+    return dict(rows=rows, apps=apps, sites=sites, leads=leads, today=today.isoformat(), since=since)
+
+
+def _manual(pipe: str):
+    """스크립트가 못 도는 채널과 그 확인 결과, 그리고 판정하지 못한 공고 (references/judgment.md §2)."""
+    import providers
+    src, checks = K.load_yaml(K.P["sources"]), K.load_yaml(K.P["checks"])
+    chans = [(n, c) for n, c in (src.get("boards") or {}).items() if c.get("enabled") and n not in providers.BOARDS]
+    chans += [(c["name"], c) for c in src.get("companies") or [] if providers.for_company(c) is None]
+    chans += [(n, {}) for n in checks if n not in {x for x, _ in chans}]      # sources.yaml 밖에서 따로 확인한 채널
+    sites, leads = [], []
+    for n, c in chans:
+        k, b = checks.get(n) or {}, c.get("browse") or {}
+        sites.append(dict(name=BOARD_NAMES.get(n, n), url=b.get("url") or c.get("careers_url") or "", how=b.get("how") or "",
+                          result=k.get("result") or "확인 기록 없음", checked=str(k.get("checked") or ""),
+                          memo=k.get("memo") or b.get("note") or ""))
+        for l in k.get("leads") or []:
+            l = l if isinstance(l, dict) else dict(title=l)
+            leads.append(dict(company=BOARD_NAMES.get(n, n), title=l.get("title") or "", url=l.get("url") or "",
+                              where=f"직접 확인 {k.get('checked') or ''}".strip(), why=l.get("why") or "공고 주소나 본문을 못 얻음"))
+    sec = None
+    for line in pipe.split("\n"):
+        if line.startswith("## "):
+            sec = line.strip()
+        elif sec == "## 새로 수집 (선별 전)" and line.lstrip().startswith("- [ ]"):
+            c = [x.strip() for x in line.lstrip()[5:].split(" | ")]
+            if len(c) > 5:
+                leads.append(dict(company=c[1], title=c[2], url=c[0], where=c[5].split(" · 마감")[0],
+                                  why="선별 전 — 본문을 아직 판정하지 않음"))
+    return sites, leads
 
 
 def _short_loc(s: str) -> str:
@@ -117,7 +154,18 @@ def demo(today: date) -> dict:
                  judgment=f"data/search/judgments/example_{i}.yaml") for i, b in enumerate(base)]
     apps = [dict(no=1, date=d(-10), company="가나다증권", role="Server Developer", state="지원함", memo="서류 결과 대기"),
             dict(no=2, date=d(-30), company="마바사랩", role="Backend Engineer", state="불합격", memo="1차 면접 탈락")]
-    return dict(rows=rows, apps=apps, today=today.isoformat(), since=today.isoformat(), demo=True)
+    sites = [dict(name="하나게임즈", url="https://example.com/careers", how="firecrawl-links", result="일부만 확인", checked=d(0),
+                  memo="게임 서버 공고 2건이 보이나 공고 주소를 못 얻음"),
+             dict(name="두리캐피탈", url="https://example.com/recruit", how="search", result="주소 깨짐", checked=d(0),
+                  memo="채용 사이트 개편 뒤 이전 안내만 보임"),
+             dict(name="잡보드", url="", how="", result="확인 기록 없음", checked="", memo=""),
+             dict(name="세모뱅크", url="https://example.com/jobs", how="firecrawl-markdown", result="대기함에 있음", checked=d(0),
+                  memo="서버 개발자 1건 — 이미 대기함"),
+             dict(name="네모소프트", url="https://example.com/jobs", how="html", result="맞는 공고 없음", checked=d(-9), memo="")]
+    leads = [dict(company="하나게임즈", title="게임 서버 프로그래머", url="", where=f"직접 확인 {d(0)}", why="공고 주소나 본문을 못 얻음"),
+             dict(company="별빛커머스", title="백엔드 개발자", url="https://example.com/jobs/9", where=f"saramin · {d(0)}",
+                  why="선별 전 — 본문을 아직 판정하지 않음")]
+    return dict(rows=rows, apps=apps, sites=sites, leads=leads, today=today.isoformat(), since=today.isoformat(), demo=True)
 
 
 # ── 그리기 ────────────────────────────────────────────────────────────────
@@ -268,6 +316,14 @@ tr.att td { background: var(--cell-2); padding: var(--s-3) var(--s-4); }
 .apps .st-fail { color: var(--ink-3); text-decoration: line-through; font-weight: 500; }
 .apps .st-live { color: var(--blue); }
 
+/* 직접 확인한 곳 · 판정 못 한 공고 */
+.c-res { width: 7.4rem; white-space: nowrap; }
+.c-how { width: 8.4rem; color: var(--ink-2); font-size: .88rem; }
+.c-src { width: 11rem; color: var(--ink-2); font-size: .88rem; }
+.manual .co a { color: var(--ink); text-decoration-color: var(--rule-2); }
+.manual .co a:hover { color: var(--blue); text-decoration-color: currentColor; }
+.todo { display: inline-block; padding: 0 .3em; border: 1px solid var(--ink); color: var(--ink); font-weight: 700; }
+
 .empty { margin-top: var(--s-5); padding: var(--s-5); border: 1px dashed var(--rule-2); color: var(--ink-2); text-align: center; }
 .foot { margin-top: var(--s-6); padding-top: var(--s-4); border-top: 3px double var(--rule); display: flex; flex-wrap: wrap;
   gap: var(--s-3) var(--s-6); font-size: .8rem; color: var(--ink-2); }
@@ -305,6 +361,16 @@ tr.att td { background: var(--cell-2); padding: var(--s-3) var(--s-4); }
   .apps tr > td { border: 0; padding: 0; width: auto; }
   .apps .a-no { grid-area: no; } .apps .a-co { grid-area: co; } .apps .st { grid-area: st; }
   .apps .a-role { grid-area: role; } .apps .a-date { grid-area: date; font-size: .85rem; } .apps .a-memo { grid-area: memo; font-size: .88rem; }
+  .manual thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .manual table, .manual tbody { display: block; }
+  .manual tr { display: grid; grid-template-columns: 2rem minmax(0, 1fr) auto;
+    grid-template-areas: "no co res" "no how date" "no memo memo"; gap: var(--s-1) var(--s-3); padding: var(--s-3);
+    border-bottom: 1px solid var(--rule-2); }
+  .manual.leads tr { grid-template-areas: "no co src" "no title title" "no memo memo"; }
+  .manual tr > td { border: 0; padding: 0; width: auto; }
+  .manual .m-no { grid-area: no; } .manual .m-co { grid-area: co; } .manual .m-res { grid-area: res; }
+  .manual .m-how { grid-area: how; } .manual .m-date { grid-area: date; font-size: .85rem; } .manual .m-memo { grid-area: memo; font-size: .88rem; }
+  .manual .m-title { grid-area: title; } .manual .m-src { grid-area: src; }
 }
 """
 
@@ -385,6 +451,12 @@ def body(data: dict) -> str:
     soon_n = sum(1 for r in rows if _due(r["closes"], today)[2])
     new_n = sum(1 for r in rows if r["new"])
     live = [a for a in apps if a["state"] != "불합격"]
+    sites, leads = data.get("sites") or [], data.get("leads") or []
+    stale = (today - timedelta(days=STALE_DAYS)).isoformat()
+    for st in sites:
+        st["todo"] = st["result"] in TODO or st["checked"] < stale
+    sites.sort(key=lambda st: (not st["todo"], RESULTS.index(st["result"]) if st["result"] in RESULTS else len(RESULTS)))
+    todo_n = sum(1 for st in sites if st["todo"])
     out = []
     out.append('<main class="sheet">')
     out.append('<header class="head"><div><h1>공고 현황</h1>'
@@ -402,6 +474,9 @@ def body(data: dict) -> str:
                  f'<span class="v">{soon_n}<small>건</small></span></button>')
     cells.append(f'<a href="#apps"><span class="k">지원 기록<small>진행 중 / 전체</small></span>'
                  f'<span class="v">{len(live)}<small>/ {len(apps)}건</small></span></a>')
+    if sites or leads:
+        cells.append(f'<a href="#manual"><span class="k">직접 확인<small>다시 볼 곳 / 전체</small></span>'
+                     f'<span class="v">{todo_n}<small>/ {len(sites)}곳</small></span></a>')
     out.append('<nav class="ledger" aria-label="판정별 건수"><div class="lg-title" aria-hidden="true">판정</div>'
                '<div class="lg-cells">' + "".join(cells) + "</div></nav>")
     out.append('<div class="query"><label for="q">조회</label>'
@@ -454,6 +529,31 @@ def body(data: dict) -> str:
         out.append(f'<tr><td class="c-no a-no">{a["no"]}</td><td class="c-due a-date">{_e(a["date"])}</td><td class="c-co co a-co">{_e(a["company"])}</td>'
                    f'<td class="a-role">{_e(a["role"])}</td><td class="st {st_cls}">{_e(a["state"])}</td><td class="reason a-memo">{_e(a["memo"][:120])}</td></tr>')
     out.append("</tbody></table></div></section>")
+
+    if sites:
+        out.append('<section class="band manual" id="manual"><h2>직접 확인한 곳<span class="range">스크립트가 못 읽는 채용 사이트 · '
+                   f'{STALE_DAYS}일 넘은 확인은 다시 볼 곳</span><span class="n">{len(sites)}곳</span></h2><div class="wrap"><table>'
+                   '<thead><tr><th class="c-no">번호</th><th class="c-co">채널</th><th class="c-res">결과</th><th class="c-due">확인일</th>'
+                   '<th class="c-how">읽는 법</th><th>내용</th></tr></thead><tbody>')
+        for n, st in enumerate(sites, 1):
+            name = (f'<a href="{_e(st["url"])}" target="_blank" rel="noopener">{_e(st["name"])}</a>' if st["url"] else _e(st["name"]))
+            res = f'<span class="todo">{_e(st["result"])}</span>' if st["todo"] and st["result"] in TODO else _e(st["result"])
+            day = (f'<span class="due-past">{_e(st["checked"][5:].replace("-", "."))}</span><br>다시 확인' if st["checked"] and st["checked"] < stale
+                   else _e(st["checked"][5:].replace("-", ".")) or "—")
+            out.append(f'<tr><td class="c-no m-no">{n}</td><td class="c-co co m-co">{name}</td><td class="c-res m-res">{res}</td>'
+                       f'<td class="c-due m-date">{day}</td><td class="c-how m-how">{_e(HOW.get(st["how"], st["how"]) or "—")}</td>'
+                       f'<td class="reason m-memo">{_e(st["memo"])}</td></tr>')
+        out.append("</tbody></table></div></section>")
+    if leads:
+        out.append('<section class="band manual leads" id="leads"><h2>판정 못 한 공고<span class="range">보였지만 주소·본문을 못 얻었거나 아직 선별 전</span>'
+                   f'<span class="n">{len(leads)}건</span></h2><div class="wrap"><table>'
+                   '<thead><tr><th class="c-no">번호</th><th class="c-co">회사</th><th>포지션</th><th class="c-src">찾은 곳</th><th>사유</th></tr></thead><tbody>')
+        for n, l in enumerate(leads, 1):
+            title = (f'<a href="{_e(l["url"])}" target="_blank" rel="noopener">{_e(l["title"])}</a>' if l["url"] else _e(l["title"]))
+            out.append(f'<tr><td class="c-no m-no">{n}</td><td class="c-co co m-co">{_e(l["company"])}</td>'
+                       f'<td class="c-title m-title"><span class="title">{title}</span></td><td class="c-src m-src">{_e(l["where"])}</td>'
+                       f'<td class="reason m-memo">{_e(l["why"])}</td></tr>')
+        out.append("</tbody></table></div></section>")
 
     out.append('<p class="closing">위와 같이 대기 중인 공고 현황을 발급합니다. 끝.</p>')
     out.append('<footer class="foot"><div class="legend"><span class="seal" style="animation:none">지원<br>권장</span>4.0 이상'

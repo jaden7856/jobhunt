@@ -197,11 +197,11 @@ Font status: Nanum Myeongjo is loaded from Google Fonts (one `<link>`, weights 7
 
 One centred sheet, max 1440px, inline padding clamp(16px, 3vw, 40px), block padding 2.5rem. The spacing scale is s-1 … s-6 (0.25, 0.5, 0.75, 1, 1.5, 2.5rem); bands sit s-6 apart, blocks within the header s-5 apart, cell padding is s-2 × s-3.
 
-Order of the sheet: title block (title and sub-line left, 발급일 / 발급 번호 definition list right-aligned) closed by a double rule; the 결재란; the 조회 row (label, underline-only search input, live count); verdict bands in fixed order 권장 → 고려 → 보류 → 확인, each a framed table; the 지원 기록 band; the right-aligned closing sentence; the footer legend above a double rule.
+Order of the sheet: title block (title and sub-line left, 발급일 / 발급 번호 definition list right-aligned) closed by a double rule; the 결재란; the 조회 row (label, underline-only search input, live count); verdict bands in fixed order 권장 → 고려 → 보류 → 확인, each a framed table; the 지원 기록 band; the 직접 확인한 곳 and 판정 못 한 공고 bands (only when there is data); the right-aligned closing sentence; the footer legend above a double rule.
 
 Ledger columns are fixed-width so every band aligns: 번호 3.6rem (centred), 회사 11rem, 근무지 7rem, 점수 6.2rem (right), 판정 4.6rem (centred), 마감 7.4rem; 포지션 and 비고 take the remainder. Header rows stick to the top under the safe-area inset.
 
-**The Narrow Record Rule.** At ≤720px tables stop being tables. Headers are visually hidden (still read by assistive tech); each posting row becomes a four-column grid record — row number down the left, then company / score / seal, position beside the seal, deadline and location, reason full-width. Application rows become a three-column record: number, company / state, role / date, memo full-width. The title block stacks and the issue list left-aligns; the attachment drops its indent to a single column. Never ship a horizontally scrolling ledger.
+**The Narrow Record Rule.** At ≤720px tables stop being tables. Headers are visually hidden (still read by assistive tech); each posting row becomes a four-column grid record — row number down the left, then company / score / seal, position beside the seal, deadline and location, reason full-width. Application rows become a three-column record: number, company / state, role / date, memo full-width; 직접 확인 rows the same: number, channel / result, method / date, memo full-width (판정 못 한 공고: company / found-at, position, reason). The title block stacks and the issue list left-aligns; the attachment drops its indent to a single column. Never ship a horizontally scrolling ledger.
 
 ## Elevation & Depth
 
@@ -227,7 +227,7 @@ Four verdict marks in the fixed 판정 cell, each weaker than the one above.
 - **Motion:** only the seal moves. With `prefers-reduced-motion: no-preference` it presses into place: from scale 1.28 / opacity .55 to scale 1 / opacity .9 over .5s `cubic-bezier(.16, 1, .3, 1)`, staggered 45ms per row (capped at row 12). It is visible from the first frame (`both` fill). The legend seal is static.
 
 ### 결재란 Count Ledger (navigation)
-A bordered box: a 2.4rem vertical 판정 title cell (Myeongjo, vertical-rl, `cell` shade) then auto-fit cells of min 128px. Each cell is a header (`cell`, .8rem label plus a small range line in `ink-3`) over a value (numeral 1.3rem + small 건). Cells for bands are anchor links to their band; 지원 권장 count is `seal`, 지원 고려 count is `blue`. The 마감 7일 이내 cell is a toggle button (`aria-pressed`): pressed inverts its header to `ink` on `paper`. Hover shades the header `blue-soft`. The 지원 기록 cell shows 진행 중 / 전체.
+A bordered box: a 2.4rem vertical 판정 title cell (Myeongjo, vertical-rl, `cell` shade) then auto-fit cells of min 128px. Each cell is a header (`cell`, .8rem label plus a small range line in `ink-3`) over a value (numeral 1.3rem + small 건). Cells for bands are anchor links to their band; 지원 권장 count is `seal`, 지원 고려 count is `blue`. The 마감 7일 이내 cell is a toggle button (`aria-pressed`): pressed inverts its header to `ink` on `paper`. Hover shades the header `blue-soft`. The 지원 기록 cell shows 진행 중 / 전체; the 직접 확인 cell shows 다시 볼 곳 / 전체 and jumps to that band.
 
 ### Band Sections and Ledger Table
 Each verdict band is a Myeongjo headline with inline range and live count, then a table in a 1px `rule` frame. Header row: `cell` shade, label type, 1px `rule` bottom. Body cells: `rule-2` hairlines right and bottom, top-aligned. Company is weight 600; position links are `ink` with a `rule-2` underline that turns `blue` on hover. Empty bands are omitted; search hides bands with no matching rows and updates their counts.
@@ -246,6 +246,9 @@ Label 조회 in spaced `ink-2`; the input has no box, only a 1px `rule` underlin
 
 ### 지원 기록 Applications Band
 Same band and table grammar. State cell is weight 600: live states in `blue`; 불합격 in `ink-3`, struck through, weight 500. Live states sort first, then newest.
+
+### 직접 확인한 곳 · 판정 못 한 공고 Bands
+Same band and table grammar, after 지원 기록. 직접 확인한 곳 lists every channel the scripts cannot read (번호 · 채널 linked to its list page · 결과 7.4rem · 확인일 · 읽는 법 8.4rem · 내용); channels to revisit sort first. A result that needs work (못 봄, 주소 깨짐, 일부만 확인, 확인 기록 없음) is an ink box mark at weight 700; a check older than 7 days shows its date struck in `ink-3` with 다시 확인 below. 판정 못 한 공고 lists postings seen but not judged (번호 · 회사 · 포지션 · 찾은 곳 11rem · 사유). No colour: neither band carries a verdict.
 
 ### Focus and Links
 All focusable elements get a 2px `blue` (`focus`) outline at 2px offset on `:focus-visible`. Links are `blue`, underline 1px at 3px offset, thickening to 2px on hover.

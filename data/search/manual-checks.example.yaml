@@ -1,0 +1,14 @@
+# 스크립트가 못 도는 채널을 손으로 확인한 결과 (예시). 복사해서 manual-checks.yaml 로 쓴다.
+# 이름은 sources.yaml 의 회사 name 이나 boards 키(jobkorea·remember)와 같게 적는다. 채널마다 가장 최근 확인만 남긴다.
+# result: 새 공고 | 대기함에 있음 | 맞는 공고 없음 | 일부만 확인 | 주소 깨짐 | 못 봄
+# 공고 현황표(scripts/report_html.py)의 "직접 확인한 곳"·"판정 못 한 공고" 장이 이 파일을 읽는다. 7일 넘은 확인은 다시 볼 곳으로 센다.
+사아자:
+  checked: 2026-01-05
+  result: 일부만 확인
+  memo: 서버 공고 2건이 보이나 공고 주소를 못 얻음
+  leads:                     # 보였지만 주소·본문을 못 얻어 판정 못 한 공고
+    - { title: "게임 서버 프로그래머", url: "", why: "목록에 주소가 없음 — 다음엔 firecrawl links" }
+jobkorea:
+  checked: 2026-01-05
+  result: 못 봄
+  memo: 이번에는 수집하지 않음

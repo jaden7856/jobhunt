@@ -37,4 +37,12 @@ boards:
 companies:
   - { name: 가나다커머스, careers_url: "https://careers.example.com", priority: true }
   - { name: 라마바페이, careers_url: "https://boards.greenhouse.io/example", api: "https://boards-api.greenhouse.io/v1/boards/example/jobs", priority: false }
-  - { name: 사아자, careers_url: "https://example.career.greetinghr.com/", priority: true, method: browser }   # 스크립트가 못 읽는 곳은 method: browser
+  - { name: 차카타랩, careers_url: "https://jobs.lever.co/example", api: "https://api.lever.co/v0/postings/example", priority: false }
+  - { name: 파하소프트, careers_url: "https://careers.example.com/", links: '/detail/\d+', priority: false }   # 첫 화면 HTML 에 공고 링크가 있는 곳
+  # 스크립트가 못 읽는 곳은 method: browser 와 읽는 법(browse). scan.py 가 이대로 보여 주고, 결과는 manual-checks.yaml 에 적는다.
+  # how: firecrawl-markdown | firecrawl-links | html | <회사>-api | search(주소 다시 찾기) | browser — 유형표는 references/judgment.md §2
+  - name: 사아자
+    careers_url: "https://careers.example.com/"
+    priority: true
+    method: browser
+    browse: { url: "https://careers.example.com/jobs?keyword=서버", how: firecrawl-markdown, note: "목록은 스크립트로 그림. 본문은 /jobs/{id}" }

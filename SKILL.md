@@ -33,7 +33,7 @@ scripts/check.py            page count · orphaned headings · links · placehol
 scripts/check_links.py      link reachability (stdlib only, runs anywhere)
 scripts/git_log.sh          author-filtered commit log from a local git repository
 scripts/setup.sh            skill link into installed agents (~/.claude/skills, ~/.codex/skills, or SKILLS_DIR) + Playwright Chromium, fonts (Pretendard, Noto Sans/Serif CJK KR), poppler
-scripts/scan.py             posting collection (Wanted · Jumpit · LinkedIn · Greenhouse · Toss · NHN · Kakao · Naver · Baemin · LINE · greetinghr · ninehire) → filters → pipeline.md
+scripts/scan.py             posting collection (Wanted · Jumpit · LinkedIn · Saramin · Greenhouse · Lever · Toss · NHN · Kakao · Naver · Baemin · LINE · greetinghr · ninehire · plain-HTML career pages) → filters → pipeline.md
 scripts/alive.py            closing check for tracked postings
 scripts/tracker.py          application log (add/set) and combined report table (report)
 scripts/score.py            posting score (line-level judgment file → per-item scores)

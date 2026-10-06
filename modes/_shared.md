@@ -35,6 +35,7 @@ Everything written for the user — a resume line, a cover-letter answer, an int
 | working rules, resume wording decisions | `preferences/standing.md` |
 | search conditions, priority company list | `search/sources.yaml` |
 | collected-posting queue, seen-posting log, excluded companies | `search/pipeline.md`, `search/scan-history.tsv`, `search/blacklist.md` |
+| hand checks of channels the scripts can't reach | `search/manual-checks.yaml` |
 | posting text and evaluation | `job_postings/<YYYY-MM-DD>_<회사>_<포지션>.md`, `.eval.md` with the same name |
 | application status | `applications/tracker.md` |
 | cover-letter / application-form answers | `applications/covers/<회사>_<포지션>.yaml` |

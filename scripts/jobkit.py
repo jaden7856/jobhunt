@@ -27,6 +27,7 @@ P = dict(
     history=os.path.join(DATA, "search", "scan-history.tsv"),
     blacklist=os.path.join(DATA, "search", "blacklist.md"),
     inbox=os.path.join(DATA, "search", "inbox"),
+    checks=os.path.join(DATA, "search", "manual-checks.yaml"),   # 스크립트가 못 도는 채널을 손으로 확인한 결과
     tracker=os.path.join(DATA, "applications", "tracker.md"),
 )
 HISTORY_COLS = ["url", "first_seen", "portal", "title", "company", "status", "location",

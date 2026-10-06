@@ -31,16 +31,16 @@ NEW_HEADER = "## 새로 수집 (선별 전)"
 
 
 def plan(sources: dict, only):
-    """(이름, 모듈, cfg) 목록과 스크립트가 못 도는 채널 목록."""
+    """(이름, 모듈, cfg) 목록과 스크립트가 못 도는 (이름, cfg) 목록."""
     runs, manual = [], []
     for name, cfg in (sources.get("boards") or {}).items():
         if not cfg.get("enabled"):
             continue
         mod = providers.BOARDS.get(name)
-        (runs.append((name, mod, cfg)) if mod else manual.append(name))
+        (runs.append((name, mod, cfg)) if mod else manual.append((name, cfg)))
     for c in sources.get("companies") or []:
         mod = providers.for_company(c)
-        (runs.append((c["name"], mod, c)) if mod else manual.append(c["name"]))
+        (runs.append((c["name"], mod, c)) if mod else manual.append((c["name"], c)))
     if only:
         keep = set(only)
         runs = [r for r in runs if r[0] in keep or r[1].__name__.split(".")[-1] in keep]
@@ -164,7 +164,12 @@ def main(argv=None):
     for name, err in errors.items():
         print(f"  {name:<22} ✗ {err}")
     if manual:
-        print(f"  스크립트 미지원 (브라우저·Firecrawl로 modes/scan.md 수동 단계): {', '.join(manual)}")
+        checks = K.load_yaml(K.P["checks"])
+        print("  스크립트 미지원 — 아래 읽는 법(sources.yaml browse)대로 확인하고 결과는 manual-checks.yaml 에 (references/judgment.md §2):")
+        for name, cfg in manual:
+            b, last = cfg.get("browse") or {}, checks.get(name) or {}
+            print(f"    {name:<20} {b.get('how') or '읽는 법 없음'} {b.get('url') or cfg.get('careers_url') or ''}"
+                  + (f" · 지난 확인 {last.get('checked')} {last.get('result')}" if last else ""))
     print("  제외: " + (", ".join(f"{k} {v}" for k, v in sorted(reasons.items())) or "없음"))
     print(f"  새로 추가: {len(lines)}건 → {'pipeline.md ' + NEW_HEADER if not a.dry_run else '(dry-run)'}")
     for l in lines[:40]:

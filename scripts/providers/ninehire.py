@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 """나인하이어 (*.ninehire.site 또는 회사 도메인에 붙인 나인하이어 채용 사이트, 2026-09-30 실측).
 
-목록: 채용 사이트 첫 화면 __NEXT_DATA__ 의 homepageProps.homepage.companyId →
+목록: sources.yaml 의 company_id, 없으면 채용 사이트 첫 화면 __NEXT_DATA__ 의 homepageProps.homepage.companyId →
       https://api.ninehire.com/identity-access/homepage/recruitments?companyId=…
+      (company_id 는 첫 화면 og:image·favicon 주소 image.ninehire.com/{brand|homepage}/{companyId}/… 에서 읽는다)
 본문: {채용 사이트}/job_posting/{addressKey} 의 __NEXT_DATA__ pageProps.jobPosting.content (HTML)
 """
 import json
 import re
 from typing import List, Optional
 
-from jobkit import Job, ShapeError, html_text, http_get
+from jobkit import P, Job, ShapeError, html_text, http_get, load_yaml
 
 API = "https://api.ninehire.com/identity-access/homepage/recruitments"
 _ND = re.compile(r'<script id="__NEXT_DATA__" type="application/json">(.*?)</script>', re.S)
@@ -42,16 +43,18 @@ def _company_from_posting(careers_url: str):
 
 def collect(cfg: dict) -> List[Job]:
     base = _base(cfg["careers_url"])
-    try:
-        hp = (((_next_data(base).get("props") or {}).get("pageProps") or {}).get("homepageProps") or {}).get("homepage") or {}
-    except ShapeError:
-        hp = {}
-    cid = hp.get("companyId")
+    cid = cfg.get("company_id")   # 채용 사이트 첫 화면이 봇 차단(HTTP 429)일 때도 목록 API 는 열려 있다 (2026-10-06)
+    if not cid:
+        try:
+            hp = (((_next_data(base).get("props") or {}).get("pageProps") or {}).get("homepageProps") or {}).get("homepage") or {}
+        except ShapeError:
+            hp = {}
+        cid = hp.get("companyId")
     if not cid:
         cid, site = _company_from_posting(cfg["careers_url"])
         base = site or base
     if not cid:
-        raise ShapeError(f"나인하이어 companyId 없음: {base}")
+        raise ShapeError(f"나인하이어 companyId 없음 (첫 화면 차단이면 sources.yaml 에 company_id 지정): {base}")
     jobs, page = [], 1
     while True:
         status, body = http_get(f"{API}?companyId={cid}&page={page}&countPerPage=50&order=created_at_desc")
@@ -82,11 +85,38 @@ def handles(url: str) -> bool:
     return "/job_posting/" in url and ("ninehire" in url or url.count("/") == 4)
 
 
+def _open_keys(cid: str) -> set:
+    """목록 API 에서 진행 중·공개 공고의 addressKey 모음."""
+    keys, page = set(), 1
+    while True:
+        status, body = http_get(f"{API}?companyId={cid}&page={page}&countPerPage=50&order=created_at_desc")
+        if status != 200:
+            raise ShapeError(f"나인하이어 목록 HTTP {status}")
+        d = json.loads(body)
+        keys |= {r["addressKey"] for r in d.get("results") or [] if r.get("status") == "in_progress" and not r.get("isPrivate")}
+        if page * 50 >= (d.get("count") or 0):
+            return keys
+        page += 1
+
+
+def _company_id_for(url: str) -> Optional[str]:
+    """공고 주소의 호스트와 같은 채용 사이트를 sources.yaml 에서 찾아 company_id 를 돌려준다."""
+    host = _base(url)
+    for c in (load_yaml(P["sources"]) or {}).get("companies") or []:
+        if c.get("company_id") and _base(c.get("careers_url") or "x://") == host:
+            return c["company_id"]
+    return None
+
+
 def alive(url: str) -> Optional[bool]:
     try:
         pp = (_next_data(url).get("props") or {}).get("pageProps") or {}
-    except ShapeError:
-        return None
+    except ShapeError:   # 공고 페이지가 봇 차단이면 목록 API 로 판정 (2026-10-06)
+        cid = _company_id_for(url)
+        try:
+            return url.rstrip("/").rsplit("/", 1)[-1] in _open_keys(cid) if cid else None
+        except ShapeError:
+            return None
     if not pp:
         return False
     return (pp.get("recruitment") or {}).get("status", "in_progress") == "in_progress" and bool(pp.get("jobPosting"))
