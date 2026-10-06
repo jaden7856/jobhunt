@@ -2,11 +2,12 @@
 
 <p align="center">
   Find Korean developer job postings, score how well each one fits you, and build a resume tailored to each posting as an A4 PDF.<br/>
-  A Claude skill that gets sharper the more you use it.
+  An agent skill for Codex, Claude Code, Grok and any other AI agent — it gets sharper the more you use it.
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Claude-Skill-D97757?style=flat-square" alt="Claude Skill"/>
+  <img src="https://img.shields.io/badge/AI_Agent-Skill-6E56CF?style=flat-square" alt="AI Agent Skill"/>
+  <img src="https://img.shields.io/badge/AGENTS.md-Codex_·_Claude_·_Grok-444?style=flat-square" alt="Codex · Claude · Grok"/>
   <img src="https://img.shields.io/badge/Python-3.9+-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python 3.9+"/>
   <img src="https://img.shields.io/badge/Jobs-Korea-1E4FC2?style=flat-square" alt="Korean job boards"/>
   <img src="https://img.shields.io/badge/Output-A4_PDF_%2B_PNG-555?style=flat-square" alt="A4 PDF + PNG"/>
@@ -22,10 +23,10 @@
 
 <p align="center"><img src="assets/flow.en.png" alt="Find → Evaluate → Tailor → Track &amp; learn workflow" width="820"/></p>
 
-**resume-builder** is a [Claude](https://claude.com) skill plus Python scripts.
+**resume-builder** is an AI agent skill (`SKILL.md` and `AGENTS.md`) plus Python scripts. It is not tied to one AI: Codex, Claude Code, Grok, Gemini, Cursor, or any agent that can read files in this folder and run commands follows the same steps.
 
 - **Scripts:** Mechanical work (collecting postings, checking whether they're still open, updating the tracker) runs without an LLM.
-- **Claude:** Handles the judgment calls (does this posting fit you? what should the resume lead with?) by following the procedures in `modes/`.
+- **AI agent:** Handles the judgment calls (does this posting fit you? what should the resume lead with?) by following the procedures in `modes/`.
 - **Your data:** Everything personal stays under `data/` and never reaches git.
 
 > The tool targets the Korean job market, so its prompts, reports and resumes are written in Korean.
@@ -45,7 +46,7 @@
 
 ### Posting report (`scripts/report_html.py`)
 
-A sample built from fictional companies (`python3 scripts/report_html.py --demo`). It is laid out like a Korean certificate form: a ruled ledger per verdict band, a red seal on recommended postings, D-day marks for deadlines, and an itemised-score attachment per row. It is one HTML file, so any browser or AI agent can open it; in Claude the `--fragment` version is published as an Artifact. Design rules live in [`DESIGN.md`](DESIGN.md).
+A sample built from fictional companies (`python3 scripts/report_html.py --demo`). It is laid out like a Korean certificate form: a ruled ledger per verdict band, a red seal on recommended postings, D-day marks for deadlines, and an itemised-score attachment per row. It is one HTML file, so any browser or AI agent can open it; hosts that publish HTML pages (e.g. Claude Artifacts) get the `--fragment` version. Design rules live in [`DESIGN.md`](DESIGN.md).
 
 <p align="center"><img src="assets/report.ko.png" alt="Posting report sample: verdict ledger, recommended postings with seals, itemised score attachment" width="720"/></p>
 
@@ -83,14 +84,14 @@ bash scripts/setup.sh
 ```
 
 What `setup.sh` does:
-- **Connects the Claude skill:** points `~/.claude/skills/resume-pdf-builder` at this folder. It's a link, not a copy, so the personalization that builds up here reaches the skill immediately.
+- **Connects the agent skill:** finds the agents you have installed and links this folder into their skill folders (Claude Code `~/.claude/skills`, Codex `~/.codex/skills`). It's a link, not a copy, so the personalization that builds up here reaches the skill immediately. Agents that don't load skills follow `AGENTS.md` when started in this folder.
 - **Build environment:** installs Python packages, Playwright Chromium, fonts (Pretendard, Noto CJK KR) and poppler.
 
 | Option | Description |
 |---|---|
 | `--skill-only` | Only connect the skill |
 | `--no-skill` | Only the build environment |
-| `CLAUDE_SKILLS_DIR=path` | Use a different skills folder (default `~/.claude/skills`) |
+| `SKILLS_DIR=path[:path…]` | Link into specific skill folders (other agents, several places) |
 
 If a folder or a link to somewhere else already exists under that name, it's left untouched and you're told what to do.
 
@@ -98,7 +99,7 @@ If a folder or a link to somewhere else already exists under that name, it's lef
 >
 > This skill is meant to become yours the more you use it.
 > - **Your criteria live next to the tool.** Target roles, salary and deal-breakers (`data/profile/`), experience evidence (`data/experience/`), search settings and priority companies (`data/search/`), evaluations and applications all accumulate under `data/` inside the repository.
-> - **Some installs would lose that history.** A marketplace or plugin install lives in a managed cache folder (e.g. `~/.claude/plugins/cache/…/<version>/`) that is swapped out on every update. Your records and your rule changes would go with it.
+> - **Some installs would lose that history.** A marketplace or plugin install lives in a managed cache folder (e.g. an agent-managed folder like `~/.claude/plugins/cache/…/<version>/`) that is swapped out on every update. Your records and your rule changes would go with it.
 > - **Updates leave your data alone.** A clone is your own working copy, so `git pull` brings in tool updates only. `data/` is git-ignored and never touched.
 > - **You can change the tool itself.** Job sources (`references/sources.md`, `scripts/providers/`), evaluation rules (`modes/evaluate.md`), writing rules (`references/style_rules.yaml`) and resume design (`scripts/render.py`) are plain files. Fork it, adapt it, and merge upstream changes when you want them.
 > - **Your data stays on your machine.** Collection and builds run on your own Python and Chromium, and personal data only ever exists as local files.
@@ -109,7 +110,17 @@ Update:
 cd ~/resume-builder && git pull   # data/ stays as is
 ```
 
-### 2. Talk to Claude
+Starting it in each agent:
+
+| Agent | Start |
+|---|---|
+| Codex | `cd ~/resume-builder && codex` — reads `AGENTS.md`, and the skill is linked into `~/.codex/skills` |
+| Claude Code | `cd ~/resume-builder && claude` — `CLAUDE.md` imports `AGENTS.md`, and the skill is linked into `~/.claude/skills` |
+| Grok, Gemini, Cursor, others | open the agent in this folder and say "read `AGENTS.md` and start" |
+
+Features that differ between agents, such as web search (Firecrawl, …) or publishing HTML pages (Claude Artifacts, …), are used when present; without them the agent gives you the file path or reports that channel as not scanned.
+
+### 2. Talk to your AI agent
 
 | Say | What happens |
 |---|---|
@@ -133,7 +144,7 @@ python3 scripts/render.py examples/example.yaml \
 
 ## 🔎 1. Find Postings
 
-`scripts/scan.py` collects postings and saves the full requirement text to `data/search/inbox/`. Claude then triages them against `data/profile/brief.md`.
+`scripts/scan.py` collects postings and saves the full requirement text to `data/search/inbox/`. The AI agent then triages them against `data/profile/brief.md`.
 
 | Source | Method | Automated by |
 |---|---|---|
@@ -141,7 +152,7 @@ python3 scripts/render.py examples/example.yaml \
 | LinkedIn | Public guest API, Korean-language postings only (English-only JDs excluded) | `scan.py` |
 | Greenhouse companies (Daangn, Coupang, KRAFTON …) | Official public API | `scan.py` |
 | Toss (all affiliates), NHN, Kakao, greetinghr and Ninehire companies | Career-site JSON | `scan.py` (companies found by `discover.py`) |
-| Saramin, JobKorea, Remember, other career sites | HTML / browser | Claude, following [`references/sources.md`](references/sources.md) |
+| Saramin, JobKorea, Remember, other career sites | HTML / browser | The AI agent, following [`references/sources.md`](references/sources.md) |
 
 - **What gets filtered out:** title keywords, required years (when the posting states them), location, postings you've already seen (including the same posting on another site), blocked companies, companies you applied to recently (6-month cooldown by default), and English-only JDs (when enabled).
 - **What doesn't:** the tech stack is never used as a filter at collection time. Narrowing the search to one language drops good postings that accept any language. The script only attaches a required/preferred hint, and the stack is judged during triage.
@@ -161,18 +172,18 @@ python3 scripts/render.py examples/example.yaml \
 | F Interview prep | Likely questions, which project to answer with, questions to ask |
 | G Posting legitimacy | Posting date and reposts, any AI-targeted instructions hidden in the posting |
 
-Claude classifies the posting line by line (have you done this work, is each required item met, which preferred items are core skills of the position, is this the kind of work you want), and `scripts/score.py` computes the score in two layers.
+The AI agent classifies the posting line by line (have you done this work, is each required item met, which preferred items are core skills of the position, is this the kind of work you want), and `scripts/score.py` computes the score in two layers.
 
 - **Common rules (the same for everyone):** coverage of the required and preferred lines sets the band. Everything met: 4.9+. Required plus the position's key preferred skills: 4.5+. Required plus at least half of the preferred: 4.0+. A required line or a key preferred skill missing: 3.9 or below.
 - **Personal preferences:** wanted and avoided work and bonuses (`data/profile/targets.yaml`) only reorder postings inside a band.
 
-After the calculation Claude rereads the whole posting (seniority and scope, what the hiring side weighs) and records any adjustment with its reason in the judgment file ([`references/judgment.md`](references/judgment.md)). Location and compensation are pass/fail rules, not score components. The criteria live in [`references/scoring.md`](references/scoring.md).
+After the calculation the agent rereads the whole posting (seniority and scope, what the hiring side weighs) and records any adjustment with its reason in the judgment file ([`references/judgment.md`](references/judgment.md)). Location and compensation are pass/fail rules, not score components. The criteria live in [`references/scoring.md`](references/scoring.md).
 
 ## 📝 3. Tailored Resume
 
 [`modes/tailor.md`](modes/tailor.md) drives the steps. If an evaluation exists, its block E becomes the default plan.
 
-| Step | What Claude does |
+| Step | What the agent does |
 |---|---|
 | 0. Direction | Shows the tailoring plan and picks the closest base resume (`base_*.yaml`) |
 | 1. Material | Gathers project candidates with evidence from docs, local git logs (`scripts/git_log.sh`), GitLab MRs and old resumes |
@@ -224,6 +235,7 @@ The tool (`SKILL.md`, `modes/`, `scripts/`, `references/`) is versioned in git. 
 ## 📁 Project Structure
 
 ```
+AGENTS.md                    Working guide for every AI agent (CLAUDE.md imports it)
 SKILL.md                     Skill entry point, routes requests to modes
 modes/                       Shared rules and per-mode procedures (onboard · scan · evaluate · tailor · track)
 scripts/

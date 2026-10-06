@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """공고 점수 계산 (LLM 호출 없음). 기준은 references/scoring.md.
 
-LLM(Claude)은 공고를 한 줄씩 분류만 해서 판정 파일(yaml)을 채우고, 점수는 이 스크립트가 계산한다.
+AI 에이전트(Claude·Codex·Grok 등)는 공고를 한 줄씩 분류만 해서 판정 파일(yaml)을 채우고, 점수는 이 스크립트가 계산한다.
 같은 판정이면 언제나 같은 점수가 나오고, 어디서 깎였는지 항목별로 남는다.
 
   python3 scripts/score.py init <본문.md> [-o 판정.yaml]   본문의 주요업무·자격요건·우대사항을 줄 단위 뼈대로

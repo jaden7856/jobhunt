@@ -2,7 +2,7 @@
 
 Only site-wide facts go here (endpoints, body location, closing check). Personal search conditions live in `data/search/sources.yaml`.
 Date every measurement. When a format changes, fix it here and update the date.
-Handled automatically by `scripts/providers/`: Wanted, Jumpit, LinkedIn, Greenhouse, Toss, NHN, Kakao, the Naver group, Woowa Brothers, LINE, greetinghr (sites with `__NEXT_DATA__`, including ones on a company domain), ninehire, hiworks recruit. Claude collects the rest by hand following this document.
+Handled automatically by `scripts/providers/`: Wanted, Jumpit, LinkedIn, Greenhouse, Toss, NHN, Kakao, the Naver group, Woowa Brothers, LINE, greetinghr (sites with `__NEXT_DATA__`, including ones on a company domain), ninehire, hiworks recruit. The agent collects the rest by hand following this document.
 To widen the set of companies collected, see "Company discovery" below.
 
 ## Common rules

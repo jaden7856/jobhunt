@@ -5,7 +5,7 @@ If the posting went through evaluation (`modes/evaluate.md`), use the requiremen
 
 ## Steps
 
-Ask each step with AskUserQuestion, 1–4 questions at a time. If `data/` already holds an answer, show that value first as the recommendation.
+Ask each step 1–4 questions at a time (the host's choice UI if it has one, otherwise plain text). If `data/` already holds an answer, show that value first as the recommendation.
 
 ### 0. Direction
 
@@ -63,7 +63,7 @@ Ask each step with AskUserQuestion, 1–4 questions at a time. If `data/` alread
 4. Show the PNG previews page by page and take revision requests. Repeat steps 4–5 until final.
 5. When final:
    - Put the final PDF in the connected folder (default `data/output/`).
-   - Put the final yaml in `data/resumes/`, and if a Claude project is connected, save it there too.
+   - Put the final yaml in `data/resumes/`, and if the host has a connected project space (e.g. a Claude project), save it there too.
    - Write the yaml name used into the posting file in `data/job_postings/`.
    - Update the PDF cell and memo of the row in `data/applications/tracker.md`. The user submits; when they say they did, change the state per `modes/track.md`.
 

@@ -3,7 +3,7 @@
 """공고 현황표를 HTML 한 파일로 만든다 (디자인: .impeccable/surfaces/scripts-report-html-py.md, DESIGN.md).
 
   python3 scripts/report_html.py                      # data/search/reports/postings.html
-  python3 scripts/report_html.py --fragment <경로>     # 문서 뼈대(<html>·<head>·<body>) 없는 판 — Claude Artifact 처럼 뼈대를 씌워 주는 곳에 올릴 때
+  python3 scripts/report_html.py --fragment <경로>     # 문서 뼈대(<html>·<head>·<body>) 없는 판 — HTML 페이지를 올려 주는 곳(예: Claude Artifact)에 올릴 때
   python3 scripts/report_html.py --demo -o <경로>      # 가상 회사로 채운 견본 (디자인 확인·문서용, 개인 자료 없음)
 
 어느 AI 에이전트·브라우저에서도 열리도록 표준 라이브러리만 쓰고, 외부 자원은 제목 글꼴(Google Fonts) 하나뿐이다

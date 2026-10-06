@@ -1,7 +1,7 @@
 # Posting scoring
 
 First-pass screening (`modes/scan.md` step 4) and full evaluation (`modes/evaluate.md`) use the same criteria.
-**Claude classifies the posting line by line; `scripts/score.py` computes the score; Claude then reviews the result against the whole posting (`references/judgment.md`).** The same classification always yields the same score, and the record shows which item cost points.
+**The agent classifies the posting line by line; `scripts/score.py` computes the score; the agent then reviews the result against the whole posting (`references/judgment.md`).** The same classification always yields the same score, and the record shows which item cost points.
 
 The score has two layers, kept apart on purpose:
 

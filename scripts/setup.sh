@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
-# 설치: Claude 스킬 연결 + 빌드 환경(Python 패키지, Playwright Chromium, 폰트 Pretendard·Noto Sans/Serif CJK KR, poppler)
+# 설치: AI 에이전트 스킬 연결 + 빌드 환경(Python 패키지, Playwright Chromium, 폰트 Pretendard·Noto Sans/Serif CJK KR, poppler)
 # 사용: bash scripts/setup.sh              전부
 #       bash scripts/setup.sh --skill-only 스킬 연결만
 #       bash scripts/setup.sh --no-skill   스킬 연결 없이 빌드 환경만
-# 스킬 폴더를 바꾸려면 CLAUDE_SKILLS_DIR=경로 (기본 ~/.claude/skills)
+# 스킬 폴더: 설치된 에이전트를 찾아 연결한다 (~/.claude → ~/.claude/skills, ~/.codex → ~/.codex/skills).
+#   다른 에이전트·위치는 SKILLS_DIR=경로[:경로…] 로 지정 (예전 이름 CLAUDE_SKILLS_DIR 도 받음).
+#   스킬을 읽지 않는 에이전트는 이 폴더에서 실행하면 AGENTS.md 를 따른다.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -18,10 +20,9 @@ done
 
 link_skill() {
   # 이 폴더를 그대로 스킬로 연결한다. 복사하지 않으므로 data/ 개인화와 git pull 업데이트가 스킬에 바로 반영된다.
-  local repo name dir dest
+  local repo name dir="$1" dest
   repo="$(pwd -P)"
   name="$(sed -n 's/^name:[[:space:]]*//p' SKILL.md | head -1)"
-  dir="${CLAUDE_SKILLS_DIR:-$HOME/.claude/skills}"
   dest="$dir/$name"
   mkdir -p "$dir"
   if [ -L "$dest" ]; then
@@ -38,9 +39,28 @@ link_skill() {
   fi
 }
 
+skill_dirs() {
+  local dirs="${SKILLS_DIR:-${CLAUDE_SKILLS_DIR:-}}"
+  if [ -n "$dirs" ]; then
+    echo "$dirs" | tr ':' '\n'
+    return
+  fi
+  [ -d "$HOME/.claude" ] && echo "$HOME/.claude/skills"   # Claude Code
+  [ -d "$HOME/.codex" ] && echo "$HOME/.codex/skills"     # Codex
+  return 0
+}
+
 if [ "$SKILL" = 1 ]; then
-  echo "▶ Claude 스킬 연결"
-  link_skill
+  echo "▶ AI 에이전트 스킬 연결"
+  found=0
+  while IFS= read -r d; do
+    [ -n "$d" ] || continue
+    found=1
+    link_skill "$d"
+  done < <(skill_dirs)
+  if [ "$found" = 0 ]; then
+    echo "  스킬 폴더를 찾지 못했습니다. 에이전트를 이 폴더에서 실행하면 AGENTS.md 를 따릅니다 (스킬로 쓰려면 SKILLS_DIR=경로)."
+  fi
 fi
 [ "$ENV" = 1 ] || exit 0
 

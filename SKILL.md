@@ -27,7 +27,7 @@ scripts/render.py           yaml → HTML → PDF + PNG, designs A/B/C, runs pos
 scripts/check.py            page count · orphaned headings · links · placeholders · style checks
 scripts/check_links.py      link reachability (stdlib only, runs anywhere)
 scripts/git_log.sh          author-filtered commit log from a local git repository
-scripts/setup.sh            skill link (~/.claude/skills) + Playwright Chromium, fonts (Pretendard, Noto Sans/Serif CJK KR), poppler
+scripts/setup.sh            skill link into installed agents (~/.claude/skills, ~/.codex/skills, or SKILLS_DIR) + Playwright Chromium, fonts (Pretendard, Noto Sans/Serif CJK KR), poppler
 scripts/scan.py             posting collection (Wanted · Jumpit · LinkedIn · Greenhouse · Toss · NHN · Kakao · Naver · Baemin · LINE · greetinghr · ninehire) → filters → pipeline.md
 scripts/alive.py            closing check for tracked postings
 scripts/tracker.py          application log (add/set) and combined report table (report)
@@ -55,7 +55,7 @@ data/                       user data (git-ignored; only the structure is commit
 2. Read `modes/_shared.md`.
 3. Run the session-start check in `modes/onboard.md`. Tell the user about any missing personalization file.
 4. Read `data/preferences/standing.md`. Anything already decided there is settled; use it without asking again.
-5. If this session is attached to a Claude project, also check the project's finalized yaml and guide documents.
+5. If the host attaches project files to this session (e.g. a Claude project, a Codex workspace), also check the finalized yaml and guide documents there.
 
 ## Modes
 

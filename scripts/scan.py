@@ -8,7 +8,7 @@
   python3 scripts/scan.py --seed          지금 열린 공고를 "본 것"으로만 기록 (대기함에 넣지 않음, 다음 실행부터 새 공고만)
 
 결과
-  data/search/pipeline.md   "## 새로 수집 (선별 전)" 섹션에 추가 → Claude 가 brief.md 로 1차 선별
+  data/search/pipeline.md   "## 새로 수집 (선별 전)" 섹션에 추가 → AI 에이전트가 brief.md 로 1차 선별
   data/search/inbox/*.md    공고별 본문 (자격요건·우대·주요업무) + 언어 요건 힌트
   data/search/scan-history.tsv  본 공고 전부 (중복 제거용)
 

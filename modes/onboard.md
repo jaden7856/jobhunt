@@ -17,7 +17,7 @@ Check whether each file below exists and whether it is still the example (`*.exa
 
 If `targets.yaml` or `brief.md` is still the example and the user starts scan or evaluate, say so first: "선별 기준이 아직 예시라 점수가 내 기준이 아닙니다. 먼저 채울까요?"
 
-## Setting targets (AskUserQuestion, 1–4 questions at a time)
+## Setting targets (1–4 questions at a time, with the host's choice UI if it has one, otherwise plain text)
 
 1. 2–4 target roles with priority, plus adjacent roles (worth considering if the move is feasible)
 2. How to show years of experience, desired salary range and floor (pre-tax)
