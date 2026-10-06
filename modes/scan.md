@@ -27,7 +27,7 @@ Collect postings from job sites, screen them once, and queue them in `data/searc
    - Years: if the posting states a number of years, apply `career_filter` from `sources.yaml`.
 3. **Fetch bodies.** Fetch the full detail (qualifications, preferred, main tasks) of the remaining postings. Expand umbrella postings down to their sub-positions (for Toss the script gathers sub-links at the end of the body).
 4. **First-pass screening.** For each posting under "새로 수집 (선별 전)", follow `references/scoring.md` in order. Never estimate a score.
-   - Scaffold with `python3 scripts/score.py init <inbox body> -o data/search/judgments/<source>_<id>.yaml`, then fill every line's classification (fit · met · gap) plus direction, gates, and signals. The `언어:` hint at the end of a line is only a hint; judge conditions from the qualification sentences.
+   - Scaffold with `python3 scripts/score.py init <inbox body> -o data/search/judgments/<source>_<id>.yaml`, then fill every line's classification (fit · met · gap) plus direction, gates, signals, and `domain_new` (a specialised technical domain the team's product is built around that the user has never worked in, e.g. LLM serving). The `언어:` hint at the end of a line is only a hint; judge conditions from the qualification sentences.
    - If an exclusion gate hits, write only `fail` and the evidence sentence under `gates` and skip line classification.
    - If a posting resembles a case in `calibration.md`, classify it the same way.
    - Use the score and verdict from `python3 scripts/score.py data/search/judgments/<file>.yaml` as is. 3.5+ `PASS`, 3.0–3.4 `MARGINAL`, below `FAIL`.

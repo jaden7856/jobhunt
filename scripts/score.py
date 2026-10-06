@@ -105,6 +105,10 @@ def score(j: dict, cfg: dict) -> dict:
     if kind(d.get("primary")) < 0 and total > avoid_cap:
         caps.append(f"주 업무 방향 '{d.get('primary')}' → 상한 {avoid_cap}")
         total = avoid_cap
+    domain_cap = float(cfg.get("domain_new_cap", 3.9))           # 팀 제품의 핵심 도메인이 처음이면 요건이 다 맞아도 지원 고려까지
+    if j.get("domain_new") and total > domain_cap:
+        caps.append(f"핵심 도메인 처음 ({j['domain_new']}) → 상한 {domain_cap}")
+        total = domain_cap
     total = round(total, 1)
     verdict, triage = next((v, t) for lim, v, t in VERDICTS if total >= lim)
     return dict(total=total, verdict=verdict, triage=triage, parts=parts, bonus=bonus, caps=caps, gate=[])
@@ -118,7 +122,7 @@ def init(path: str) -> dict:
     out = dict(url=url.group(1) if url else "", company=head.group(1) if head else "", title=head.group(2) if head else "",
                source=path, gates=dict(location="", language="", stack="", years="", employment="", comp=""),
                gate_note="", work=[], required=[], preferred=[], direction=dict(primary="", secondary=[]),
-               signals=[], priority=False, note="")
+               domain_new="", signals=[], priority=False, note="")
     cur = None
     for raw in text.split("\n"):
         line = raw.strip()

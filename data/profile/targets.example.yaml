@@ -49,3 +49,4 @@ scoring:
   core_alt: { value: 1.75, cap_plus: 0.2 }   # 핵심 빈틈이지만 공고가 '이에 준하는 경험'을 인정할 때
   low_work_cap: { below: 2.5, cap: 3.9 }     # 업무 대부분이 처음이면 지원 권장까지 가지 않음
   avoid_cap: 3.4                             # 주 업무 방향이 avoid_work 면 보류까지
+  domain_new_cap: 3.9                        # 팀 제품의 핵심 도메인(예: LLM 서빙)이 처음이면 지원 고려까지

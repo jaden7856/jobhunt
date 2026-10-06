@@ -39,6 +39,7 @@ required:    # one line per qualification
 preferred:   # one line per preferred item
   - { line: "Kafka 운영", met: partial }
 direction: { primary: payment_settlement, secondary: [large_scale_product] }
+domain_new: ""           # core domain of the team's product the user has never worked in (caps at 3.9)
 signals: [self_service]
 priority: false          # priority company (sources.yaml priority: true)
 note: "한 줄 근거"
@@ -76,13 +77,15 @@ note: "한 줄 근거"
 - primary: preferred 5.0 · other 3.0 · avoided 1.5. Each secondary: preferred +0.5 · avoided −0.5 (within 1–5).
 - Judge by **main tasks and team description**, not requirement sentences. Generic lines found everywhere ("문서화", "공통 모듈", "테스트·배포") never set the direction.
 
+**domain_new** — a specialised technical domain that the team's product is built around and that the main work lines depend on, when the user has never worked in it (e.g. "LLM 서빙·분산 추론", ML training, game engines, compilers, codecs). Write it in a few Korean words; leave it empty otherwise. Business domains (commerce, payments, securities, …) where general backend skills carry over do not count; a gap there is a required `core` gap or nothing. It caps the score at 3.9 (`domain_new_cap`) even when an "A, B, C 중 하나" requirement is met through a neighbouring skill, because the daily work still sits in the unknown domain. If the user only built what runs next to that domain (a K8s operator that deploys inference servers, not the inference itself), the domain is still new.
+
 **signals** — only keys present in `scoring.signals` of `targets.yaml`, and only what the posting shows.
 
 ## Calculation
 
 ```
 score = work×0.30 + required×0.30 + preferred×0.10 + direction×0.30 + sum of signals (+ priority bonus)
-      → clamp to 1–5 → cap for required core gaps → cap 3.9 if work fit is below 2.5 → cap 3.4 if `direction.primary` is an `avoid_work` key (`avoid_cap`; a product-API job whose generic requirements all read "met" shouldn't reach a recommendation) → one decimal
+      → clamp to 1–5 → cap for required core gaps → cap 3.9 if work fit is below 2.5 → cap 3.4 if `direction.primary` is an `avoid_work` key (`avoid_cap`; a product-API job whose generic requirements all read "met" shouldn't reach a recommendation) → cap 3.9 if `domain_new` is set (`domain_new_cap`) → one decimal
 ```
 
 Change weights, bonuses, and caps in `scoring` of `targets.yaml`.
