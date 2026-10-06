@@ -6,10 +6,10 @@ Guidance for any AI coding agent working in this repository — Codex, Claude Co
 
 Two things in one folder:
 
-- **An agent skill** (`resume-pdf-builder`, the open `SKILL.md` format): `SKILL.md` routes a request to a mode file in `modes/` (onboard · scan · evaluate · tailor · track). Agents that load skills get it through `scripts/setup.sh`, which symlinks this repo into their skill folders; agents that don't simply run in this folder and follow this file. Either way edits here are live immediately.
+- **An agent skill** (`resume-pdf-builder`, the open `SKILL.md` format): `SKILL.md` is a router: a mode argument or the request picks a mode file in `modes/` (onboard · scan · evaluate · tailor · cover · deep · interview · track · outcome). Agents that load skills get it through `scripts/setup.sh`, which symlinks this repo into their skill folders; agents that don't simply run in this folder and follow this file. Either way edits here are live immediately.
 - **LLM-free Python scripts** under `scripts/` that do everything not needing judgment: collecting Korean job postings, closing checks, the application tracker, scoring arithmetic, company discovery, and resume PDF builds.
 
-If the user asks to find/evaluate postings, write a resume, or log an application, that is *using* the skill: follow `SKILL.md` (read `modes/_shared.md` first). If they ask to change the tool itself, you are editing the scripts/modes below.
+If the user asks to find/evaluate postings, write a resume or cover letter, prepare for an interview, or log an application, that is *using* the skill: follow `SKILL.md` (read `modes/_shared.md` first). If they ask to change the tool itself, you are editing the scripts/modes below.
 
 ## Running under different agents
 
@@ -20,6 +20,8 @@ The workflow is plain files plus Python, so every agent follows the same steps. 
 | Codex | reads this `AGENTS.md` when started in the repo; `setup.sh` also links the skill into `~/.codex/skills` |
 | Claude Code | `CLAUDE.md` imports this file; `setup.sh` links the skill into `~/.claude/skills` |
 | Grok, Gemini, Cursor, others | start the agent in this folder and point it at `AGENTS.md` (most read it on their own); if the host loads `SKILL.md` skills, set `SKILLS_DIR` for `setup.sh` |
+
+In-repo pointers `.agents/skills/`, `.grok/skills/`, `.cursor/skills/` hold a thin `SKILL.md` that sends the agent to the root `SKILL.md`, so those agents find the skill without `setup.sh`. Keep their frontmatter (`name`, `description`, `argument-hint`) identical to the root `SKILL.md` when it changes.
 
 Host features are optional add-ons, never requirements:
 - **Publishing HTML** (e.g. Claude Artifacts): the posting report is one HTML file; publish the `--fragment` version where the host can, otherwise open the file or give its path (`SKILL.md` "Showing the posting report").
@@ -49,6 +51,7 @@ bash scripts/weekly.sh [--since YYYY-MM-DD]       # scan → alive --write → t
 # scoring / tracking / discovery
 python3 scripts/score.py init <body.md> -o <judgment.yaml>;  python3 scripts/score.py <judgment.yaml>...;  ... apply <judgment.yaml>...
 python3 scripts/tracker.py add|set|report [--alive]
+python3 scripts/cover_check.py <cover.yaml>          # cover-letter answers: character counts vs limit + style rules
 python3 scripts/discover.py collect|probe|report|missing|set <file.tsv>|promote [--min S] [--dry-run]
 
 python3 assets/src/render.py                      # regenerate README preview PNGs

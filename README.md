@@ -149,7 +149,12 @@ cd ~/resume-builder && git pull   # data/ 는 그대로
 | "공고 찾아줘" | `weekly.sh`로 수집한 뒤, 새 공고를 내 기준으로 1차 선별해 현황표로 보여 줍니다 |
 | (공고 URL을 붙여넣고) "이 공고 어때?" | 조건 판정, 요구사항 대응표, 점수, 맞춤 이력서 계획, 면접 준비 |
 | "이 공고용 이력서 만들어줘" | 평가의 계획으로 yaml 작성 → PDF 빌드 → 검사 → 수정 반복 |
-| "지원했어" / "서류 붙었어" | 현황표 갱신, 재지원 쿨다운 적용, 결과가 쌓이면 기준 조정 제안 |
+| "자소서 써줘" / "지원서 문항 답 써줘" | 문항별 구조로 초안 작성, 글자 수 제한·문체 검사 (`cover_check.py`) |
+| "이 회사 조사해줘" | 제품·팀·기술·개발 문화·회사 상태·경고 신호를 출처와 함께 정리 (지원 동기·역질문 재료) |
+| "면접 준비해줘" | 전형별 준비, 이력서에서 나올 질문과 꼬리질문, 기술 질문, 행동 질문, 역질문 연습지 |
+| "모의 면접 해줘" | 면접관처럼 한 문항씩 묻고 내 답에 꼬리질문, 답마다 짧은 피드백 |
+| "지원했어" / "서류 붙었어" / "면접 봤어" | 현황표 갱신, 재지원 쿨다운, 면접 기록, 결과가 쌓이면 원인 분석과 기준 조정 제안 |
+| "메뉴" (또는 모드 이름만) | 쓸 수 있는 모드와 지금 할 만한 다음 단계 |
 
 ### 3. 스크립트만 따로 쓰기
 
@@ -247,7 +252,8 @@ AI 에이전트가 공고를 한 줄씩 분류하면(해 본 일인지, 필수 �
 | 작업 규칙, 보고 형식, 이력서 표현 결정 | `data/preferences/standing.md` |
 | 검색 조건, 우선 기업, 대기함, 본 공고 기록 | `data/search/` |
 | 공고 원문과 평가 | `data/job_postings/` |
-| 지원 현황과 결과 | `data/applications/tracker.md` |
+| 지원 현황과 결과, 자기소개서 답 | `data/applications/` |
+| 면접 연습지, 행동 질문 사례, 면접 기록 | `data/interview/` |
 
 - 판단을 교정하면 그 성격에 맞는 파일에 날짜와 함께 적습니다. 바뀐 결정은 지우지 않고 이전 값을 남깁니다.
 - 지원 결과가 3건 이상 쌓이면, 점수와 실제 결과가 어긋난 부분을 찾아 기준 조정을 제안합니다.
@@ -258,12 +264,13 @@ AI 에이전트가 공고를 한 줄씩 분류하면(해 본 일인지, 필수 �
 ```
 AGENTS.md                    모든 AI 에이전트용 작업 안내 (CLAUDE.md 는 이 파일을 불러옴)
 SKILL.md                     스킬 진입점, 요청을 모드로 연결
-modes/                       공통 규칙과 모드별 절차 (onboard · scan · evaluate · tailor · track)
+modes/                       공통 규칙과 모드별 절차 (onboard · scan · evaluate · tailor · cover · deep · interview · track · outcome)
 scripts/
   scan.py · providers/       공고 수집 (사이트별 모듈)
   discover.py                회사 찾기 (채용 사이트·채용 시스템 판별 → 수집 대상 추가)
   alive.py                   마감 확인
   tracker.py                 지원 현황 기록, 통합 현황표
+  cover_check.py             자기소개서 문항 글자 수·문체 검사
   weekly.sh                  주간 스캔 (scan → alive → report)
   render.py                  yaml → HTML → PDF + PNG, 디자인 A/B/C
   check.py · check_links.py  빌드 후 검사, 링크 접속 확인
@@ -275,11 +282,13 @@ references/
   writing_rules.md           문장 규칙과 점검 방법
   style_rules.yaml           금지어 · 번역투 · 기호 한도
   resume_guide.md            이력서 일반 규칙
+  cover_letter.md            자기소개서·지원서 문항 작성법
+  interview_questions.md     면접 질문 방식·꼬리질문 패턴·답변 구조
 docs/ROADMAP.md              설계와 단계
 examples/example.yaml        가상 인물 예시
 assets/                      README 미리보기 이미지와 예시 PDF
 data/                        내 자료 (git 제외, 구조와 예시만 올라감)
-  profile/ experience/ preferences/ portfolio/ search/ job_postings/ applications/ resumes/ output/
+  profile/ experience/ preferences/ portfolio/ search/ job_postings/ applications/ resumes/ output/ interview/
 ```
 
 ## 🔒 개인정보

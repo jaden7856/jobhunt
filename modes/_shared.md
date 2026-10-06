@@ -37,6 +37,9 @@ When asking for confirmation, offer all four answers: (a) correct (b) the exact 
 | collected-posting queue, seen-posting log, excluded companies | `search/pipeline.md`, `search/scan-history.tsv`, `search/blacklist.md` |
 | posting text and evaluation | `job_postings/<YYYY-MM-DD>_<회사>_<포지션>.md`, `.eval.md` with the same name |
 | application status | `applications/tracker.md` |
+| cover-letter / application-form answers | `applications/covers/<회사>_<포지션>.yaml` |
+| company research note | `job_postings/<same name>.deep.md` |
+| interview practice sheets, behavioral stories, debrief log | `interview/<회사>_<포지션>.md`, `interview/stories.md`, `interview/log.md` |
 | resume yaml, build output | `resumes/`, `output/` |
 
 ## 4. Learning (sharper with use)

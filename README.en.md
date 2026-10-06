@@ -151,7 +151,12 @@ Features that differ between agents, such as web search (Firecrawl, …) or publ
 | "공고 찾아줘" (find postings) | Runs `weekly.sh`, triages new postings against your criteria, shows the overview table |
 | (paste a URL) "이 공고 어때?" (how is this one?) | Rule checks, requirement match table, score, tailoring plan, interview prep |
 | "이 공고용 이력서 만들어줘" (make a resume for it) | Writes the YAML from the plan → builds the PDF → checks → revises |
-| "지원했어" / "서류 붙었어" (applied / passed screening) | Updates the tracker, applies the re-apply cooldown, suggests criteria tweaks as outcomes accumulate |
+| "자소서 써줘" (write the cover letter) | Drafts each application question with a fitting structure, checks character limits and style (`cover_check.py`) |
+| "이 회사 조사해줘" (research this company) | Product, team, stack, engineering culture, company state and red flags, with sources (material for motivation and reverse questions) |
+| "면접 준비해줘" (prepare the interview) | A practice sheet: per-stage prep, resume-driven questions with follow-ups, technical and behavioral questions, reverse questions |
+| "모의 면접 해줘" (mock interview) | Asks one question at a time like an interviewer, follows up on your answer, short feedback after each |
+| "지원했어" / "서류 붙었어" / "면접 봤어" (applied / passed / interviewed) | Updates the tracker, applies the re-apply cooldown, logs the interview, analyzes causes and suggests criteria changes as results accumulate |
+| "메뉴" (menu, or just a mode name) | The available modes and the next step that fits where you are |
 
 ### 3. Use the scripts on their own
 
@@ -249,7 +254,8 @@ The tool (`SKILL.md`, `modes/`, `scripts/`, `references/`) is versioned in git. 
 | House rules, report format, resume wording decisions | `data/preferences/standing.md` |
 | Search settings, priority companies, inbox, seen-posting history | `data/search/` |
 | Posting text and evaluations | `data/job_postings/` |
-| Applications and outcomes | `data/applications/tracker.md` |
+| Applications, outcomes, cover-letter answers | `data/applications/` |
+| Interview practice sheets, behavioral stories, interview log | `data/interview/` |
 
 - Corrections are written to the matching file with a date, and superseded decisions keep their previous value.
 - Once three or more outcomes accumulate, the skill looks for mismatches between scores and results and proposes criteria adjustments.
@@ -260,12 +266,13 @@ The tool (`SKILL.md`, `modes/`, `scripts/`, `references/`) is versioned in git. 
 ```
 AGENTS.md                    Working guide for every AI agent (CLAUDE.md imports it)
 SKILL.md                     Skill entry point, routes requests to modes
-modes/                       Shared rules and per-mode procedures (onboard · scan · evaluate · tailor · track)
+modes/                       Shared rules and per-mode procedures (onboard · scan · evaluate · tailor · cover · deep · interview · track · outcome)
 scripts/
   scan.py · providers/       Posting collection (one module per site)
   discover.py                Company discovery (find career sites and hiring systems, add them to the scan)
   alive.py                   Open/closed check
   tracker.py                 Application tracker and combined overview
+  cover_check.py             Cover-letter character counts and style checks
   weekly.sh                  Weekly scan (scan → alive → report)
   render.py                  YAML → HTML → PDF + PNG, designs A/B/C
   check.py · check_links.py  Post-build checks, link reachability
@@ -277,11 +284,13 @@ references/
   writing_rules.md           Writing rules and how to check them
   style_rules.yaml           Banned words, translationese, symbol limits
   resume_guide.md            General resume rules
+  cover_letter.md            Cover letter and application-question writing
+  interview_questions.md     How interviewers ask: question styles, follow-ups, answer shapes
 docs/ROADMAP.md              Design and phases
 examples/example.yaml        Fictional sample resume
 assets/                      README preview images and sample PDF
 data/                        Your data (git-ignored; only structure and examples are committed)
-  profile/ experience/ preferences/ portfolio/ search/ job_postings/ applications/ resumes/ output/
+  profile/ experience/ preferences/ portfolio/ search/ job_postings/ applications/ resumes/ output/ interview/
 ```
 
 ## 🔒 Privacy

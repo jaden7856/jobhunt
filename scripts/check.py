@@ -95,7 +95,8 @@ def plain(s):
 
 
 # ══════════════════════════════ 문체·플레이스홀더 ══════════════════════════════
-def lint(resume, rules=None):
+def lint(resume, rules=None, texts=None):
+    """texts 를 주면 이력서 대신 그 (위치, 문장, 종류) 목록을 검사한다 (자기소개서 등)."""
     rules = rules or load_rules()
     issues = []
 
@@ -112,7 +113,7 @@ def lint(resume, rules=None):
     name_allow = set(names.get("allow", []))
     gloss = re.compile(rules["gloss_parens"]) if rules.get("gloss_parens") else None
 
-    for where, raw, kind in iter_texts(resume):
+    for where, raw, kind in (texts if texts is not None else iter_texts(resume)):
         t = plain(raw)
         for p in ph:
             if p.search(str(raw)):
