@@ -291,6 +291,7 @@ The tool (`SKILL.md`, `modes/`, `scripts/`, `references/`) is versioned in git. 
 ```
 install.sh                   One-line install (clone or update → scripts/setup.sh)
 AGENTS.md                    Working guide for every AI agent (CLAUDE.md imports it)
+LEGAL_DISCLAIMER.md          Acceptable use and disclaimer (Korean)
 SKILL.md                     Skill entry point, routes requests to modes
 modes/                       Shared rules and per-mode procedures (onboard · scan · evaluate · tailor · cover · deep · interview · track · outcome)
 scripts/
@@ -327,6 +328,15 @@ data/                        Your data (git-ignored; only structure and examples
 - Mistakes like `git add -f` are caught too. CI checks the tracked `data/` files on every PR, and the pre-commit hook (enable with `git config core.hooksPath .githooks`) stops a commit whose content includes the name, email, phone or school from `profile.yaml` (`scripts/privacy_check.py`).
 - Your name and contact info are never hard-coded. They're read from `data/profile/profile.yaml` at build time.
 - The Wanted, Jumpit, LinkedIn guest and career-site JSON endpoints are unofficial; they're used for personal purposes with a delay between requests.
+
+## ⚖️ Acceptable use and disclaimer
+
+Please read [`LEGAL_DISCLAIMER.md`](LEGAL_DISCLAIMER.md) (in Korean) before use. In short:
+
+- **Personal job search only.** Bulk collection and redistributing or selling collected postings are out of scope. Checking each site's terms is up to you. Requests are spaced out, and bot blocking is never worked around.
+- **Stored only on your PC.** There is no server run by the author and no usage tracking. When you use an AI agent, the conversation and the files it reads go to the AI service you chose.
+- **AI can be wrong or make things up.** Scores are an opinion; check every resume and cover letter for accuracy before sending it. You submit applications yourself.
+- Provided "as is" under the MIT License, with no warranty for any outcome.
 
 ## 🙏 Acknowledgements
 
