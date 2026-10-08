@@ -1,12 +1,12 @@
-rule: "주 업무 방향이 피하는 일(admin_only)이면 개인 상한 avoid_cap 3.4. 우대 사항이 없으면 B 등급"
+rule: "같은 기술로 쓰는 사람(운영자)만 다른 업무는 adjacent. 주 업무 방향이 피하는 일(admin_only)이면 개인 상한 avoid_cap 3.4. 우대 사항이 없으면 B 등급"
 expect: 보류
 url: https://careers.basa.example/jobs/909
 company: 바사커머스
 title: 백오피스 API 개발자
 gates: { location: pass, language: pass, stack: pass, years: pass, employment: pass, comp: unclear }
 work:
-  - { line: "운영자용 어드민 화면에 쓰는 API 개발", fit: done }
-  - { line: "상품·회원 관리 백오피스 기능 개발", fit: done }
+  - { line: "운영자용 어드민 화면에 쓰는 API 개발", fit: adjacent, why: "고객용 주문 API 만 개발" }
+  - { line: "상품·회원 관리 백오피스 기능 개발", fit: adjacent }
 required:
   - { line: "Java 또는 Kotlin 서버 개발 경력 3년 이상", met: "yes" }
   - { line: "Spring Boot 와 JPA 사용 경험", met: "yes" }

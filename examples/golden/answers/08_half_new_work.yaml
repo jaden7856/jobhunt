@@ -1,4 +1,4 @@
-rule: "일반적인 필수 문구를 다 채워도 주요 업무 절반 이상이 처음(new)이면 S·A·B 하한 없이 C"
+rule: "일반적인 필수 문구를 다 채워도 주요 업무 절반 이상이 처음(new)이면 S·A·B 하한 없이 C. 업종 이름(게임 서버)만으로는 domain_new 아님"
 expect: 지원 고려
 url: https://careers.mabagames.example/jobs/808
 company: 마바게임즈

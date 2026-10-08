@@ -1,4 +1,4 @@
-rule: "필수에 경험 없는 언어(Python·Django)가 '또는 이에 준하는 역량'과 함께 있으면 스택 조건은 통과, 그 줄은 met: no · gap: bridge (references/scoring.md)"
+rule: "필수에 경험 없는 언어(Python·Django)가 '또는 이에 준하는 역량'과 함께 있으면 스택 조건은 통과, 그 줄은 met: no · gap: bridge (references/scoring.md). 업종 경험 우대는 key 아님, 'A·B' 는 하나를 채우면 yes"
 expect: 지원 고려
 url: https://careers.ganadapay.example/jobs/101
 company: 가나다페이
@@ -15,7 +15,7 @@ required:
   - { line: "RDBMS 트랜잭션과 인덱스에 대한 이해", met: "yes" }
 preferred:
   - { line: "Kafka 등 메시지 큐 운영 경험", met: "yes" }
-  - { line: "금융·결제 도메인 경험", met: partial, why: "커머스 결제 연동" }
+  - { line: "금융·결제 도메인 경험", met: "yes", why: "커머스 결제 연동 — '금융·결제' 중 하나. 업종 경험이라 key 아님" }
 direction: { primary: payment_settlement, secondary: [] }
 domain_new: ""
 signals: []

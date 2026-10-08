@@ -1,4 +1,4 @@
-rule: "'언어 무관' 필수는 met: yes. 자격요건 밖 '기술 스택' 절(Go)은 팀 스택이라 필수 줄도 스택 조건도 아님"
+rule: "'언어 무관' 필수는 met: yes. 자격요건 밖 '기술 스택' 절(Go)은 팀 스택이라 필수 줄도 스택 조건도 아님. 숫자 없는 규모 표현(대용량)은 partial"
 expect: 지원 권장
 url: https://careers.ramaba.example/jobs/202
 company: 라마바랩스

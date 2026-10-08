@@ -58,15 +58,19 @@ note: "한 줄 근거"
 
 ## Classification
 
-**gates** (`location` · `gates` · `compensation` in `targets.yaml`): `pass` / `fail` / `unclear`. Any `fail` → excluded with no score. Location and compensation are judged here only.
+**gates** (`location` · `gates` · `compensation` in `targets.yaml`): `pass` / `fail` / `unclear`. Any `fail` → excluded with no score; `unclear` never changes the score. Location and compensation are judged here only. A posting that does not state the salary is `comp: unclear`.
 
 **work.fit** — has the user done this work?
 
 | Value | Meaning | Score |
 |---|---|---|
-| `done` | has done the same work | 5.0 |
-| `adjacent` | has done similar work and can connect it in an interview | 3.5 |
-| `new` | never done it | 1.5 |
+| `done` | has done the same work: the same kind of thing, for the same users | 5.0 |
+| `adjacent` | has done related work with the same skills and can connect it in an interview | 3.5 |
+| `new` | neither the kind of work nor its skills connect to anything the user has done | 1.5 |
+
+- `done` needs both: the same skills **and** the same kind of thing for the same users (a customer-facing order API for an order API line). The same skills on a different object or for different users is `adjacent`: AWS used to run services → an API that creates and changes AWS resources; customer-facing APIs → admin or back-office APIs for operators.
+- Industry alone does not lower `done`: the same kind of system in another industry (commerce order events → stock order events, seller settlement batches → delivery settlement batches) is `done`, as business domains carry over (see `domain_new`). "Users" only separates customer-facing features from operator tools; internal batches and pipelines are judged by the kind of system.
+- `new` is work whose kind and skills are both unfamiliar (matchmaking servers, inference request scheduling). Having used a tool is not enough for `done`; having built nothing near the work is `new` even when the tool is familiar.
 
 **required.met** — `yes` 5.0 · `partial` 3.5 · `no` by gap type
 
@@ -80,16 +84,16 @@ note: "한 줄 근거"
 - Personality and attitude lines ("서비스에 애착", "기술 도전을 즐김", "소통을 잘함") stay out of required. Classify only verifiable experience and skills.
 - Which requirements are core, as decided by the user, is in the `scoring` comments of `targets.yaml` and in `data/profile/calibration.md`. Follow them.
 
-**preferred.met** — average of `yes` 1 · `partial` 0.5 · `no` 0, mapped to 1–5 (3 when there are none). Personality and attitude lines stay out.
+**preferred.met** — average of `yes` 1 · `partial` 0.5 · `no` 0, mapped to 1–5 (3 when there are none). Personality and attitude lines stay out. A line that lists alternatives ("금융·결제 도메인", "A 또는 B") is `yes` when the user has one of them. A scale word with no number ("대용량", "대규모 트래픽") is `partial` when the user has run a real production service; when the posting gives a number, compare against it.
 
-**preferred.key** — `true` when the line is a core technical skill or requirement *of this position*, even though the posting files it under 우대: the thing the team builds on every day (vLLM/KV cache for an LLM serving platform, Terraform/AWS for a cloud infra team, RTB for a bidder team). Generic lines (Kafka, DDD, mentoring, agile, English) are not key unless the position is about them. Mark at most 2–3 lines; when unsure, read the main tasks: a preferred line that names what most main tasks need is key.
+**preferred.key** — `true` when the line is a core technical skill or requirement *of this position*, even though the posting files it under 우대: the thing the team builds on every day (vLLM/KV cache for an LLM serving platform, Terraform/AWS for a cloud infra team, RTB for a bidder team). Generic lines (Kafka, DDD, mentoring, agile, English) are not key unless the position is about them. Mark at most 2–3 lines; when unsure, read the main tasks: a preferred line that names what most main tasks need is key. Business-domain experience (금융·결제, 커머스, 증권 …) is never key, even for a team working in that domain: a missing business domain is a required `core` gap when the posting requires it, and the direction already reflects what the team builds.
 
 **direction** — is the daily work in this seat the desired direction? `primary` is what the team mainly builds; `secondary` is side work.
 - Values are keys of `scoring.prefer_work` · `scoring.avoid_work` in `targets.yaml`; `other` if neither.
 - primary: preferred 5.0 · other 3.0 · avoided 1.5. Each secondary: preferred +0.5 · avoided −0.5 (within 1–5).
 - Judge by **main tasks and team description**, not requirement sentences. Generic lines found everywhere ("문서화", "공통 모듈", "테스트·배포") never set the direction.
 
-**domain_new** — a specialised technical domain that the team's product is built around and that the main work lines depend on, when the user has never worked in it (e.g. "LLM 서빙·분산 추론", ML training, game engines, compilers, codecs). Write it in a few Korean words; leave it empty otherwise. Business domains (commerce, payments, securities, …) where general backend skills carry over do not count; a gap there is a required `core` gap or nothing. It caps the score at 3.9 (`domain_new_cap`) even when an "A, B, C 중 하나" requirement is met through a neighbouring skill, because the daily work still sits in the unknown domain. If the user only built what runs next to that domain (a K8s operator that deploys inference servers, not the inference itself), the domain is still new.
+**domain_new** — a specialised technical domain that the team's product is built around and that the main work lines depend on, when the user has never worked in it (e.g. "LLM 서빙·분산 추론", ML training, game engines, compilers, codecs). Write it in a few Korean words; leave it empty otherwise. Business domains (commerce, payments, securities, …) where general backend skills carry over do not count; a gap there is a required `core` gap or nothing. It caps the score at 3.9 (`domain_new_cap`) even when an "A, B, C 중 하나" requirement is met through a neighbouring skill, because the daily work still sits in the unknown domain. If the user only built what runs next to that domain (a K8s operator that deploys inference servers, not the inference itself), the domain is still new. An industry name alone ("게임 서버", "핀테크") is not `domain_new`: when the work is general server development on unfamiliar tasks, those tasks are already `new` in the work lines. It is `domain_new` only when the main work depends on technical knowledge that general backend experience does not carry over to (game engines or real-time state-sync netcode, inference optimisation).
 
 **signals** — only keys present in `scoring.signals` of `targets.yaml`, and only what the posting shows (personal layer).
 
