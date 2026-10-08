@@ -84,6 +84,17 @@ class PrivacyGuard(unittest.TestCase):
         self.assertEqual(r.returncode, 0, r.stderr)
         self.assertIn("이름은(는) 이미 저장소에 있어", r.stderr)
 
+    def test_works_without_pyyaml(self):
+        """훅이 PyYAML 없는 가상환경의 python3 로 돌아도 traceback 없이 같은 검사를 한다."""
+        self.write("notes.md", "연락처 010 9999 8888, 학교 가상대학교\n")
+        self.git("add", "notes.md")
+        script = os.path.join(self.dir, "scripts", "privacy_check.py")
+        r = subprocess.run([sys.executable, "-c", "import runpy, sys; sys.modules['yaml'] = None; "
+                            f"sys.argv = [{script!r}, '--staged']; runpy.run_path({script!r}, run_name='__main__')"],
+                           capture_output=True, text=True)
+        self.assertNotIn("Traceback", r.stderr)
+        self.assertBlocked(r, "notes.md  ← profile.yaml 의 전화번호", "notes.md  ← profile.yaml 의 학교")
+
     def test_tracked_mode_for_ci(self):
         self.assertEqual(self.check().returncode, 0)
         self.git("add", "-f", "data/profile/profile.yaml")
