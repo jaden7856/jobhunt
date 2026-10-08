@@ -32,7 +32,7 @@ Write instructions for the agent in neutral terms ("the agent", "the host"); nam
 
 ## Commands
 
-No test suite, linter, or build step. Verify changes by running the affected script. Python 3.9+, deps in `requirements.txt` (PyYAML, playwright, pdf2image, pdfplumber); `bash scripts/setup.sh --no-skill` installs them plus Chromium, Korean fonts (Pretendard, Noto CJK KR), and poppler. Supported hosts: macOS (Homebrew), Debian/Ubuntu (apt), and Windows through WSL2 Ubuntu — on Windows the repo, the scripts, and the agent all run inside WSL (clone under `~`, not `/mnt/c`).
+No test suite, linter, or build step. Verify changes by running the affected script. Python 3.9+, deps in `requirements.txt` (PyYAML, playwright, pdf2image, pdfplumber); `bash scripts/setup.sh --no-skill` installs them plus Chromium, Korean fonts (Pretendard, Noto CJK KR), and poppler. `install.sh` at the repo root is the one-line installer users run with `curl … | bash`: it clones (or fast-forwards) the repo into `JOBHUNT_DIR` (default `~/jobhunt`) and then runs `setup.sh`; releases are git tags (`v1.0.0`). Supported hosts: macOS (Homebrew), Debian/Ubuntu (apt), and Windows through WSL2 Ubuntu — on Windows the repo, the scripts, and the agent all run inside WSL (clone under `~`, not `/mnt/c`).
 
 ```bash
 # resume build (yaml → HTML → A4 PDF + per-page PNG, then runs check.py)
