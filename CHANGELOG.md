@@ -7,14 +7,18 @@
 
 ## 다음 버전
 
+## v1.1.0 — 2026-10-08
+
 - 이력서 yaml 형식 검사: 모르는 키(오타)·타입·쓸 수 없는 값을 빌드 전에 위치와 함께 멈춤, 편집기 자동완성용 스키마 `references/resume.schema.json` (#13)
 - 판정 정답 세트 `examples/golden/` 와 `scripts/eval_golden.py`: 분류 규칙을 바꿨을 때 에이전트 판정의 줄·결론 일치율 (#14)
 - 이 변경 기록, `install.sh` 갱신 때 바뀐 점 안내 (#15)
-- 분류 규칙 문구 (`references/scoring.md`): 같은 기술로 대상·쓰는 사람만 다른 업무는 adjacent(업종만 다른 같은 종류의 시스템은 done), 업종 경험 우대는 key 아님, 'A·B' 우대는 하나를 채우면 yes, 업종 이름만으로는 domain_new 아님, 숫자 없는 규모 표현은 partial, 연봉 미기재는 comp: unclear(점수 반영 없음). 기존 판정은 다시 분류하면 adjacent·key 가 바뀔 수 있다 (#25)
-- 고침: 커밋 전 훅이 PyYAML 없는 가상환경의 python3 로 돌 때 traceback 으로 멈추던 것 — profile.yaml 을 직접 읽어 같은 검사 (#23)
-- 기여 안내 `CONTRIBUTING.md`, 이슈 양식(수집기 응답 형식 변경 · 버그 · 기능 제안)과 PR 양식 (#17)
 - ruff 린트(`ruff.toml`: 쓰지 않는 import·변수, 정의 안 된 이름 같은 실수만): CI 작업, 커밋 전 훅은 ruff 가 설치돼 있을 때만. 쓰지 않던 변수 정리 (#16)
-- **data/ 이전:** `data/resumes/*.yaml` 이 형식 검사에 걸리면 표시된 위치를 고친다 (예: `meta.posting:` 처럼 비워 둔 칸 중 기본값이 없는 칸, 키 오타). 첫 줄에 `# yaml-language-server: $schema=../../references/resume.schema.json` 을 넣으면 편집기가 미리 알려 준다
+- 기여 안내 `CONTRIBUTING.md`, 이슈 양식(수집기 응답 형식 변경 · 버그 · 기능 제안)과 PR 양식 (#17)
+- 고침: 커밋 전 훅이 PyYAML 없는 가상환경의 python3 로 돌 때 traceback 으로 멈추던 것 — profile.yaml 을 직접 읽어 같은 검사 (#23)
+- 분류 규칙 문구 (`references/scoring.md`): 같은 기술로 대상·쓰는 사람만 다른 업무는 adjacent(업종만 다른 같은 종류의 시스템은 done), 업종 경험 우대는 key 아님, 'A·B' 우대는 하나를 채우면 yes, 업종 이름만으로는 domain_new 아님, 숫자 없는 규모 표현은 partial, 연봉 미기재는 comp: unclear(점수 반영 없음). 기존 판정은 다시 분류하면 adjacent·key 가 바뀔 수 있다 (#25)
+- **data/ 이전:**
+  - `data/resumes/*.yaml` 이 형식 검사에 걸리면 표시된 위치를 고친다 (예: 기본값이 없는 칸을 비워 둔 것, 키 오타). 첫 줄에 `# yaml-language-server: $schema=../../references/resume.schema.json` 을 넣으면 편집기가 미리 알려 준다
+  - `data/search/judgments/` 의 판정은 예전 분류 문구로 쓰였다. 새 문구(#25)로 갈리는 줄(어드민·운영 API 의 done, 업종 경험 우대의 key, 'A·B' 우대, 숫자 없는 규모 표현, 업종 이름의 domain_new)만 다시 보고 `score.py` 로 다시 계산한다
 
 ## v1.0.1 — 2026-10-08
 
