@@ -2,7 +2,9 @@
 """회사 찾기 (LLM 호출 없음). 자체 채용 사이트에만 공고를 올리는 회사까지 수집 범위를 넓힌다.
 
   python3 scripts/discover.py collect          정보원에서 회사 후보를 모으고 인지도·규모 점수를 매긴다
-  python3 scripts/discover.py probe [--top N]  점수 높은 후보의 채용 사이트와 채용 시스템(ATS)을 찾는다
+  python3 scripts/discover.py probe [--top N] [--no-browser]
+                                               점수 높은 후보의 채용 사이트와 채용 시스템(ATS)을 찾는다 (못 찾으면 흔한 채용 주소 →
+                                               헤드리스 브라우저로 목록 API 를 본다. 순서: references/sources.md "회사 찾기")
   python3 scripts/discover.py report           후보 표 (점수·채용 사이트·ATS·수집 가능 여부)
   python3 scripts/discover.py missing          채용 사이트를 못 찾은 후보 (Firecrawl·검색으로 채울 목록)
   python3 scripts/discover.py set <파일.tsv>   밖에서 찾은 채용 사이트(회사<TAB>URL<TAB>출처)를 넣고 채용 시스템을 판별·검증
@@ -40,9 +42,17 @@ ATS = [
     ("lever", r"jobs\.lever\.co/[\w-]+", "lever"),
     ("ninehire", r"[\w-]+\.ninehire\.site|ninehire\.com", "ninehire"),
     ("hiworks", r"recruit\.[\w.-]+/recruit/(?:jobs|view/)|gabiaoffice\.hiworks\.com", "hiworks"),   # 가비아 하이웍스 채용 (JS 로 그림)
-    ("recruiter", r"[\w-]+\.recruiter\.co\.kr", None),
-    ("roundhr", r"[\w-]+\.recruit\.roundhr\.com", None),
-    ("notion", r"[\w-]+\.notion\.site|notion\.so/", None),
+    ("workday", r"[\w-]+\.wd\d+\.myworkdayjobs\.com/(?:[a-z]{2}-[A-Z]{2}/)?[\w-]+", "workday"),
+    ("recruiter", r"[\w-]+\.recruiter\.co\.kr", "recruiter"),
+    ("roundhr", r"[\w-]+\.recruit\.roundhr\.com|api-prod\.roundhr\.com|roundhr\.com/service", "roundhr"),   # 회사 도메인이면 아이콘 주소로만 보인다
+    ("workable", r"apply\.workable\.com/(?!api/|j/)[\w-]+", "workable"),
+    ("ashby", r"jobs\.ashbyhq\.com/[\w.-]+", "ashby"),
+    ("skcareers", r"skcareers\.com/Recruit[^\"'\s<]*", "skcareers"),
+    ("smartrecruiters", r"(?:jobs|careers)\.smartrecruiters\.com/[\w-]+", None),   # 아래는 지문만 (수집기 없음)
+    ("teamtailor", r"[\w-]+\.teamtailor\.com", None),
+    ("recruitee", r"[\w-]+\.recruitee\.com", None),
+    ("bamboohr", r"[\w-]+\.bamboohr\.com/careers", None),
+    ("notion", r"[\w-]+\.notion\.site|notion\.so/|[\w-]+\.oopy\.io", None),
     ("wanted", r"wanted\.co\.kr/(?:company|wd)/\d+", None),
 ]
 CAREER_LINK = re.compile(r'href="([^"#]+)"[^>]*>(?:(?!</a>).){0,200}?(?:채용|인재\s*영입|커리어|Careers?|Recruit|Jobs|Join\s*us|We\'?re\s*hiring)',
@@ -211,20 +221,142 @@ def _links(base: str, html: str):
     return out
 
 
-def verify(ats: str, careers: str, name: str):
-    """판별한 채용 시스템으로 목록을 실제로 받아 본다 → 공고 수 (실패하면 None)."""
+def verify(ats: str, careers: str, name: str, **extra):
+    """판별한 채용 시스템으로 목록을 실제로 받아 본다 → 공고 수 (실패하면 None). extra: company_id(나인하이어)·code(라운드HR)."""
     import providers
     mod = providers.BY_ATS.get(ats)
     if not mod or ats == "greenhouse":
         return None
     try:
-        return len(mod.collect({"careers_url": careers, "name": name}))
+        return len(mod.collect({"careers_url": careers, "name": name, "ats": ats, **extra}))
     except Exception:
         return None
 
 
-def probe_one(c: dict) -> dict:
-    """홈페이지에서 채용 링크를 찾고, 그 페이지의 채용 시스템을 판별한 뒤 목록을 받아 검증한다."""
+def _identify(url: str, page: str, name: str, **extra):
+    """페이지(주소·HTML·iframe·script)에 보이는 채용 시스템마다 목록을 받아 보고, 공고가 나온 것을 고른다.
+    여러 시스템이 함께 보이면(예: 공고 없는 greetinghr 사이트 + Workday) 공고 수가 있는 쪽 → 0건이라도 받은 쪽 → 처음 본 쪽."""
+    hrefs = [urllib.parse.urljoin(url, h.replace("&amp;", "&")) for h in re.findall(r'(?:href|src)="([^"#]+)"', page or "")] + [url]
+    found = []
+    for ats, pat, _ in ATS:
+        m = re.search(pat, url, re.I) or re.search(pat, page or "", re.I)
+        if not m:
+            continue
+        own = [x for x in hrefs if re.search(pat, x, re.I) and not MARKETING.search(x) and not ASSET.search(x)]
+        if not own and ats in ("workday", "workable", "ashby", "lever", "greenhouse") and "/" in m.group(0):
+            own = ["https://" + m.group(0)]      # 링크가 아니라 페이지 데이터 안에만 있는 주소 (예: jobs.ashbyhq.com/{회사}). 경로가 회사를 가리키는 시스템만
+        careers = own[0] if own else url
+        n = verify(ats, careers, name, **extra)
+        found.append(dict(careers=careers, ats=ats, **({"verified": n} if n is not None else {})))
+    return (sorted(found, key=lambda r: (-(r.get("verified") or 0), "verified" not in r)) or [None])[0]
+
+
+SUBS = ("careers", "career", "recruit", "jobs", "talent", "join")
+PATHS = ("/careers", "/career", "/career/jobs", "/careers/jobs", "/recruit", "/recruit/list", "/jobs", "/hiring", "/ko/careers")
+POSTING = re.compile(r'href="[^"]*?/(?:jobs?|recruits?|careers?|positions?|openings?|o|detail|job_posting)/[\w-]*\d[\w-]*/?"', re.I)
+
+
+def _guess(home: str):
+    """채용 링크를 못 찾았을 때 흔한 채용 주소(하위 도메인·경로)를 붙여 본다.
+    200 이어도 공고 링크 2개 이상이나 채용 시스템 지문이 없으면 버린다 (홈으로 돌려보내는 사이트가 많다)."""
+    dom = re.sub(r"^www\.", "", urllib.parse.urlparse(home).netloc)   # 하위 도메인 회사(x.그룹.com)가 그룹 채용 사이트로 가지 않게 그대로 쓴다
+    out, blocked = [], []
+    for u in [f"https://{s}.{dom}/" for s in SUBS] + [home + x for x in PATHS]:
+        try:
+            st, page = K.http_get(u, accept="text/html", timeout=10)
+        except OSError:          # 없는 하위 도메인 (DNS)
+            continue
+        if st == 200 and (len(set(POSTING.findall(page))) >= 2 or ats_of(u, page)[0]):
+            out.append((u, page))
+        elif st in (403, 429):   # 봇 차단 (나인하이어 등) — 브라우저로 볼 후보
+            blocked.append(u)
+    return out, blocked
+
+
+def _links_hint(url: str, page: str) -> str:
+    """평문 HTML 에 공고 링크가 2개 이상이면 htmllinks 용 links 정규식 제안 (숫자를 \\d+ 로)."""
+    pats = {}
+    for h in set(re.findall(r'href="([^"]*?/(?:jobs?|recruits?|careers?|positions?|openings?|o|detail|job_posting)/[\w-]*\d[\w-]*/?)"', page or "", re.I)):
+        pat = re.sub(r"\d+", r"\\d+", re.escape(urllib.parse.urlparse(h).path))
+        pats[pat] = pats.get(pat, 0) + 1
+    if not pats:
+        return ""
+    pat, n = max(pats.items(), key=lambda x: x[1])
+    return f"links: '{pat}' {n}건 (평문 HTML)" if n >= 2 else ""
+
+
+JOBWORD = r"job|recruit|rec\b|posting|notice|position|announce|anno|opening|career|apply|due|employ"   # 사이트 장식용 목록(메뉴·앵커)과 가르기
+
+
+def _job_lists(o, path="", out=None):
+    """JSON 안에서 공고 목록처럼 보이는 곳 (제목·아이디 같은 키를 가진 dict 목록) → [(경로, 개수)]."""
+    out = [] if out is None else out
+    if isinstance(o, list) and o and all(isinstance(x, dict) for x in o[:3]):
+        keys = " ".join(o[0])
+        if re.search(r"title|subject|name|Nm\b", keys, re.I) and re.search(r"id\b|Id\b|Sn\b|seq|No\b|code", keys) \
+                and re.search(JOBWORD, path + " " + keys, re.I):
+            out.append((path.lstrip("."), len(o)))
+    if isinstance(o, dict):
+        for k, v in o.items():
+            _job_lists(v, f"{path}.{k}", out)
+    return out
+
+
+def _browser(url: str) -> dict:
+    """탐색 때만: 헤드리스 브라우저로 채용 페이지를 열어 네트워크를 본다 (playwright 가 없으면 건너뜀).
+    공고 목록 JSON 이 안 보이면 '채용 공고·전체·더보기·View all' 버튼을 한 번 누른다.
+    → ats_seen(요청 주소의 채용 시스템), company_id(나인하이어 API 의 companyId), hint(목록 API 와 브라우저 없이 재현되는지)."""
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        return {}
+    seen, hits = [], []
+
+    def on_resp(r):
+        seen.append(r.url)
+        if r.request.resource_type in ("xhr", "fetch") and "json" in r.headers.get("content-type", ""):
+            try:
+                lists = _job_lists(r.json())
+                post = r.request.post_data
+            except Exception:            # JSON 아님·압축된 요청 본문
+                return
+            if lists:
+                hits.append((r.request.method, r.url, post, max(lists, key=lambda x: x[1])))
+    with sync_playwright() as p:
+        b = p.chromium.launch()
+        page = b.new_context(locale="ko-KR").new_page()
+        page.on("response", on_resp)
+        try:
+            page.goto(url, wait_until="networkidle", timeout=30000)
+            if not hits:
+                page.get_by_text(re.compile(r"^\s*(채용\s*공고|전체|더\s*보기|View all|Open positions)\s*$", re.I)).first.click(timeout=3000)
+                page.wait_for_load_state("networkidle", timeout=10000)
+        except Exception:
+            pass
+        b.close()
+    r = {}
+    for ats, pat, prov in ATS:
+        if prov and any(re.search(pat, u, re.I) for u in seen):
+            r["ats_seen"] = ats
+            break
+    cid = next((m.group(1) for u in seen if "ninehire" in u or "_backend" in u for m in [re.search(r"companyId=([0-9a-f-]{36})", u)] if m), None)
+    if cid:
+        r["company_id"] = cid
+    if hits:
+        method, u, post, (path, n) = hits[0]
+        try:
+            body = json.loads(post) if post else None
+        except ValueError:
+            body = post
+        st, text = K.http_post(u, body) if body is not None else K.http_get(u)
+        ok = st == 200 and any(c == n for _, c in _job_lists(json.loads(text) if text.lstrip()[:1] in "[{" else {}))
+        r["hint"] = f"{method} {u}{' ' + post[:200] if post else ''} → {path or '$'} {n}건 · 브라우저 없이 {'재현됨' if ok else '안 됨'}"
+    return r
+
+
+def probe_one(c: dict, browser: bool = True) -> dict:
+    """홈페이지에서 채용 링크를 찾고(없으면 흔한 채용 주소를 붙여 보고), 페이지의 채용 시스템을 판별해 목록을 받아 검증한다.
+    그래도 자체 사이트면 헤드리스 브라우저로 목록 API 를 찾는다 (references/judgment.md §2)."""
     home = _home(c)
     if not home:
         return dict(probe="홈페이지 모름")
@@ -237,20 +369,35 @@ def probe_one(c: dict) -> dict:
         st, page = K.http_get(cand, accept="text/html", timeout=15)
         if st == 200:
             pages.append((cand, page))
+    blocked = []
+    if len(pages) == 1:
+        guessed, blocked = _guess(home)
+        pages += guessed
     for url, page in pages[1:] + pages[:1]:
-        name, hit = ats_of(url, page)
-        if not name:
-            continue
-        own = [x for x in _links(url, page) + [url] if re.search(dict((n, p) for n, p, _ in ATS)[name], x, re.I) and not MARKETING.search(x)]
-        careers = own[0] if own else url
-        r = dict(probe="찾음", home=home, careers=careers, ats=name)
-        n = verify(name, careers, c["name"])
-        if n is not None:
-            r["verified"] = n
-        return r
+        r = _identify(url, page, c["name"])
+        if r:
+            return dict(probe="찾음", home=home, **r)
     if len(pages) > 1:
-        return dict(probe="찾음", home=home, careers=pages[1][0], ats="자체")
-    return dict(probe="채용 링크 없음", home=home)
+        r = dict(probe="찾음", home=home, careers=pages[1][0], ats="자체")
+        hint = _links_hint(*pages[1])
+        if hint:
+            r["hint"] = hint
+    elif blocked:
+        r = dict(probe="찾음 · 봇 차단", home=home, careers=blocked[0], ats="자체")
+    else:
+        r = dict(probe="채용 링크 없음", home=home)
+    return _with_browser(r, r.get("careers") or home, c["name"]) if browser and "hint" not in r else r
+
+
+def _with_browser(r: dict, url: str, name: str) -> dict:
+    """자체 사이트로 남은 결과에 브라우저 관찰을 더한다: 요청에 채용 시스템이 보이면 그 시스템으로 검증, 아니면 hint(목록 API)를 남긴다."""
+    b = _browser(url)
+    if b.get("ats_seen"):
+        n = verify(b["ats_seen"], url, name, **({"company_id": b["company_id"]} if b.get("company_id") else {}))
+        r.update(probe=r["probe"].replace("채용 링크 없음", "찾음") + " · 브라우저", careers=url, ats=b["ats_seen"],
+                 **({"verified": n} if n is not None else {}))
+    r.update({k: b[k] for k in ("company_id", "hint") if k in b})
+    return r
 
 
 # ── 명령 ──────────────────────────────────────────────
@@ -275,11 +422,11 @@ def cmd_probe(a):
     todo = [c for c in sorted(reg.values(), key=lambda c: -c.get("tier", 0))
             if c["status"] == "후보" and c.get("tier", 0) >= a.min and (a.again or "probe" not in c)][:a.top]
     for i, c in enumerate(todo, 1):
-        for k in ("careers", "ats", "verified", "home"):     # 다시 조사할 때 이전 결과가 남지 않게
+        for k in ("careers", "ats", "verified", "home", "company_id", "hint"):     # 다시 조사할 때 이전 결과가 남지 않게
             if k != "careers" or c["status"] == "후보":
                 c.pop(k, None)
         try:
-            c.update(probe_one(c))
+            c.update(probe_one(c, browser=not a.no_browser))
         except Exception as e:
             c["probe"] = f"오류 {type(e).__name__}"
         c["probed"] = K.TODAY
@@ -289,20 +436,19 @@ def cmd_probe(a):
     _save(reg)
 
 
-def classify(c: dict, careers: str, via: str) -> dict:
+def classify(c: dict, careers: str, via: str, browser: bool = True) -> dict:
     """밖에서 찾은 채용 사이트 URL 로 채용 시스템을 판별하고 목록을 받아 검증한다."""
     try:
         st, page = K.http_get(careers, accept="text/html", timeout=15)
     except OSError as e:                      # TLS 거부·DNS 실패 — URL 은 남기고 판별만 건너뛴다
         st, page = type(e).__name__, ""
-    name, _ = ats_of(careers, page if st == 200 else "")
-    r = dict(probe=f"찾음 ({via})", careers=careers, ats=name or "자체")
-    n = verify(name, careers, c["name"]) if name else None
-    if n is not None:
-        r["verified"] = n
+    r = dict(probe=f"찾음 ({via})", careers=careers, ats="자체")
+    r.update(_identify(careers, page if st == 200 else "", c["name"]) or {})
     if st != 200:
         r["probe"] += f" · HTTP {st}"
-    return r
+    if r["ats"] == "자체" and _links_hint(careers, page):
+        r["hint"] = _links_hint(careers, page)
+    return _with_browser(r, careers, c["name"]) if r["ats"] == "자체" and browser and "hint" not in r else r
 
 
 def cmd_missing(a):
@@ -326,9 +472,9 @@ def cmd_set(a):
         if not url or url == "-":
             c["probe"] = f"채용 사이트 없음 ({via[0] if via else '수동'})"
             continue
-        for k in ("careers", "ats", "verified"):
+        for k in ("careers", "ats", "verified", "company_id", "hint"):
             c.pop(k, None)
-        c.update(classify(c, url, via[0] if via else "수동"))
+        c.update(classify(c, url, via[0] if via else "수동", browser=not a.no_browser))
         c["probed"] = K.TODAY
         print(f"  {c['name']}: {c['probe']} {c.get('ats')} {'검증 ' + str(c['verified']) + '건' if 'verified' in c else ''} {url}")
     _save(reg)
@@ -377,8 +523,12 @@ def cmd_promote(a):
                 e["api"] = f"https://boards-api.greenhouse.io/v1/boards/{m.group(1)}/jobs"
         if auto and c.get("ats") in supported:
             e["ats"] = c["ats"]
+            if c.get("company_id"):
+                e["company_id"] = c["company_id"]
         else:
             e["method"] = "browser"
+            if c.get("hint"):                # 탐색이 찾은 읽는 법 (목록 API 또는 links) — 설정으로 옮기면 자동 수집 (references/judgment.md §2)
+                e["browse"] = dict(url=c["careers"], how="jsonapi" if "links:" not in c["hint"] else "links", note=c["hint"])
         add.append(e)
         c["status"] = "추가"
     print(f"sources.yaml 에 추가할 회사 {len(add)}곳 (자동 수집 {sum(1 for e in add if 'ats' in e)} · 브라우저 {sum(1 for e in add if 'method' in e)})")
@@ -398,10 +548,11 @@ def main(argv=None):
     sub = ap.add_subparsers(dest="cmd", required=True)
     p = sub.add_parser("collect"); p.add_argument("--skip-wanted", action="store_true")
     p = sub.add_parser("probe"); p.add_argument("--top", type=int, default=60); p.add_argument("--min", type=float, default=2.5)
+    p.add_argument("--no-browser", action="store_true", help="헤드리스 브라우저 관찰(F)을 건너뜀")
     p.add_argument("--again", action="store_true")
     p = sub.add_parser("report"); p.add_argument("--min", type=float, default=2.5)
     p = sub.add_parser("missing"); p.add_argument("--min", type=float, default=2.5)
-    p = sub.add_parser("set"); p.add_argument("file")
+    p = sub.add_parser("set"); p.add_argument("file"); p.add_argument("--no-browser", action="store_true")
     p = sub.add_parser("promote"); p.add_argument("--min", type=float, default=2.5, help="자동 수집(검증된 채용 시스템) 최소 점수")
     p.add_argument("--min-browser", type=float, default=4.0, help="브라우저 수집 최소 점수 (매번 손이 가서 더 높게, 유명 회사 목록은 예외)")
     p.add_argument("--dry-run", action="store_true")

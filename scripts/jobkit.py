@@ -52,13 +52,14 @@ UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
 _last: Dict[str, float] = {}
 
 
-def http_get(url: str, accept: str = "application/json", delay: float = 1.0, timeout: int = 20, headers: Optional[dict] = None):
-    """(status, text). 같은 호스트에는 delay 초 간격을 둔다 (references/sources.md 공통 규칙)."""
+def http_get(url: str, accept: str = "application/json", delay: float = 1.0, timeout: int = 20, headers: Optional[dict] = None,
+             data: Optional[bytes] = None):
+    """(status, text). 같은 호스트에는 delay 초 간격을 둔다 (references/sources.md 공통 규칙). data 가 있으면 POST."""
     host = url.split("/")[2]
     wait = _last.get(host, 0) + delay - time.time()
     if wait > 0:
         time.sleep(wait)
-    req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": accept, **(headers or {})})
+    req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": accept, **(headers or {})}, data=data)
     try:
         with _OPENER.open(req, timeout=timeout) as r:
             status, body = r.status, r.read().decode("utf-8", "replace")
@@ -67,6 +68,14 @@ def http_get(url: str, accept: str = "application/json", delay: float = 1.0, tim
     finally:
         _last[host] = time.time()
     return status, body
+
+
+def http_post(url: str, body, **kw):
+    """(status, text). body 가 dict 면 JSON, 문자열이면 폼(application/x-www-form-urlencoded)으로 보낸다."""
+    is_json = not isinstance(body, str)
+    ctype = "application/json" if is_json else "application/x-www-form-urlencoded; charset=UTF-8"
+    data = (json.dumps(body, ensure_ascii=False) if is_json else body).encode("utf-8")
+    return http_get(url, headers={"Content-Type": ctype, **(kw.pop("headers", None) or {})}, data=data, **kw)
 
 
 def get_json(url: str, **kw):

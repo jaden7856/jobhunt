@@ -8,11 +8,12 @@
 
 방법과 실측 날짜는 references/sources.md. 형식이 바뀌면 ShapeError 를 올려 "응답 형식 변경"으로 보고한다.
 """
-from . import greenhouse, greetinghr, hiworks, htmllinks, jumpit, kakao, lever, line, linkedin, naver, nhn, ninehire, saramin, toss, wanted, woowa
+from . import greenhouse, greetinghr, hiworks, htmllinks, jsonapi, jumpit, kakao, lever, line, linkedin, naver, nhn, ninehire, saramin, toss, wanted, woowa
 
 BOARDS = {"wanted": wanted, "jumpit": jumpit, "linkedin": linkedin, "saramin": saramin}
-ALL = [wanted, jumpit, linkedin, saramin, greenhouse, lever, toss, nhn, kakao, greetinghr, ninehire, naver, woowa, line, hiworks, htmllinks]
-BY_ATS = {"greetinghr": greetinghr, "ninehire": ninehire, "greenhouse": greenhouse, "hiworks": hiworks}   # sources.yaml 의 ats: (discover.py 가 적음)
+ALL = [wanted, jumpit, linkedin, saramin, greenhouse, lever, toss, nhn, kakao, greetinghr, ninehire, naver, woowa, line, hiworks, htmllinks, jsonapi]
+BY_ATS = {"greetinghr": greetinghr, "ninehire": ninehire, "greenhouse": greenhouse, "hiworks": hiworks,   # sources.yaml 의 ats: (discover.py 가 적음)
+          **{name: jsonapi for name in jsonapi.PRESETS}}                                               # workday·recruiter·roundhr·workable·ashby·skcareers
 
 
 def for_company(c: dict):
@@ -26,6 +27,8 @@ def for_company(c: dict):
         return greenhouse
     if "lever.co" in api:
         return lever
+    if c.get("jsonapi"):
+        return jsonapi                               # 탐색 때 찾아 둔 목록 API (예: 채용 사이트의 /api/…/announces)
     if c.get("links"):
         return htmllinks                             # 첫 화면 HTML 에 공고 링크가 있는 곳 (예: 두나무 /detail/{번호})
     if "toss.im" in url:

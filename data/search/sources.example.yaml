@@ -39,8 +39,22 @@ companies:
   - { name: 라마바페이, careers_url: "https://boards.greenhouse.io/example", api: "https://boards-api.greenhouse.io/v1/boards/example/jobs", priority: false }
   - { name: 차카타랩, careers_url: "https://jobs.lever.co/example", api: "https://api.lever.co/v0/postings/example", priority: false }
   - { name: 파하소프트, careers_url: "https://careers.example.com/", links: '/detail/\d+', priority: false }   # 첫 화면 HTML 에 공고 링크가 있는 곳
+  - { name: 거너랩, careers_url: "https://example.wd3.myworkdayjobs.com/ko-KR/External", ats: workday, priority: false }   # 채용 시스템: workday·workable·ashby·recruiter·roundhr·skcareers
+  # 목록이 탭·버튼 뒤에 있어 탐색 때 찾은 목록 API (discover.py 의 hint → 키 설명은 scripts/providers/jsonapi.py)
+  - name: 더러스튜디오
+    careers_url: "https://careers.example.com/jobs"
+    priority: false
+    jsonapi:
+      list: "https://careers.example.com/api/v1/jobs?page=1&size=100"
+      items: data.content
+      id: jobId
+      title: jobTitle
+      url: "https://careers.example.com/jobs/{jobId}"
+      detail: "https://careers.example.com/api/v1/jobs/{jobId}"
+      closes: endDate
   # 스크립트가 못 읽는 곳은 method: browser 와 읽는 법(browse). scan.py 가 이대로 보여 주고, 결과는 manual-checks.yaml 에 적는다.
-  # how: firecrawl-markdown | firecrawl-links | html | <회사>-api | search(주소 다시 찾기) | browser — 유형표는 references/judgment.md §2
+  # how: firecrawl-markdown | firecrawl-links | html | search(주소 다시 찾기) | jobboard(잡보드로 충분) | browser — 유형표는 references/judgment.md §2.
+  # note 에는 자동으로 못 바꾸는 이유(봇 차단·토큰·대기열)를 적는다
   - name: 사아자
     careers_url: "https://careers.example.com/"
     priority: true
