@@ -151,7 +151,7 @@ bash scripts/setup.sh
 curl -fsSL https://raw.githubusercontent.com/jojaden/jobhunt/main/install.sh | bash   # 또는 cd ~/jobhunt && git pull (data/ 는 그대로)
 ```
 
-버전은 `v1.0.0`처럼 태그로 붙입니다. 바뀐 점은 [Releases](https://github.com/jojaden/jobhunt/releases)에서 봅니다.
+버전은 `v1.0.0`처럼 태그로 붙입니다. 바뀐 점은 [`CHANGELOG.md`](CHANGELOG.md)와 [Releases](https://github.com/jojaden/jobhunt/releases)에서 보고, 설치 명령으로 갱신하면 그 사이 바뀐 점을 보여 줍니다. `data/` 형식이 바뀐 버전은 옮기는 방법을 함께 적습니다.
 
 에이전트별로 시작하는 법:
 
@@ -291,6 +291,7 @@ AI 에이전트가 공고를 한 줄씩 분류하면(해 본 일인지, 필수 �
 install.sh                   한 줄 설치 (clone·갱신 → scripts/setup.sh)
 AGENTS.md                    모든 AI 에이전트용 작업 안내 (CLAUDE.md 는 이 파일을 불러옴)
 LEGAL_DISCLAIMER.md          사용 범위와 면책
+CHANGELOG.md                 변경 기록 (버전마다 data/ 이전 안내)
 SKILL.md                     스킬 진입점, 요청을 모드로 연결
 modes/                       공통 규칙과 모드별 절차 (onboard · scan · evaluate · tailor · cover · deep · interview · track · outcome)
 scripts/
