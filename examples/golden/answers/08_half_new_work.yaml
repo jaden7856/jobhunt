@@ -1,0 +1,18 @@
+rule: "일반적인 필수 문구를 다 채워도 주요 업무 절반 이상이 처음(new)이면 S·A·B 하한 없이 C"
+expect: 지원 고려
+url: https://careers.mabagames.example/jobs/808
+company: 마바게임즈
+title: 게임 서버 개발자
+gates: { location: pass, language: pass, stack: pass, years: pass, employment: pass, comp: unclear }
+work:
+  - { line: "실시간 대전 게임의 매치메이킹 서버 개발", fit: new }
+  - { line: "게임 내 결제·아이템 지급 API 개발", fit: adjacent, why: "결제 연동" }
+  - { line: "게임 클라이언트와 통신하는 소켓 서버 개발", fit: new }
+required:
+  - { line: "서버 개발 경력 3년 이상", met: "yes" }
+  - { line: "RDBMS 사용 경험", met: "yes" }
+preferred:
+  - { line: "Redis 사용 경험", met: "yes" }
+direction: { primary: other, secondary: [] }
+domain_new: ""
+signals: []

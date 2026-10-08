@@ -299,6 +299,7 @@ scripts/
   alive.py                   마감 확인
   tracker.py                 지원 현황 기록, 통합 현황표
   cover_check.py             자기소개서 문항 글자 수·문체 검사
+  eval_golden.py             판정 정답 세트와 에이전트 판정 비교 (분류 규칙을 바꿨을 때)
   weekly.sh                  주간 스캔 (scan → alive → report)
   render.py                  yaml → HTML → PDF + PNG, 디자인 A/B/C
   check.py · check_links.py  빌드 후 검사, 링크 접속 확인
@@ -315,6 +316,7 @@ references/
   interview_questions.md     면접 질문 방식·꼬리질문 패턴·답변 구조
 docs/ROADMAP.md              설계와 단계
 examples/example.yaml        가상 인물 예시
+examples/golden/             판정 정답 세트 (가상 지원자·공고·정답)
 tests/                       도구를 고친 뒤 돌리는 테스트 (네트워크 없이, python3 -m unittest discover -s tests)
 assets/                      README 미리보기 이미지와 예시 PDF
 data/                        내 자료 (git 제외, 구조와 예시만 올라감)

@@ -1,0 +1,17 @@
+rule: "필수의 경력·도메인 자체가 없으면 gap: core. '또는 이에 준하는' 대체 문구가 있으면 alt: true (상한 3.4 → 3.6)"
+expect: 지원 고려
+url: https://careers.paha.example/jobs/505
+company: 파하증권
+title: 주식 주문 시스템 서버 개발자
+gates: { location: pass, language: pass, stack: pass, years: pass, employment: pass, comp: unclear }
+work:
+  - { line: "주식 주문 접수·체결 API 개발", fit: adjacent, why: "커머스 주문 API" }
+  - { line: "주문 이벤트 처리 파이프라인 개선", fit: done, why: "Kafka 주문 이벤트 도입" }
+required:
+  - { line: "Java 또는 Kotlin 서버 개발 경력 3년 이상", met: "yes" }
+  - { line: "증권사 매매 시스템 개발 경력 2년 이상 또는 이에 준하는 금융권 경험", met: "no", gap: core, alt: true }
+preferred:
+  - { line: "Kafka 운영 경험", met: "yes" }
+direction: { primary: other, secondary: [] }
+domain_new: ""
+signals: []

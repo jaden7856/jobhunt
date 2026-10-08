@@ -1,0 +1,18 @@
+rule: "태도·성향 줄('애착', '소통')은 필수에서 뺀다. 남은 줄을 모두 채우면 S"
+expect: 지원 권장
+url: https://careers.daramarket.example/jobs/707
+company: 다라마켓
+title: 주문·결제 백엔드 개발자
+gates: { location: pass, language: pass, stack: pass, years: pass, employment: pass, comp: unclear }
+work:
+  - { line: "주문 생성·취소와 결제 승인 API 개발", fit: done }
+  - { line: "정산 배치 개발과 운영", fit: done }
+required:
+  - { line: "Kotlin 과 Spring Boot 로 서버를 개발한 경력 3년 이상", met: "yes" }
+  - { line: "결제 대행사(PG) 연동 경험", met: "yes" }
+preferred:
+  - { line: "Kafka 기반 이벤트 설계 경험", met: "yes" }
+  - { line: "Redis 캐시 설계 경험", met: "yes" }
+direction: { primary: payment_settlement, secondary: [large_scale_product] }
+domain_new: ""
+signals: [b2c]

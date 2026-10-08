@@ -1,0 +1,17 @@
+rule: "근무지 조건(서울·판교, 통근 가능 과천·안양) 밖이고 원격도 없으면 gates.location: fail → 점수 없이 제외"
+expect: 제외
+url: https://careers.ajalogis.example/jobs/1010
+company: 아자물류
+title: 물류 시스템 백엔드 개발자
+gates: { location: fail, language: pass, stack: pass, years: pass, employment: pass, comp: unclear }
+gate_note: "부산 강서구, 재택 불가"
+work:
+  - { line: "입출고 처리 API 개발", fit: adjacent }
+  - { line: "배송 정산 배치 개발", fit: done }
+required:
+  - { line: "Java 또는 Kotlin 서버 개발 경력 3년 이상", met: "yes" }
+preferred:
+  - { line: "Kafka 운영 경험", met: "yes" }
+direction: { primary: other, secondary: [] }
+domain_new: ""
+signals: []

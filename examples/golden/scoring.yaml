@@ -1,0 +1,14 @@
+# 정답 세트의 개인 선호 (data/profile/targets.yaml 의 scoring 과 같은 형식). score.py 계산에 쓴다.
+prefer_work:
+  payment_settlement: "결제·정산처럼 돈이 맞아야 하는 시스템"
+  large_scale_product: "사용자가 많은 B2C 서비스의 API·도메인"
+avoid_work:
+  admin_only: "어드민·백오피스 화면용 API 위주"
+  ops_only: "운영·온콜 위주 (개발 비중이 작음)"
+avoid_cap: 3.4
+signals:
+  b2c: 0.3
+  self_service: 0.2
+  crunch: -0.2
+  tiny_startup: -0.3
+priority_bonus: 0.2

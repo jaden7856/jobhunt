@@ -1,0 +1,18 @@
+rule: "'언어 무관' 필수는 met: yes. 자격요건 밖 '기술 스택' 절(Go)은 팀 스택이라 필수 줄도 스택 조건도 아님"
+expect: 지원 권장
+url: https://careers.ramaba.example/jobs/202
+company: 라마바랩스
+title: 서버 개발자 (언어 무관)
+gates: { location: pass, language: pass, stack: pass, years: pass, employment: pass, comp: unclear }
+work:
+  - { line: "주문·배송 상태를 다루는 B2C 서비스 API 개발", fit: done }
+  - { line: "트래픽 증가에 맞춘 캐시와 쿼리 개선", fit: done, why: "주문 API p99 개선" }
+required:
+  - { line: "하나 이상의 언어로 서버 개발 경력 3년 이상 (언어 무관)", met: "yes" }
+  - { line: "MySQL 등 RDBMS 사용 경험", met: "yes" }
+preferred:
+  - { line: "Redis 캐시 설계 경험", met: "yes" }
+  - { line: "대용량 트래픽 서비스 운영 경험", met: partial, why: "월 거래액 300억 오픈마켓" }
+direction: { primary: large_scale_product, secondary: [] }
+domain_new: ""
+signals: [b2c]
