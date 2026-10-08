@@ -1,0 +1,44 @@
+{"cases": [
+  {
+    "name": "목록 두 쪽 · 본문(버튼·꼬리 문구 제외) · 마감",
+    "cfg": {"careers_url": "https://recruit.navercorp.com/rcrt/list.do", "name": "네이버"},
+    "responses": {
+      "https://recruit.navercorp.com/rcrt/loadJobList.do?annoId=&sw=&subJobCdArr=&sysCompanyCdArr=&empTypeCdArr=&entTypeCdArr=&workAreaCdArr=&firstIndex=0": {"json": {
+        "result": "Y", "totalSize": 11, "list": [
+          {"annoId": 9001, "annoSubject": "[가상팀] 검색 백엔드 개발", "sysCompanyCdNm": "NAVER", "workAreaCd": "0010",
+           "endYmd": "20261130", "entTypeCdNm": "경력", "subJobCdNm": "Backend"}]}},
+      "https://recruit.navercorp.com/rcrt/loadJobList.do?annoId=&sw=&subJobCdArr=&sysCompanyCdArr=&empTypeCdArr=&entTypeCdArr=&workAreaCdArr=&firstIndex=10": {"json": {
+        "result": "Y", "totalSize": 11, "list": [
+          {"annoId": 9002, "annoSubject": "데이터 엔지니어", "workAreaCd": "0020", "endYmd": ""}]}},
+      "https://recruit.navercorp.com/rcrt/view.do?annoId=9001": {"html": "<html><body><div class=\"top\">공유하기</div><div class=\"detail_wrap\"><p>공유하기</p><p>입사지원은 PC를 이용해주세요.</p><h3>자격요건</h3><p>Java 5년 이상</p><script>var x = 1;</script></div><div>Footer 가상 회사 정보</div></body></html>"},
+      "https://recruit.navercorp.com/rcrt/view.do?annoId=9003": {"html": "<html><body><div class=\"detail_wrap\">마감된 공고입니다</div></body></html>"},
+      "https://recruit.navercorp.com/rcrt/view.do?annoId=9004": {"status": 404},
+      "https://recruit.navercorp.com/rcrt/view.do?annoId=9005": {"status": 500}
+    },
+    "jobs": [
+      {"source": "naver:navercorp", "id": "9001", "url": "https://recruit.navercorp.com/rcrt/view.do?annoId=9001", "company": "NAVER",
+       "title": "검색 백엔드 개발", "location": "판교", "closes_at": "2026-11-30", "extra": {"entry": "경력", "job": "Backend"}},
+      {"id": "9002", "company": "네이버", "title": "데이터 엔지니어", "location": "", "closes_at": "상시"}
+    ],
+    "detail": {"9001": {"has": ["자격요건", "Java 5년 이상"], "lacks": ["공유하기", "입사지원은", "var x", "Footer", "가상 회사 정보"]}},
+    "alive": [["https://recruit.navercorp.com/rcrt/view.do?annoId=9001", true], ["https://recruit.navercorp.com/rcrt/view.do?annoId=9003", false],
+              ["https://recruit.navercorp.com/rcrt/view.do?annoId=9004", false], ["https://recruit.navercorp.com/rcrt/view.do?annoId=9005", null]],
+    "handles": [["https://recruit.navercorp.com/rcrt/view.do?annoId=9001", true], ["https://recruit.navercorp.com/rcrt/list.do", false]]
+  },
+  {
+    "name": "소개 사이트 주소 → 채용 시스템, 공고 없음",
+    "cfg": {"careers_url": "https://career.navercloudcorp.com/"},
+    "responses": {
+      "https://recruit.navercloudcorp.com/rcrt/loadJobList.do?annoId=&sw=&subJobCdArr=&sysCompanyCdArr=&empTypeCdArr=&entTypeCdArr=&workAreaCdArr=&firstIndex=0": {"json": {"result": "N", "list": [], "totalSize": 0}}
+    },
+    "jobs": []
+  },
+  {
+    "name": "목록 형식 변경",
+    "cfg": {"careers_url": "https://recruit.navercorp.com/rcrt/list.do"},
+    "responses": {
+      "https://recruit.navercorp.com/rcrt/loadJobList.do?annoId=&sw=&subJobCdArr=&sysCompanyCdArr=&empTypeCdArr=&entTypeCdArr=&workAreaCdArr=&firstIndex=0": {"json": {}}
+    },
+    "error": "ShapeError"
+  }
+]}

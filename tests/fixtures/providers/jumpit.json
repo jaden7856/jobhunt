@@ -1,0 +1,35 @@
+{"cases": [
+  {
+    "name": "목록(중복 제거) · 본문 · 마감",
+    "cfg": {"keywords": ["backend"], "max_pages": 2},
+    "responses": {
+      "https://jumpit-api.saramin.co.kr/api/positions?keyword=backend&sort=reg_dt&page=1": {"json": {"result": {"positions": [
+        {"id": 501, "title": "서버 개발자", "companyName": "라마바소프트", "locations": ["서울 마포구"], "minCareer": 2, "maxCareer": 5, "newcomer": false},
+        {"id": 501, "title": "서버 개발자", "companyName": "라마바소프트", "locations": ["서울 마포구"]},
+        {"id": 502, "title": "데이터 엔지니어", "companyName": "가나다랩", "locations": null, "newcomer": true}
+      ]}}},
+      "https://jumpit-api.saramin.co.kr/api/position/501": {"json": {"result": {
+        "publishedAt": "2026-10-01T09:00:00", "closedAt": "2099-12-31 23:59:59", "location": "서울 마포구 월드컵로 1",
+        "responsibility": "주문 서버 개발", "qualifications": "Java 2년 이상", "preferredRequirements": "AWS 경험",
+        "minCareer": 2, "maxCareer": 5, "newcomer": false, "techStacks": [{"stack": "Java"}, {"stack": "Spring"}]}}},
+      "https://jumpit-api.saramin.co.kr/api/position/502": {"json": {"result": {"closedAt": "2020-01-01 00:00:00"}}},
+      "https://jumpit-api.saramin.co.kr/api/position/503": {"json": {"result": {"closedAt": null}}}
+    },
+    "jobs": [
+      {"source": "jumpit", "id": "501", "url": "https://jumpit.saramin.co.kr/position/501", "company": "라마바소프트", "title": "서버 개발자",
+       "location": "서울 마포구", "extra": {"career": [2, 5], "newcomer": false}},
+      {"id": "502", "location": "", "extra": {"newcomer": true}}
+    ],
+    "detail": {"501": {"has": ["## 주요업무\n주문 서버 개발", "## 경력\n2~5년", "## 기술스택\nJava, Spring"],
+                       "lacks": ["신입 가능"],
+                       "job": {"posted_at": "2026-10-01", "closes_at": "2099-12-31", "location": "서울 마포구 월드컵로 1"}}},
+    "alive": [["https://jumpit.saramin.co.kr/position/501", true], ["https://jumpit.saramin.co.kr/position/502", false],
+              ["https://jumpit.saramin.co.kr/position/503", true], ["https://jumpit.saramin.co.kr/company/1", null]]
+  },
+  {
+    "name": "목록 형식 변경",
+    "cfg": {"keywords": ["backend"], "max_pages": 1},
+    "responses": {"https://jumpit-api.saramin.co.kr/api/positions?keyword=backend&sort=reg_dt&page=1": {"json": {"result": {}}}},
+    "error": "ShapeError"
+  }
+]}

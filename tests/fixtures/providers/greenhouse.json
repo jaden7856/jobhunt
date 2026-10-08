@@ -1,0 +1,32 @@
+{"cases": [
+  {
+    "name": "목록(본문 포함) · 마감 · 회사 도메인 gh_jid",
+    "cfg": {"api": "https://boards-api.greenhouse.io/v1/boards/ganadalab/jobs", "name": "가나다랩"},
+    "responses": {
+      "https://boards-api.greenhouse.io/v1/boards/ganadalab/jobs?content=true": {"json": {"jobs": [
+        {"id": 4001, "absolute_url": "https://boards.greenhouse.io/ganadalab/jobs/4001", "title": "Backend Engineer",
+         "location": {"name": "Seoul"}, "first_published": "2026-09-20T10:00:00-04:00", "application_deadline": null,
+         "content": "&lt;h3&gt;자격요건&lt;/h3&gt;&lt;ul&gt;&lt;li&gt;Go 로 결제 서버를 만든 경험&lt;/li&gt;&lt;/ul&gt;"}
+      ]}},
+      "https://boards-api.greenhouse.io/v1/boards/ganadalab/jobs/4001": {"json": {"id": 4001}},
+      "https://boards-api.greenhouse.io/v1/boards/ganadalab/jobs/4002": {"status": 404},
+      "https://boards-api.greenhouse.io/v1/boards/ganadalab/jobs/4003": {"status": 500}
+    },
+    "jobs": [
+      {"source": "greenhouse:ganadalab", "id": "4001", "url": "https://boards.greenhouse.io/ganadalab/jobs/4001", "company": "가나다랩",
+       "title": "Backend Engineer", "location": "Seoul", "posted_at": "2026-09-20", "closes_at": "",
+       "text_has": ["자격요건", "• Go 로 결제 서버를 만든 경험"], "text_lacks": ["<li>", "&lt;"]}
+    ],
+    "detail": {"4001": {"has": ["Go 로 결제 서버를 만든 경험"]}},
+    "alive": [["https://boards.greenhouse.io/ganadalab/jobs/4001", true], ["https://boards.greenhouse.io/ganadalab/jobs/4002", false],
+              ["https://boards.greenhouse.io/ganadalab/jobs/4003", null], ["https://careers.ganadalab.com/jobs?gh_jid=4001", true],
+              ["https://careers.unknown-co.com/jobs?gh_jid=4001", null]],
+    "handles": [["https://careers.ganadalab.com/jobs?gh_jid=4001", true], ["https://boards.greenhouse.io/ganadalab/jobs/4001", true]]
+  },
+  {
+    "name": "목록 형식 변경",
+    "cfg": {"api": "https://boards-api.greenhouse.io/v1/boards/ganadalab/jobs"},
+    "responses": {"https://boards-api.greenhouse.io/v1/boards/ganadalab/jobs?content=true": {"json": {}}},
+    "error": "ShapeError"
+  }
+]}

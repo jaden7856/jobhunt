@@ -1,0 +1,38 @@
+{"cases": [
+  {
+    "name": "목록(본문 포함) · 마감",
+    "cfg": {"api": "https://api.lever.co/v0/postings/ganadalab", "name": "가나다랩"},
+    "responses": {
+      "https://api.lever.co/v0/postings/ganadalab?mode=json": {"json": [
+        {"id": "0a1b2c3d-0000-4000-8000-000000000001", "hostedUrl": "https://jobs.lever.co/ganadalab/0a1b2c3d-0000-4000-8000-000000000001",
+         "text": "Platform Engineer", "categories": {"location": "Seoul"}, "descriptionPlain": "플랫폼 팀을 소개합니다",
+         "lists": [{"text": "Requirements", "content": "<li>Kubernetes 운영 경험</li>"}], "additionalPlain": "가상 복지 안내"}
+      ]},
+      "https://api.lever.co/v0/postings/ganadalab/0a1b2c3d-0000-4000-8000-000000000001": {"json": {}},
+      "https://api.lever.co/v0/postings/ganadalab/0a1b2c3d-0000-4000-8000-000000000002": {"status": 404},
+      "https://api.lever.co/v0/postings/ganadalab/0a1b2c3d-0000-4000-8000-000000000003": {"status": 503}
+    },
+    "jobs": [
+      {"source": "lever:ganadalab", "id": "0a1b2c3d-0000-4000-8000-000000000001",
+       "url": "https://jobs.lever.co/ganadalab/0a1b2c3d-0000-4000-8000-000000000001", "company": "가나다랩", "title": "Platform Engineer",
+       "location": "Seoul", "closes_at": "상시", "text_has": ["플랫폼 팀을 소개합니다", "## Requirements\n• Kubernetes 운영 경험", "가상 복지 안내"]}
+    ],
+    "detail": {"0a1b2c3d-0000-4000-8000-000000000001": {"has": ["Kubernetes 운영 경험"]}},
+    "alive": [["https://jobs.lever.co/ganadalab/0a1b2c3d-0000-4000-8000-000000000001", true],
+              ["https://jobs.lever.co/ganadalab/0a1b2c3d-0000-4000-8000-000000000002", false],
+              ["https://jobs.lever.co/ganadalab/0a1b2c3d-0000-4000-8000-000000000003", null],
+              ["https://jobs.lever.co/ganadalab", null]]
+  },
+  {
+    "name": "목록 형식 변경 (목록이 아님)",
+    "cfg": {"api": "https://api.lever.co/v0/postings/ganadalab"},
+    "responses": {"https://api.lever.co/v0/postings/ganadalab?mode=json": {"json": {"ok": false}}},
+    "error": "ShapeError"
+  },
+  {
+    "name": "목록 HTTP 오류",
+    "cfg": {"api": "https://api.lever.co/v0/postings/ganadalab"},
+    "responses": {"https://api.lever.co/v0/postings/ganadalab?mode=json": {"status": 404}},
+    "error": "ShapeError"
+  }
+]}

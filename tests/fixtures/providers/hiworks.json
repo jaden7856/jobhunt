@@ -1,0 +1,32 @@
+{"cases": [
+  {
+    "name": "회사 번호 → 목록 · 본문(근무지) · 마감",
+    "cfg": {"careers_url": "https://recruit.ganadalab.co.kr", "name": "가나다랩"},
+    "responses": {
+      "https://recruit-api.gabiaoffice.hiworks.com/v1/career-site/tokens/site-information": {"json": {"data": {"office_no": 555}}},
+      "https://recruit-api.gabiaoffice.hiworks.com/v1/career-site/offices/555/announces": {"json": {"data": [
+        {"announce_id": "a1b2c3", "announce_name": "인프라 엔지니어", "apply_finish_date": "2026-11-15 18:00:00", "experience": "경력"},
+        {"announce_id": "d4e5f6", "announce_name": "상시 채용", "apply_finish_date": null}
+      ]}},
+      "https://recruit-api.gabiaoffice.hiworks.com/v1/career-site/offices/555/announces/a1b2c3": {"json": {"data": {
+        "description": "<p>가상 리눅스 서버를 운영합니다</p>", "category_location": [{"address": "서울 중구"}]}}},
+      "https://recruit-api.gabiaoffice.hiworks.com/v1/career-site/offices/555/announces/zzzzzz": {"status": 404},
+      "https://recruit-api.gabiaoffice.hiworks.com/v1/career-site/offices/555/announces/yyyyyy": {"status": 500}
+    },
+    "jobs": [
+      {"source": "hiworks:ganadalab", "id": "a1b2c3", "url": "https://recruit.ganadalab.co.kr/recruit/view/a1b2c3", "company": "가나다랩",
+       "title": "인프라 엔지니어", "closes_at": "2026-11-15", "extra": {"domain": "ganadalab.co.kr", "office": "555", "experience": "경력"}},
+      {"id": "d4e5f6", "closes_at": "상시"}
+    ],
+    "detail": {"a1b2c3": {"has": ["근무지: 서울 중구", "가상 리눅스 서버를 운영합니다"]}},
+    "alive": [["https://recruit.ganadalab.co.kr/recruit/view/a1b2c3", true], ["https://recruit.ganadalab.co.kr/recruit/view/zzzzzz", false],
+              ["https://recruit.ganadalab.co.kr/recruit/view/yyyyyy", null]],
+    "handles": [["https://recruit.ganadalab.co.kr/recruit/view/a1b2c3", true], ["https://www.ganadalab.co.kr/recruit/view/a1b2c3", false]]
+  },
+  {
+    "name": "회사 번호 형식 변경",
+    "cfg": {"careers_url": "https://recruit.ganadalab.co.kr"},
+    "responses": {"https://recruit-api.gabiaoffice.hiworks.com/v1/career-site/tokens/site-information": {"json": {}}},
+    "error": "ShapeError"
+  }
+]}

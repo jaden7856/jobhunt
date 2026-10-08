@@ -1,0 +1,54 @@
+{"cases": [
+  {
+    "name": "첫 화면 companyId → 목록 API (진행 중·공개만) · 본문 · 마감 · 봇 차단 시 목록 API 로 판정",
+    "cfg": {"careers_url": "https://ganadalab.ninehire.site", "name": "가나다랩"},
+    "responses": {
+      "https://ganadalab.ninehire.site": {"next_data": {"props": {"pageProps": {"homepageProps": {"homepage": {"companyId": "cmp-111"}}}}}},
+      "https://api.ninehire.com/identity-access/homepage/recruitments?companyId=cmp-111&page=1&countPerPage=50&order=created_at_desc": {"json": {
+        "count": 3, "results": [
+          {"recruitmentId": "r1", "addressKey": "AbCd1234", "status": "in_progress", "isPrivate": false, "title": "서버 개발자",
+           "externalTitle": "백엔드 개발자 (Node.js)", "jobLocations": [{"addressName": "서울 강남구"}],
+           "career": {"range": {"over": 3, "below": 7}}, "deadlineValue": null, "jobGroup": {"title": "개발"}},
+          {"recruitmentId": "r2", "addressKey": "EfGh5678", "status": "finished", "isPrivate": false, "title": "마감 공고"},
+          {"recruitmentId": "r3", "addressKey": "IjKl9012", "status": "in_progress", "isPrivate": true, "title": "비공개 공고"}
+        ]}},
+      "https://ganadalab.ninehire.site/job_posting/AbCd1234": {"next_data": {"props": {"pageProps": {
+        "jobPosting": {"content": "<p>가상 서비스의 Node.js 서버를 만듭니다</p>"}, "recruitment": {"status": "in_progress"}}}}},
+      "https://ganadalab.ninehire.site/job_posting/EfGh5678": {"next_data": {"props": {"pageProps": {
+        "jobPosting": {"content": "x"}, "recruitment": {"status": "finished"}}}}},
+      "https://ganadalab.ninehire.site/job_posting/MnOp3456": {"status": 404},
+      "https://careers.rabaso.co.kr/job_posting/Zz991122": {"status": 429, "html": "Too Many Requests"},
+      "https://careers.rabaso.co.kr/job_posting/Yy001122": {"status": 429, "html": "Too Many Requests"},
+      "https://api.ninehire.com/identity-access/homepage/recruitments?companyId=cmp-222&page=1&countPerPage=50&order=created_at_desc": {"json": {
+        "count": 1, "results": [{"recruitmentId": "r9", "addressKey": "Zz991122", "status": "in_progress", "isPrivate": false, "title": "가상 공고"}]}}
+    },
+    "jobs": [
+      {"source": "ninehire:ganadalab", "id": "r1", "url": "https://ganadalab.ninehire.site/job_posting/AbCd1234", "company": "가나다랩",
+       "title": "백엔드 개발자 (Node.js)", "location": "서울 강남구", "closes_at": "상시", "extra": {"career": [3, 7], "group": "개발"}}
+    ],
+    "detail": {"r1": {"has": ["가상 서비스의 Node.js 서버를 만듭니다"]}},
+    "alive": [["https://ganadalab.ninehire.site/job_posting/AbCd1234", true], ["https://ganadalab.ninehire.site/job_posting/EfGh5678", false],
+              ["https://ganadalab.ninehire.site/job_posting/MnOp3456", false], ["https://careers.rabaso.co.kr/job_posting/Zz991122", true],
+              ["https://careers.rabaso.co.kr/job_posting/Yy001122", false]],
+    "handles": [["https://ganadalab.ninehire.site/job_posting/AbCd1234", true], ["https://careers.rabaso.co.kr/job_posting/Zz991122", true],
+                ["https://careers.rabaso.co.kr/about/job_posting/x", false]]
+  },
+  {
+    "name": "companyId 를 어디서도 못 찾음",
+    "cfg": {"careers_url": "https://ganadalab.ninehire.site"},
+    "responses": {
+      "https://ganadalab.ninehire.site": {"next_data": {"props": {"pageProps": {"homepageProps": {}}}}}
+    },
+    "error": "ShapeError"
+  },
+  {
+    "name": "목록 형식 변경 (company_id 지정) — 수집은 오류, 마감 판정은 판정 불가",
+    "cfg": {"careers_url": "https://careers.rabaso.co.kr", "company_id": "cmp-222"},
+    "responses": {
+      "https://api.ninehire.com/identity-access/homepage/recruitments?companyId=cmp-222&page=1&countPerPage=50&order=created_at_desc": {"json": {}},
+      "https://careers.rabaso.co.kr/job_posting/Zz991122": {"status": 429, "html": "Too Many Requests"}
+    },
+    "error": "ShapeError",
+    "alive": [["https://careers.rabaso.co.kr/job_posting/Zz991122", null]]
+  }
+]}

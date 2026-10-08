@@ -1,0 +1,98 @@
+{"cases": [
+  {
+    "name": "자체 API (where·본문·틀) · 상세가 없으면 공고 페이지 글 · 마감",
+    "cfg": {"name": "가나다랩", "careers_url": "https://careers.ganadalab.io",
+            "jsonapi": {"list": "https://careers.ganadalab.io/api/jobs", "items": "data.list", "id": "jobId", "title": "name",
+                        "url": "https://careers.ganadalab.io/jobs/{jobId}", "where": {"status": "OPEN"}, "text": "content",
+                        "closes": "endDate", "location": "{office.city} {office.district}", "total": "data.total"}},
+    "responses": {
+      "https://careers.ganadalab.io/api/jobs": {"json": {"data": {"total": 3, "list": [
+        {"jobId": 1, "name": "백엔드 개발자", "status": "OPEN", "content": "<p>가상 Go 서버</p>", "endDate": "20261130",
+         "office": {"city": "서울", "district": "성동구"}},
+        {"jobId": 2, "name": "닫힌 공고", "status": "CLOSED"},
+        {"jobId": 3, "name": "데이터 엔지니어", "status": "OPEN", "content": "", "endDate": "2999-12-31",
+         "office": {"city": "서울", "district": "성동구"}}
+      ]}}},
+      "https://careers.ganadalab.io/jobs/3": {"html": "<html><body><h1>데이터 엔지니어</h1><p>가상 Spark 파이프라인</p><script>t()</script></body></html>"},
+      "https://careers.ganadalab.io/jobs/2": {"status": 404},
+      "https://careers.ganadalab.io/jobs/4": {"html": "<html><body>가상 회사</body></html>"}
+    },
+    "jobs": [
+      {"source": "api:가나다랩", "id": "1", "url": "https://careers.ganadalab.io/jobs/1", "company": "가나다랩", "title": "백엔드 개발자",
+       "location": "서울 성동구", "closes_at": "2026-11-30", "text_has": ["가상 Go 서버"]},
+      {"id": "3", "closes_at": "상시", "text": ""}
+    ],
+    "detail": {"1": {"has": ["가상 Go 서버"]}, "3": {"has": ["가상 Spark 파이프라인"], "lacks": ["t()"]}},
+    "alive": [["https://careers.ganadalab.io/jobs/1", true], ["https://careers.ganadalab.io/jobs/2", false],
+              ["https://careers.ganadalab.io/jobs/4", null], ["https://careers.other.io/jobs/1", null]],
+    "handles": [["https://careers.ganadalab.io/jobs/1", true], ["https://careers.ganadalab.io/about", false]]
+  },
+  {
+    "name": "Workday 프리셋: POST · offset 으로 이어 받기 · JSON 상세",
+    "cfg": {"name": "라바소", "careers_url": "https://rabaso.wd3.myworkdayjobs.com/ko-KR/External", "ats": "workday"},
+    "responses": {
+      "https://rabaso.wd3.myworkdayjobs.com/wday/cxs/rabaso/External/jobs": [
+        {"json": {"total": 3, "jobPostings": [
+          {"title": "Software Engineer", "externalPath": "/job/Seoul/Software-Engineer_R100", "locationsText": "Seoul", "bulletFields": ["R100"]},
+          {"title": "Data Engineer", "externalPath": "/job/Seoul/Data-Engineer_R101", "locationsText": "Seoul", "bulletFields": ["R101"]}]}},
+        {"json": {"total": 3, "jobPostings": [
+          {"title": "SRE", "externalPath": "/job/Seoul/SRE_R102", "locationsText": "Seoul", "bulletFields": ["R102"]}]}}
+      ],
+      "https://rabaso.wd3.myworkdayjobs.com/wday/cxs/rabaso/External/job/Seoul/Software-Engineer_R100": {"json": {"jobPostingInfo": {
+        "title": "Software Engineer", "externalUrl": "https://rabaso.wd3.myworkdayjobs.com/External/job/Seoul/Software-Engineer_R100",
+        "jobDescription": "<p>Build fictional distributed systems in Seoul with Java and Kubernetes.</p>"}}}
+    },
+    "jobs": [
+      {"source": "workday:라바소", "id": "R100", "url": "https://rabaso.wd3.myworkdayjobs.com/External/job/Seoul/Software-Engineer_R100",
+       "company": "라바소", "title": "Software Engineer", "location": "Seoul", "closes_at": ""},
+      {"id": "R101"},
+      {"id": "R102", "title": "SRE"}
+    ],
+    "detail": {"R100": {"has": ["Build fictional distributed systems in Seoul"], "lacks": ["https://"]}}
+  },
+  {
+    "name": "잡플렉스(새 형식) 프리셋",
+    "cfg": {"name": "가나다랩", "careers_url": "https://ganadalab.recruiter.co.kr/career/home", "ats": "recruiter"},
+    "responses": {
+      "https://api-recruiter.recruiter.co.kr/position/v1/jobflex": {"json": {"list": [
+        {"positionSn": 77, "title": "QA 엔지니어", "endDateTime": "2026-11-01T23:59:59"}], "pagination": {"totalCount": 1}}}
+    },
+    "jobs": [
+      {"source": "recruiter:가나다랩", "id": "77", "url": "https://ganadalab.recruiter.co.kr/career/jobs/77", "title": "QA 엔지니어",
+       "closes_at": "2026-11-01"}
+    ]
+  },
+  {
+    "name": "Ashby 프리셋: 목록에 본문, 게시 안 된 공고 제외",
+    "cfg": {"name": "라바소", "careers_url": "https://jobs.ashbyhq.com/rabaso", "ats": "ashby"},
+    "responses": {
+      "https://api.ashbyhq.com/posting-api/job-board/rabaso": {"json": {"jobs": [
+        {"id": "u1", "title": "Backend Engineer", "isListed": true, "descriptionPlain": "가상 백엔드 팀", "location": "Seoul"},
+        {"id": "u2", "title": "Hidden", "isListed": false}]}}
+    },
+    "jobs": [
+      {"source": "ashby:라바소", "id": "u1", "url": "https://jobs.ashbyhq.com/rabaso/u1", "location": "Seoul", "text_has": ["가상 백엔드 팀"]}
+    ]
+  },
+  {
+    "name": "목록 위치에 목록이 없음",
+    "cfg": {"careers_url": "https://careers.ganadalab.io", "jsonapi": {"list": "https://careers.ganadalab.io/api/jobs", "items": "data.list",
+            "id": "jobId", "title": "name", "url": "https://careers.ganadalab.io/jobs/{jobId}"}},
+    "responses": {"https://careers.ganadalab.io/api/jobs": {"json": {"data": {}}}},
+    "error": "ShapeError"
+  },
+  {
+    "name": "전체 수보다 적게 받음 (이어 받기 설정 없음)",
+    "cfg": {"careers_url": "https://careers.ganadalab.io", "jsonapi": {"list": "https://careers.ganadalab.io/api/jobs", "items": "data.list",
+            "id": "jobId", "title": "name", "url": "https://careers.ganadalab.io/jobs/{jobId}", "total": "data.total"}},
+    "responses": {"https://careers.ganadalab.io/api/jobs": {"json": {"data": {"total": 5, "list": [{"jobId": 1, "name": "a"}]}}}},
+    "error": "ShapeError"
+  },
+  {
+    "name": "JSON 도 __NEXT_DATA__ 도 아님",
+    "cfg": {"careers_url": "https://careers.ganadalab.io", "jsonapi": {"list": "https://careers.ganadalab.io/api/jobs", "items": "data.list",
+            "id": "jobId", "title": "name", "url": "https://careers.ganadalab.io/jobs/{jobId}"}},
+    "responses": {"https://careers.ganadalab.io/api/jobs": {"html": "<html><body>로그인</body></html>"}},
+    "error": "ShapeError"
+  }
+]}

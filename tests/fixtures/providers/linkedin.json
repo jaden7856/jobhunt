@@ -1,0 +1,42 @@
+{"cases": [
+  {
+    "name": "검색 카드 · 본문·조건 · 영어 전용 공고 표시 · 마감",
+    "cfg": {"keywords": ["backend"], "location": "Seoul", "period_days": 7, "max_pages": 2, "korean_only": true},
+    "responses": {
+      "https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=backend&location=Seoul&f_TPR=r604800&start=0": {"html": "<li><div class=\"base-card relative\" data-entity-urn=\"urn:li:jobPosting:3900000001\"><a class=\"base-card__full-link absolute\" href=\"https://kr.linkedin.com/jobs/view/backend-at-ganadalab-3900000001?position=1&amp;refId=x\"></a><h3 class=\"base-search-card__title\">백엔드 개발자</h3><h4 class=\"base-search-card__subtitle\"><a href=\"https://kr.linkedin.com/company/ganadalab\">가나다랩</a></h4><span class=\"job-search-card__location\">Seoul, South Korea</span><time class=\"job-search-card__listdate\" datetime=\"2026-10-01\">1주 전</time></div></li><li><div class=\"base-card relative\" data-entity-urn=\"urn:li:jobPosting:3900000002\"><h3 class=\"base-search-card__title\">Backend Engineer</h3><h4 class=\"base-search-card__subtitle\"><a href=\"#\">Rabaso</a></h4></div></li>"},
+      "https://www.linkedin.com/jobs-guest/jobs/api/jobPosting/3900000001": {"html": "<section><div class=\"show-more-less-html__markup show-more-less-html__markup--clamp-after-5\">가상 서비스의 서버를 Go 로 개발합니다.<br>자격요건: 3년 이상</div>\n<button>더보기</button></section><ul><li><span class=\"description__job-criteria-text description__job-criteria-text--criteria\">미들 시니어 레벨</span></li><li><span class=\"description__job-criteria-text description__job-criteria-text--criteria\">정규직</span></li></ul>"},
+      "https://www.linkedin.com/jobs-guest/jobs/api/jobPosting/3900000002": {"html": "<div class=\"show-more-less-html__markup\">We build fictional backend systems in Seoul.</div>"},
+      "https://www.linkedin.com/jobs-guest/jobs/api/jobPosting/3900000003": {"html": "<div>No longer accepting applications</div><div class=\"show-more-less-html__markup\">x</div>"},
+      "https://www.linkedin.com/jobs-guest/jobs/api/jobPosting/3900000004": {"status": 404},
+      "https://www.linkedin.com/jobs-guest/jobs/api/jobPosting/3900000005": {"status": 500}
+    },
+    "jobs": [
+      {"source": "linkedin", "id": "3900000001", "url": "https://kr.linkedin.com/jobs/view/backend-at-ganadalab-3900000001",
+       "company": "가나다랩", "title": "백엔드 개발자", "location": "Seoul, South Korea", "posted_at": "2026-10-01",
+       "extra": {"korean_only": true}},
+      {"id": "3900000002", "url": "https://www.linkedin.com/jobs/view/3900000002", "company": "Rabaso", "title": "Backend Engineer", "location": ""}
+    ],
+    "detail": {"3900000001": {"has": ["가상 서비스의 서버를 Go 로 개발합니다.\n자격요건: 3년 이상", "## 조건 (LinkedIn)\n미들 시니어 레벨 · 정규직"],
+                              "job": {"extra": {"skip": null}}},
+               "3900000002": {"has": ["We build fictional backend systems"], "job": {"extra": {"skip": "skipped_language"}}}},
+    "alive": [["https://kr.linkedin.com/jobs/view/backend-at-ganadalab-3900000001", true], ["https://www.linkedin.com/jobs/view/3900000003", false],
+              ["https://www.linkedin.com/jobs/view/3900000004/", false], ["https://www.linkedin.com/jobs/view/3900000005", null],
+              ["https://www.linkedin.com/jobs/view/backend", null]]
+  },
+  {
+    "name": "카드 형식 변경",
+    "cfg": {"keywords": ["backend"], "location": "Seoul", "period_days": 7, "max_pages": 1},
+    "responses": {
+      "https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=backend&location=Seoul&f_TPR=r604800&start=0": {"html": "<li><div class=\"base-card\" data-job-id=\"3900000001\"></div></li>"}
+    },
+    "error": "ShapeError"
+  },
+  {
+    "name": "목록 HTTP 오류",
+    "cfg": {"keywords": ["backend"], "location": "Seoul", "period_days": 7, "max_pages": 1},
+    "responses": {
+      "https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=backend&location=Seoul&f_TPR=r604800&start=0": {"status": 500}
+    },
+    "error": "ShapeError"
+  }
+]}

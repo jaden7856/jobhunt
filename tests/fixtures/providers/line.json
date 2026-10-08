@@ -1,0 +1,34 @@
+{"cases": [
+  {
+    "name": "목록(한국 도시만) · 본문 · 마감",
+    "cfg": {},
+    "responses": {
+      "https://careers.linecorp.com/page-data/ko/jobs/page-data.json": {"json": {"result": {"data": {"allStrapiJobs": {"edges": [
+        {"node": {"strapiId": 3001, "title": "Server Engineer", "cities": [{"name": "Seoul"}], "companies": [{"name": "가상플러스"}],
+                  "publish": true, "until_filled": true, "end_date": null, "job_unit": [{"name": "Engineering"}]}},
+        {"node": {"strapiId": 3002, "title": "Tokyo Engineer", "cities": [{"name": "Tokyo"}], "publish": true}},
+        {"node": {"strapiId": 3003, "title": "Data Engineer", "cities": [{"name": "Seoul"}, {"name": "Bundang"}], "companies": [],
+                  "publish": true, "until_filled": false, "end_date": "2026-12-31T00:00:00.000Z"}},
+        {"node": {"strapiId": 3004, "title": "비공개", "cities": [{"name": "Seoul"}], "publish": false}}
+      ]}}}}},
+      "https://careers.linecorp.com/page-data/ko/jobs/3001/page-data.json": {"json": {"result": {"data": {"strapiJobs": {
+        "content": "<p>가상 메신저 서버를 만듭니다</p>", "publish": true}}}}},
+      "https://careers.linecorp.com/page-data/ko/jobs/3005/page-data.json": {"status": 404},
+      "https://careers.linecorp.com/page-data/ko/jobs/3006/page-data.json": {"status": 500}
+    },
+    "jobs": [
+      {"source": "line", "id": "3001", "url": "https://careers.linecorp.com/ko/jobs/3001", "company": "가상플러스", "title": "Server Engineer",
+       "location": "Seoul", "closes_at": "상시", "extra": {"unit": ["Engineering"]}},
+      {"id": "3003", "company": "LINE", "location": "Bundang, Seoul", "closes_at": "2026-12-31"}
+    ],
+    "detail": {"3001": {"has": ["가상 메신저 서버를 만듭니다"]}},
+    "alive": [["https://careers.linecorp.com/ko/jobs/3001", true], ["https://careers.linecorp.com/ko/jobs/3005", false],
+              ["https://careers.linecorp.com/ko/jobs/3006", null]]
+  },
+  {
+    "name": "목록 형식 변경",
+    "cfg": {},
+    "responses": {"https://careers.linecorp.com/page-data/ko/jobs/page-data.json": {"json": {}}},
+    "error": "ShapeError"
+  }
+]}

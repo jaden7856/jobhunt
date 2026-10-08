@@ -27,7 +27,9 @@ def collect(cfg: dict) -> List[Job]:
     jobs, page = [], 0
     while True:
         d = (_get(f"/w1/recruits?page={page}&size=50") or {}).get("data") or {}
-        for x in d.get("list") or []:
+        if not isinstance(d.get("list"), list):          # 공고가 없어도 data.list: [] 가 온다 (2026-10-08 실측)
+            raise ShapeError("우아한형제들 목록에 data.list 없음")
+        for x in d["list"]:
             end = (x.get("recruitEndDate") or "")[:10]
             jobs.append(Job("woowa", x["recruitNumber"], f"{BASE}/recruitment/{x['recruitNumber']}/detail",
                             cfg.get("name") or "우아한형제들", x["recruitName"], location="서울 송파",

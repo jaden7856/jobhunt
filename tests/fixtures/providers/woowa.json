@@ -1,0 +1,32 @@
+{"cases": [
+  {
+    "name": "목록 · 본문 · 마감",
+    "cfg": {},
+    "responses": {
+      "https://career.woowahan.com/w1/recruits?page=0&size=50": {"json": {"code": 2000, "data": {"totalPageNumber": 1, "list": [
+        {"recruitNumber": "R2609001", "recruitName": "주문 서버 개발자", "recruitEndDate": "9999-12-31 23:59:59",
+         "careerRestrictionMinYears": 3, "careerRestrictionMaxYears": null},
+        {"recruitNumber": "R2609002", "recruitName": "데이터 엔지니어", "recruitEndDate": "2026-11-15 18:00:00"}
+      ]}}},
+      "https://career.woowahan.com/w1/recruits/R2609001": {"json": {"code": 2000, "data": {
+        "recruitContents": "<p>가상 주문 시스템을 만듭니다</p><ul><li>Java 3년 이상</li></ul>", "isAfterOrEqualEndDay": false, "isUnlimitedEndDate": true}}},
+      "https://career.woowahan.com/w1/recruits/R2609003": {"json": {"code": 9002, "data": null}},
+      "https://career.woowahan.com/w1/recruits/R2609004": {"json": {"code": 2000, "data": {"recruitContents": "x", "isAfterOrEqualEndDay": true, "isUnlimitedEndDate": false}}},
+      "https://career.woowahan.com/w1/recruits/R2609005": {"status": 500}
+    },
+    "jobs": [
+      {"source": "woowa", "id": "R2609001", "url": "https://career.woowahan.com/recruitment/R2609001/detail", "company": "우아한형제들",
+       "title": "주문 서버 개발자", "location": "서울 송파", "closes_at": "상시", "extra": {"career": [3, null]}},
+      {"id": "R2609002", "closes_at": "2026-11-15"}
+    ],
+    "detail": {"R2609001": {"has": ["가상 주문 시스템을 만듭니다", "• Java 3년 이상"]}},
+    "alive": [["https://career.woowahan.com/recruitment/R2609001/detail", true], ["https://career.woowahan.com/recruitment/R2609003/detail", false],
+              ["https://career.woowahan.com/recruitment/R2609004/detail", false], ["https://career.woowahan.com/recruitment/R2609005/detail", null]]
+  },
+  {
+    "name": "목록 형식 변경",
+    "cfg": {},
+    "responses": {"https://career.woowahan.com/w1/recruits?page=0&size=50": {"json": {}}},
+    "error": "ShapeError"
+  }
+]}

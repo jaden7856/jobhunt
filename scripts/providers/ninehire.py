@@ -61,7 +61,9 @@ def collect(cfg: dict) -> List[Job]:
         if status != 200:
             raise ShapeError(f"나인하이어 목록 HTTP {status}")
         d = json.loads(body)
-        for r in d.get("results") or []:
+        if not isinstance(d.get("results"), list):
+            raise ShapeError("나인하이어 목록에 results 없음")
+        for r in d["results"]:
             if r.get("status") != "in_progress" or r.get("isPrivate"):
                 continue
             loc = " ".join(x.get("addressName") or "" for x in r.get("jobLocations") or [])
@@ -93,7 +95,9 @@ def _open_keys(cid: str) -> set:
         if status != 200:
             raise ShapeError(f"나인하이어 목록 HTTP {status}")
         d = json.loads(body)
-        keys |= {r["addressKey"] for r in d.get("results") or [] if r.get("status") == "in_progress" and not r.get("isPrivate")}
+        if not isinstance(d.get("results"), list):         # 형식이 바뀐 것을 '모두 마감'으로 읽지 않게
+            raise ShapeError("나인하이어 목록에 results 없음")
+        keys |= {r["addressKey"] for r in d["results"] if r.get("status") == "in_progress" and not r.get("isPrivate")}
         if page * 50 >= (d.get("count") or 0):
             return keys
         page += 1
