@@ -79,10 +79,30 @@ Python 3.9 이상과 다음 중 하나가 필요합니다.
 - **Windows** (WSL2 + Ubuntu): 아래 [Windows (WSL2)](#windows-wsl2) 참고
 
 ```bash
+curl -fsSL https://raw.githubusercontent.com/jojaden/jobhunt/main/install.sh | bash
+```
+
+이 한 줄이 `~/jobhunt`에 저장소를 받고 `scripts/setup.sh`까지 실행해 스킬 연결과 빌드 환경을 끝냅니다. git·python3가 없으면 Ubuntu는 apt로 설치하고, macOS는 `xcode-select --install`을 안내합니다. 같은 명령을 다시 실행하면 도구만 갱신하고 `data/`는 그대로 둡니다.
+
+| 설정 | 설명 |
+|---|---|
+| `JOBHUNT_DIR=경로` | 설치 폴더 (기본 `~/jobhunt`) |
+| `JOBHUNT_REF=v1.0.0` | 버전(태그)이나 브랜치 고정 |
+| `JOBHUNT_REPO=주소` | fork한 저장소에서 받을 때 |
+| `… \| bash -s -- --no-skill` | 뒤 인자는 `setup.sh`로 넘어갑니다 (아래 옵션) |
+
+예: `curl -fsSL https://raw.githubusercontent.com/jojaden/jobhunt/main/install.sh | JOBHUNT_REF=v1.0.0 bash`
+
+<details>
+<summary>직접 설치 (스크립트를 먼저 읽어 보고 싶을 때)</summary>
+
+```bash
 git clone https://github.com/jojaden/jobhunt.git ~/jobhunt
 cd ~/jobhunt
 bash scripts/setup.sh
 ```
+
+</details>
 
 <a id="windows-wsl2"></a>
 <details>
@@ -94,11 +114,11 @@ bash scripts/setup.sh
    ```powershell
    wsl --install -d Ubuntu
    ```
-2. 시작 메뉴에서 **Ubuntu**를 열고 사용자 이름·암호를 만든 뒤, 위 설치 명령을 그대로 실행합니다. `setup.sh`가 pip, Chromium 실행용 라이브러리, 한글 폰트(Noto CJK·Pretendard), poppler를 apt로 설치하므로 중간에 sudo 암호를 물을 수 있습니다.
+2. 시작 메뉴에서 **Ubuntu**를 열고 사용자 이름·암호를 만든 뒤, 위 한 줄 설치 명령을 그대로 실행합니다. `setup.sh`가 pip, Chromium 실행용 라이브러리, 한글 폰트(Noto CJK·Pretendard), poppler를 apt로 설치하므로 중간에 sudo 암호를 물을 수 있습니다.
 3. **AI 에이전트도 WSL 안에서 실행합니다.** Codex·Claude Code 등을 Ubuntu 터미널에 설치해 `~/jobhunt`에서 시작해야 스킬 연결(`~/.codex/skills`, `~/.claude/skills`)과 `data/` 경로가 맞습니다. VS Code·Cursor를 쓴다면 WSL 확장으로 이 폴더를 엽니다(`code ~/jobhunt`).
 
 알아 둘 점:
-- **clone은 WSL 홈(`~`)에 하세요.** `/mnt/c/...`(Windows 드라이브)에 두면 파일 접근이 느리고 스킬 링크가 깨질 수 있습니다. `setup.sh`가 이 경우 경고합니다.
+- **설치 폴더는 WSL 홈(`~`) 아래에 두세요.** `/mnt/c/...`(Windows 드라이브)에 두면 파일 접근이 느리고 스킬 링크가 깨질 수 있습니다. `install.sh`는 이 경우 멈추고, `setup.sh`는 경고합니다.
 - **결과물 열기:** 이력서 PDF·공고 현황표 HTML은 WSL 안에 만들어집니다. `explorer.exe .`로 지금 폴더를 Windows 탐색기에서 열거나, 탐색기 주소창에 `\\wsl$\Ubuntu\home\<사용자>\jobhunt`를 넣으면 됩니다.
 - **주간 수집 예약:** WSL은 Windows에 로그인해 있을 때만 돌아갑니다. `weekly.sh`를 정기 실행하려면 WSL의 cron, 또는 Windows 작업 스케줄러에서 `wsl -d Ubuntu -- bash -lc "~/jobhunt/scripts/weekly.sh"`를 등록합니다.
 
@@ -128,8 +148,10 @@ bash scripts/setup.sh
 업데이트:
 
 ```bash
-cd ~/jobhunt && git pull   # data/ 는 그대로
+curl -fsSL https://raw.githubusercontent.com/jojaden/jobhunt/main/install.sh | bash   # 또는 cd ~/jobhunt && git pull (data/ 는 그대로)
 ```
+
+버전은 `v1.0.0`처럼 태그로 붙입니다. 바뀐 점은 [Releases](https://github.com/jojaden/jobhunt/releases)에서 봅니다.
 
 에이전트별로 시작하는 법:
 
@@ -265,6 +287,7 @@ AI 에이전트가 공고를 한 줄씩 분류하면(해 본 일인지, 필수 �
 ## 📁 폴더 구조
 
 ```
+install.sh                   한 줄 설치 (clone·갱신 → scripts/setup.sh)
 AGENTS.md                    모든 AI 에이전트용 작업 안내 (CLAUDE.md 는 이 파일을 불러옴)
 SKILL.md                     스킬 진입점, 요청을 모드로 연결
 modes/                       공통 규칙과 모드별 절차 (onboard · scan · evaluate · tailor · cover · deep · interview · track · outcome)
@@ -278,7 +301,7 @@ scripts/
   render.py                  yaml → HTML → PDF + PNG, 디자인 A/B/C
   check.py · check_links.py  빌드 후 검사, 링크 접속 확인
   git_log.sh                 로컬 git 저장소에서 내 커밋 로그 추출
-  setup.sh                   설치: 스킬 연결 + Chromium, 폰트, poppler
+  setup.sh                   설치: 스킬 연결 + Chromium, 폰트, poppler (install.sh 가 clone 뒤 실행)
 references/
   sources.md                 채용 사이트별 수집 방법
   yaml_schema.md             이력서 yaml 형식

@@ -81,10 +81,30 @@ Requires Python 3.9+ and one of:
 - **Windows** (WSL2 + Ubuntu): see [Windows (WSL2)](#windows-wsl2) below
 
 ```bash
+curl -fsSL https://raw.githubusercontent.com/jojaden/jobhunt/main/install.sh | bash
+```
+
+This one line clones the repository into `~/jobhunt` and runs `scripts/setup.sh`, which links the skill and sets up the build environment. If git or python3 is missing, Ubuntu gets them through apt and macOS is pointed to `xcode-select --install`. Running the same command again updates the tool only and leaves `data/` alone.
+
+| Setting | Meaning |
+|---|---|
+| `JOBHUNT_DIR=path` | Install folder (default `~/jobhunt`) |
+| `JOBHUNT_REF=v1.0.0` | Pin a version (tag) or branch |
+| `JOBHUNT_REPO=url` | Install from your fork |
+| `… \| bash -s -- --no-skill` | Trailing arguments go to `setup.sh` (options below) |
+
+Example: `curl -fsSL https://raw.githubusercontent.com/jojaden/jobhunt/main/install.sh | JOBHUNT_REF=v1.0.0 bash`
+
+<details>
+<summary>Manual install (if you'd rather read the script first)</summary>
+
+```bash
 git clone https://github.com/jojaden/jobhunt.git ~/jobhunt
 cd ~/jobhunt
 bash scripts/setup.sh
 ```
+
+</details>
 
 <a id="windows-wsl2"></a>
 <details>
@@ -96,11 +116,11 @@ The scripts use bash and apt, so on Windows they run inside Ubuntu on WSL2.
    ```powershell
    wsl --install -d Ubuntu
    ```
-2. Open **Ubuntu** from the Start menu, create a user and password, then run the install commands above as they are. `setup.sh` installs pip, Chromium's system libraries, Korean fonts (Noto CJK, Pretendard) and poppler with apt, so it may ask for your sudo password.
+2. Open **Ubuntu** from the Start menu, create a user and password, then run the one-line install command above as it is. `setup.sh` installs pip, Chromium's system libraries, Korean fonts (Noto CJK, Pretendard) and poppler with apt, so it may ask for your sudo password.
 3. **Run the AI agent inside WSL too.** Install Codex, Claude Code, etc. in the Ubuntu terminal and start it in `~/jobhunt`, so the skill links (`~/.codex/skills`, `~/.claude/skills`) and `data/` paths line up. With VS Code or Cursor, open the folder through the WSL extension (`code ~/jobhunt`).
 
 Good to know:
-- **Clone into the WSL home (`~`).** Under `/mnt/c/...` (the Windows drive) file access is slow and the skill links can break; `setup.sh` warns about it.
+- **Keep the install folder under the WSL home (`~`).** Under `/mnt/c/...` (the Windows drive) file access is slow and the skill links can break; `install.sh` stops and `setup.sh` warns about it.
 - **Opening the output:** resume PDFs and the posting report HTML are written inside WSL. Run `explorer.exe .` to open the current folder in Windows Explorer, or type `\\wsl$\Ubuntu\home\<user>\jobhunt` into the Explorer address bar.
 - **Scheduled scans:** WSL only runs while you are signed in to Windows. To run `weekly.sh` regularly, use cron inside WSL, or register `wsl -d Ubuntu -- bash -lc "~/jobhunt/scripts/weekly.sh"` in Windows Task Scheduler.
 
@@ -130,8 +150,10 @@ If a folder or a link to somewhere else already exists under that name, it's lef
 Update:
 
 ```bash
-cd ~/jobhunt && git pull   # data/ stays as is
+curl -fsSL https://raw.githubusercontent.com/jojaden/jobhunt/main/install.sh | bash   # or cd ~/jobhunt && git pull (data/ stays as is)
 ```
+
+Versions are tags such as `v1.0.0`; see [Releases](https://github.com/jojaden/jobhunt/releases) for what changed.
 
 Starting it in each agent:
 
@@ -267,6 +289,7 @@ The tool (`SKILL.md`, `modes/`, `scripts/`, `references/`) is versioned in git. 
 ## 📁 Project Structure
 
 ```
+install.sh                   One-line install (clone or update → scripts/setup.sh)
 AGENTS.md                    Working guide for every AI agent (CLAUDE.md imports it)
 SKILL.md                     Skill entry point, routes requests to modes
 modes/                       Shared rules and per-mode procedures (onboard · scan · evaluate · tailor · cover · deep · interview · track · outcome)
@@ -280,7 +303,7 @@ scripts/
   render.py                  YAML → HTML → PDF + PNG, designs A/B/C
   check.py · check_links.py  Post-build checks, link reachability
   git_log.sh                 Extract your own commits from a local git repo
-  setup.sh                   Install: skill link + Chromium, fonts, poppler
+  setup.sh                   Install: skill link + Chromium, fonts, poppler (install.sh runs it after cloning)
 references/
   sources.md                 Per-site collection methods
   yaml_schema.md             Resume YAML format
