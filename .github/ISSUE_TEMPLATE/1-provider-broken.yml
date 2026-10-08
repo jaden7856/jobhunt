@@ -1,0 +1,50 @@
+name: 수집기 응답 형식 변경
+description: scan.py 가 "응답 형식 변경"을 보고하거나, 사이트에 있는 공고가 수집되지 않을 때
+title: "[수집기] "
+labels: ["수집기"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        채용 사이트가 응답 형식을 바꾸면 그 수집기가 멈춥니다. 고칠 수 있게 무엇을 봤는지 알려 주세요.
+        직접 고친다면 CONTRIBUTING.md "사이트 응답 형식이 바뀜"을 보세요.
+  - type: input
+    id: site
+    attributes:
+      label: 사이트 또는 수집기
+      description: 예) wanted, greetinghr, 회사 채용 사이트 주소
+    validations:
+      required: true
+  - type: input
+    id: date
+    attributes:
+      label: 확인한 날짜
+      placeholder: "2026-10-08"
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: scan.py 출력
+      description: "`python3 scripts/scan.py --dry-run --only <수집기>` 출력에서 해당 부분"
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 사이트에서 직접 본 것
+      description: 공고 수, 공고 주소 예시, 페이지가 바뀐 모습 (가능하면)
+  - type: input
+    id: version
+    attributes:
+      label: 버전
+      description: "`git describe --tags --always` 결과"
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: 확인
+      options:
+        - label: 최신 버전으로 갱신한 뒤에도 같습니다
+        - label: 붙인 내용에 개인 자료(이름·연락처·지원 기록)가 없습니다
+          required: true

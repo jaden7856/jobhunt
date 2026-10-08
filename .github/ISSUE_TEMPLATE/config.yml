@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 기여 안내 (CONTRIBUTING.md)
+    url: https://github.com/jojaden/jobhunt/blob/main/CONTRIBUTING.md
+    about: 개발 환경, 확인 방법, 새 수집기 추가 절차

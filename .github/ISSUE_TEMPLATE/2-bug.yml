@@ -1,0 +1,48 @@
+name: 버그
+description: 스크립트 오류, 잘못된 계산·출력, 설치 문제
+title: "[버그] "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: 무엇을 했나요
+      description: 실행한 명령이나 에이전트에게 한 요청
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 기대한 결과
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: 실제 결과
+      description: 오류 메시지·출력 (개인 자료는 지워 주세요)
+      render: shell
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: 버전
+      description: "`git describe --tags --always` 결과"
+  - type: dropdown
+    id: os
+    attributes:
+      label: 운영체제
+      options: [macOS, Debian/Ubuntu, Windows WSL2, 기타]
+  - type: input
+    id: python
+    attributes:
+      label: Python 버전
+      description: "`python3 -V` 결과"
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: 확인
+      options:
+        - label: 붙인 내용에 개인 자료(이름·연락처·지원 기록)가 없습니다
+          required: true

@@ -292,6 +292,7 @@ install.sh                   한 줄 설치 (clone·갱신 → scripts/setup.sh)
 AGENTS.md                    모든 AI 에이전트용 작업 안내 (CLAUDE.md 는 이 파일을 불러옴)
 LEGAL_DISCLAIMER.md          사용 범위와 면책
 CHANGELOG.md                 변경 기록 (버전마다 data/ 이전 안내)
+CONTRIBUTING.md              기여 안내 (개발 환경, 확인 방법, 새 수집기 추가)
 SKILL.md                     스킬 진입점, 요청을 모드로 연결
 modes/                       공통 규칙과 모드별 절차 (onboard · scan · evaluate · tailor · cover · deep · interview · track · outcome)
 scripts/
@@ -339,6 +340,10 @@ data/                        내 자료 (git 제외, 구조와 예시만 올라�
 - **내 PC에만 저장.** 만든 사람이 운영하는 서버나 사용 기록 수집은 없습니다. AI 에이전트를 쓰면 대화와 읽은 파일은 내가 고른 AI 서비스로 갑니다.
 - **AI는 틀리거나 지어낼 수 있습니다.** 점수는 참고 의견이고, 이력서·자기소개서는 제출 전에 사실인지 직접 확인하세요. 지원서 제출은 사용자가 직접 합니다.
 - MIT 라이선스로 "있는 그대로" 제공되며, 결과에 대한 보증은 없습니다.
+
+## 🤝 기여
+
+고치거나 넓히려면 [`CONTRIBUTING.md`](CONTRIBUTING.md)를 봐 주세요. 사이트 응답 형식이 바뀌어 수집이 멈췄다면 [이슈 양식](https://github.com/jojaden/jobhunt/issues/new/choose)으로 알려 주세요.
 
 ## 🙏 참고
 
