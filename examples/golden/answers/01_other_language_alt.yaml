@@ -1,0 +1,21 @@
+rule: "필수에 경험 없는 언어(Python·Django)가 '또는 이에 준하는 역량'과 함께 있으면 스택 조건은 통과, 그 줄은 met: no · gap: bridge (references/scoring.md)"
+expect: 지원 고려
+url: https://careers.ganadapay.example/jobs/101
+company: 가나다페이
+title: 정산 플랫폼 백엔드 개발자
+gates: { location: pass, language: pass, stack: pass, years: pass, employment: pass, comp: unclear }
+gate_note: "Python(Django) 줄에 '또는 이에 준하는 역량' — 필수 제외 조건은 아님"
+work:
+  - { line: "가맹점 정산 금액을 계산하는 배치와 API 개발", fit: done, why: "정산 배치 재작성" }
+  - { line: "결제 대행사 대사(거래 맞추기) 자동화", fit: adjacent, why: "PG 3곳 연동 모듈 통합" }
+  - { line: "정산 데이터 정합성 모니터링 도구 개발", fit: adjacent }
+required:
+  - { line: "Java 또는 Kotlin 기반 서버 개발 경력 3년 이상", met: "yes" }
+  - { line: "Python(Django) 기반 서버 개발 경험 또는 이에 준하는 역량", met: "no", gap: bridge, why: "Kotlin·Spring 서버 개발로 설명" }
+  - { line: "RDBMS 트랜잭션과 인덱스에 대한 이해", met: "yes" }
+preferred:
+  - { line: "Kafka 등 메시지 큐 운영 경험", met: "yes" }
+  - { line: "금융·결제 도메인 경험", met: partial, why: "커머스 결제 연동" }
+direction: { primary: payment_settlement, secondary: [] }
+domain_new: ""
+signals: []

@@ -1,0 +1,17 @@
+rule: "대체 문구 없는 필수 경력(RTB 2년)이 없으면 gap: core, 상한 3.4. 주요 업무 절반이 new"
+expect: 보류
+url: https://careers.ganaad.example/jobs/606
+company: 가나애드
+title: 광고 입찰 서버 개발자
+gates: { location: pass, language: pass, stack: pass, years: pass, employment: pass, comp: unclear }
+work:
+  - { line: "실시간 광고 입찰(RTB) 서버 개발", fit: new }
+  - { line: "입찰 로그 수집과 정산 데이터 생성", fit: adjacent, why: "정산 배치" }
+required:
+  - { line: "Java 또는 Kotlin 서버 개발 경력 3년 이상", met: "yes" }
+  - { line: "광고 입찰(RTB) 서버 개발 경력 2년 이상", met: "no", gap: core }
+preferred:
+  - { line: "Kafka 운영 경험", met: "yes" }
+direction: { primary: other, secondary: [] }
+domain_new: ""
+signals: []

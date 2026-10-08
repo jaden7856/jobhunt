@@ -301,6 +301,7 @@ scripts/
   alive.py                   Open/closed check
   tracker.py                 Application tracker and combined overview
   cover_check.py             Cover-letter character counts and style checks
+  eval_golden.py             Compare agent judgments with the golden set (after changing classification rules)
   weekly.sh                  Weekly scan (scan → alive → report)
   render.py                  YAML → HTML → PDF + PNG, designs A/B/C
   check.py · check_links.py  Post-build checks, link reachability
@@ -317,6 +318,7 @@ references/
   interview_questions.md     How interviewers ask: question styles, follow-ups, answer shapes
 docs/ROADMAP.md              Design and phases
 examples/example.yaml        Fictional sample resume
+examples/golden/             Golden judgment set (fictional candidate, postings, answers)
 tests/                       Tests to run after changing the tool (offline, python3 -m unittest discover -s tests)
 assets/                      README preview images and sample PDF
 data/                        Your data (git-ignored; only structure and examples are committed)

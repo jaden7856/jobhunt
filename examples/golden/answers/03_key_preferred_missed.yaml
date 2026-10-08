@@ -1,0 +1,18 @@
+rule: "우대에 있어도 이 포지션이 매일 쓰는 기술(클라우드 플랫폼 팀의 Terraform)은 key: true. 못 채우면 C 등급"
+expect: 지원 고려
+url: https://careers.saaja.example/jobs/303
+company: 사아자클라우드
+title: 클라우드 플랫폼 백엔드 엔지니어
+gates: { location: pass, language: pass, stack: pass, years: pass, employment: pass, comp: unclear }
+work:
+  - { line: "AWS 리소스를 만들고 바꾸는 내부 플랫폼 API 개발", fit: adjacent }
+  - { line: "서비스 팀이 쓰는 배포 파이프라인 개발", fit: adjacent, why: "GitHub Actions 배포 구성" }
+required:
+  - { line: "Java 또는 Kotlin 서버 개발 경력 3년 이상", met: "yes" }
+  - { line: "AWS 를 이용한 서비스 운영 경험", met: "yes", why: "ECS·RDS 운영" }
+preferred:
+  - { line: "Terraform 으로 AWS 인프라를 코드로 관리한 경험", met: "no", key: true }
+  - { line: "GitHub Actions 로 CI/CD 를 구성한 경험", met: "yes" }
+direction: { primary: other, secondary: [] }
+domain_new: ""
+signals: []

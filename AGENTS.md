@@ -54,6 +54,7 @@ bash scripts/weekly.sh [--since YYYY-MM-DD]       # scan → alive --write → t
 
 # scoring / tracking / discovery
 python3 scripts/score.py init <body.md> -o <judgment.yaml>;  python3 scripts/score.py <judgment.yaml>...;  ... apply <judgment.yaml>...
+python3 scripts/eval_golden.py <folder>             # classification drift vs examples/golden (procedure: references/scoring.md "Golden set")
 python3 scripts/tracker.py add|set|report [--alive]
 python3 scripts/cover_check.py <cover.yaml>          # cover-letter answers: character counts vs limit + style rules
 python3 scripts/discover.py collect|probe|report|missing|set <file.tsv>|promote [--min S] [--dry-run]
@@ -71,7 +72,7 @@ Most scripts read and write real files under `data/`; use `--dry-run` where offe
 
 **Company pipeline:** `discover.py` gathers candidate companies (tech blogs, GitHub orgs, Wanted company info, `references/company_seed.yaml`), scores notability, probes career sites and detects the ATS, stores everything in `data/search/companies.yaml` (preserving user-written `status`/`memo`), and `promote` copies qualifying ones into `data/search/sources.yaml` `companies`, which `scan.py` then collects via `providers.for_company`. Exploration may be expensive once per company, collection never is: `probe` falls back to common career URLs and then a headless browser (Playwright, imported lazily, discovery only) to find the list API, and whatever replays with a plain request is written as `ats:`, `links:` or `jsonapi:` (`providers/jsonapi.py`, a config-driven JSON collector) so the weekly scan stays stdlib + PyYAML.
 
-**Judgment vs arithmetic split:** the agent classifies each posting line into a judgment yaml (`data/search/judgments/`); `score.py` computes the score deterministically from it: common rules (bands by required/preferred coverage, caps) are constants in the script; personal preferences come from `data/profile/targets.yaml` `scoring` (falls back to `targets.example.yaml`). Rules: `references/scoring.md`. Keep scoring logic in the script, not in mode prose. The agent's own review on top (recorded as `review` in the judgment file) and searching beyond the scripts follow `references/judgment.md`.
+**Judgment vs arithmetic split:** the agent classifies each posting line into a judgment yaml (`data/search/judgments/`); `score.py` computes the score deterministically from it: common rules (bands by required/preferred coverage, caps) are constants in the script; personal preferences come from `data/profile/targets.yaml` `scoring` (falls back to `targets.example.yaml`). Rules: `references/scoring.md`. Keep scoring logic in the script, not in mode prose. When a change alters how posting lines are classified, run the golden set (`examples/golden/`, procedure in `references/scoring.md` "Golden set") and report the disagreements. The agent's own review on top (recorded as `review` in the judgment file) and searching beyond the scripts follow `references/judgment.md`.
 
 **Resume build:** `render.py` turns a resume yaml (schema: `references/yaml_schema.md`) plus personal info from `data/profile/profile.yaml` into HTML, prints A4 PDF with Playwright Chromium, renders PNGs, then runs `check.py`. `check.py` banned words, translationese, and symbol limits come from `references/style_rules.yaml`, so edit that file, not the code.
 

@@ -1,0 +1,19 @@
+rule: "팀 제품이 기대는 전문 기술 도메인(LLM 추론 서빙)이 처음이면 domain_new. 주요 업무 절반 이상이 new 면 C"
+expect: 보류
+url: https://careers.chakata.example/jobs/404
+company: 차카타AI
+title: LLM 서빙 플랫폼 백엔드 개발자
+gates: { location: pass, language: pass, stack: pass, years: pass, employment: pass, comp: unclear }
+work:
+  - { line: "LLM 추론 서버(vLLM)의 요청 배치·스케줄링 개발", fit: new }
+  - { line: "GPU 노드에 모델을 배포하고 오토스케일하는 서빙 플랫폼 개발", fit: new }
+  - { line: "추론 지연 시간·토큰 처리량 모니터링", fit: adjacent, why: "Datadog 지표 모니터링" }
+required:
+  - { line: "서버 개발 경력 3년 이상 (언어 무관)", met: "yes" }
+  - { line: "Kubernetes 환경에서 서비스를 운영한 경험", met: "no", gap: bridge, why: "ECS 컨테이너 운영으로 설명" }
+preferred:
+  - { line: "vLLM, TensorRT-LLM 등 추론 엔진 사용 경험", met: "no", key: true }
+  - { line: "Kafka 운영 경험", met: "yes" }
+direction: { primary: other, secondary: [] }
+domain_new: "LLM 추론 서빙"
+signals: []
