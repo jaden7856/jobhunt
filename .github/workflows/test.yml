@@ -1,5 +1,6 @@
 # 테스트: main 에 올라오는 커밋과 모든 PR 에서.
 #   tests   — 단위 테스트 (네트워크 없음) · OS 2 × Python 2 (지원 하한 3.9, 최신 3.12)
+#   privacy — data/ 의 개인 자료가 추적되고 있으면 실패 (scripts/privacy_check.py)
 #   build   — Ubuntu 에서 scripts/setup.sh 로 설치한 뒤 예시 이력서를 디자인 A·B·C 로 빌드 (render.py 가 check.py 까지 돌린다)
 name: test
 
@@ -38,6 +39,17 @@ jobs:
         run: python -m unittest discover -s tests -v
       - name: 셸 스크립트 문법
         run: for f in install.sh scripts/*.sh; do bash -n "$f"; done
+
+  privacy:
+    name: 개인 자료 검사
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: data/ 허용 목록 밖의 추적 파일
+        run: python3 scripts/privacy_check.py
 
   build:
     name: 이력서 빌드 (ubuntu)

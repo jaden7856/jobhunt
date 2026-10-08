@@ -62,6 +62,9 @@ if [ "$SKILL" = 1 ]; then
     echo "  스킬 폴더를 찾지 못했습니다. 에이전트를 이 폴더에서 실행하면 AGENTS.md 를 따릅니다 (스킬로 쓰려면 SKILLS_DIR=경로)."
   fi
 fi
+if git rev-parse --git-dir >/dev/null 2>&1 && [ "$(git config --get core.hooksPath || true)" != ".githooks" ]; then
+  echo "▶ (선택) 이 저장소에 커밋한다면 개인 자료 검사 훅을 켜세요: git config core.hooksPath .githooks"
+fi
 [ "$ENV" = 1 ] || exit 0
 
 if grep -qi microsoft /proc/version 2>/dev/null; then   # Windows WSL2
