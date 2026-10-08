@@ -500,6 +500,14 @@ def main(argv=None):
         if not profile.get(k):
             sys.exit(f"profile 에 {k} 값이 없습니다.")
 
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import check
+    problems = check.schema_issues(resume)     # 키 오타는 조용히 빠지므로 빌드 전에 멈춘다
+    if problems:
+        check.print_report(dict(issues=problems, links=[], pages=None, errors=problems, warns=[]))
+        print("형식: references/yaml_schema.md")
+        return 1
+
     design = a.design or resume.get("meta", {}).get("design", "B")
     os.makedirs(a.out, exist_ok=True)
     stem = os.path.join(a.out, out_name(resume, profile))
@@ -513,8 +521,6 @@ def main(argv=None):
         print(f"PNG  {p}")
 
     if not a.no_check:
-        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-        import check
         report = check.run_all(resume, pdf_path, offline=a.offline)
         check.print_report(report)
         return 1 if report["errors"] else 0

@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=../references/resume.schema.json
 # 가상의 인물로 만든 예시. 형식 확인과 디자인 비교용.
 #   python3 scripts/render.py examples/example.yaml --profile data/profile/profile.example.yaml --out examples/out --offline
 meta:

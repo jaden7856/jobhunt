@@ -259,6 +259,7 @@ After the calculation the agent rereads the whole posting (seniority and scope, 
 
 | Check | Rule | Level |
 |---|---|---|
+| Format | `references/resume.schema.json`: unknown keys (typos), types, disallowed values. Checked before the build, which stops on an error | Error |
 | Page count | `meta.target_pages` (default 2–3) | Error |
 | Orphaned heading | Fewer than 3 body lines after a heading on the same page | Error |
 | Links | Every link in the PDF must open | Error (unreachable) / Warning (unknown) |
@@ -308,7 +309,7 @@ scripts/
   privacy_check.py           Keeps personal data out of commits (CI, .githooks/pre-commit)
 references/
   sources.md                 Per-site collection methods
-  yaml_schema.md             Resume YAML format
+  yaml_schema.md · resume.schema.json   Resume YAML format (guide · schema for checks and editor autocomplete)
   writing_rules.md           Writing rules and how to check them
   style_rules.yaml           Banned words, translationese, symbol limits
   resume_guide.md            General resume rules
