@@ -5,7 +5,7 @@ import unittest
 
 import yaml
 
-from support import K, TMP
+from support import TMP
 
 import score as S
 

@@ -483,8 +483,7 @@ def cmd_set(a):
 def cmd_report(a):
     reg = _load()
     rows = [c for c in sorted(reg.values(), key=lambda c: -c.get("tier", 0)) if c.get("tier", 0) >= a.min]
-    supported = {n for n, _, prov in ATS if prov}
-    print(f"| 회사 | 점수 | 근거 | 채용 사이트 | ATS | 수집 | 상태 |\n|---|---|---|---|---|---|---|")
+    print("| 회사 | 점수 | 근거 | 채용 사이트 | ATS | 수집 | 상태 |\n|---|---|---|---|---|---|---|")
     for c in rows:
         s = c["signals"]
         why = " · ".join(x for x in (s.get("salary"), s.get("headcount"), str(s["known"]) if s.get("known") else "",

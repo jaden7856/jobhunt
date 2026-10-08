@@ -214,7 +214,7 @@ def apply(files) -> str:
                     old[m.group(0)] = l
     targets = K.load_yaml(K.P["targets"]) or {}
     cool = K.cooldown_companies(int(targets.get("reapply_days", 183)))
-    keep_wait, new_wait, new_fail, n = [], [], [], 0
+    new_wait, new_fail, n = [], [], 0
     touched = set()
     for f in files:
         j = K.load_yaml(f)

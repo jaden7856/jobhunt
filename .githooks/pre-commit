@@ -1,3 +1,12 @@
 #!/bin/sh
-# 개인 자료 커밋 방지 (scripts/privacy_check.py). 켜기: git config core.hooksPath .githooks
-exec python3 "$(git rev-parse --show-toplevel)/scripts/privacy_check.py" --staged
+# 커밋 전 검사. 켜기: git config core.hooksPath .githooks   (급할 때 건너뛰기: git commit --no-verify)
+#   1. 개인 자료 (scripts/privacy_check.py)
+#   2. ruff 린트 — ruff 가 설치돼 있을 때만, 커밋하는 파이썬 파일에 (규칙: ruff.toml)
+top="$(git rev-parse --show-toplevel)"
+python3 "$top/scripts/privacy_check.py" --staged || exit 1
+if command -v ruff >/dev/null 2>&1; then
+  files="$(git diff --cached --name-only --diff-filter=ACMR -- '*.py')"
+  if [ -n "$files" ]; then
+    (cd "$top" && ruff check $files) || exit 1
+  fi
+fi
