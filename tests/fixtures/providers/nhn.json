@@ -1,0 +1,30 @@
+{"cases": [
+  {
+    "name": "목록(진행 중만) · 짧은 본문 표시 · 마감",
+    "cfg": {},
+    "responses": {
+      "https://careers.nhn.com/v1/job-postings?page=0&size=100": {"json": {"result": [
+        {"id": 301, "name": "[판교] 클라우드 백엔드 개발", "finishYn": "N", "postingYn": "Y", "applicationUseYn": "Y",
+         "corporation": {"name": "가상클라우드"}, "postingEndDatetime": "2026-12-01T23:59:59", "careerType": {"name": "경력"}},
+        {"id": 302, "name": "[판교] 마감된 공고", "finishYn": "Y", "postingYn": "Y", "applicationUseYn": "Y"}
+      ]}},
+      "https://careers.nhn.com/v1/job-postings/301": {"json": {"result": {
+        "finishYn": "N", "postingYn": "Y", "applicationUseYn": "Y", "introduction": "<p>가상 클라우드 팀</p>",
+        "jobPostingContentsItems": [{"title": "자격요건", "contents": "<li>Java 경력 3년 이상</li>"}]}}},
+      "https://careers.nhn.com/v1/job-postings/302": {"json": {"result": {"finishYn": "Y", "postingYn": "Y", "applicationUseYn": "Y"}}}
+    },
+    "jobs": [
+      {"source": "nhn", "id": 301, "url": "https://careers.nhn.com/recruits/301", "company": "가상클라우드",
+       "title": "[판교] 클라우드 백엔드 개발", "location": "판교", "closes_at": "2026-12-01", "extra": {"career": "경력"}}
+    ],
+    "detail": {"301": {"has": ["가상 클라우드 팀", "Java 경력 3년 이상", "이미지로 된 공고일 수"]}},
+    "alive": [["https://careers.nhn.com/recruits/301", true], ["https://careers.nhn.com/recruits/302", false],
+              ["https://careers.nhn.com/", null]]
+  },
+  {
+    "name": "목록 형식 변경",
+    "cfg": {},
+    "responses": {"https://careers.nhn.com/v1/job-postings?page=0&size=100": {"json": {}}},
+    "error": "ShapeError"
+  }
+]}

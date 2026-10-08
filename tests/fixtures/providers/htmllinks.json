@@ -1,0 +1,43 @@
+{"cases": [
+  {
+    "name": "첫 화면 링크 → 공고 페이지 제목·본문 · 마감(404·첫 화면 제목)",
+    "cfg": {"name": "가나다랩", "careers_url": "https://careers.ganadalab.com/jobs", "links": "/jobs/detail/\\d+"},
+    "responses": {
+      "https://careers.ganadalab.com/jobs": {"html": "<html><head><title>채용 - 가나다랩</title></head><body><a href=\"/jobs/detail/12\">B</a><a href=\"/jobs/detail/11\">A</a><a href=\"/jobs/detail/11\">A</a><a href=\"/about\">소개</a></body></html>"},
+      "https://careers.ganadalab.com/": {"html": "<html><head><title>가나다랩</title></head></html>"},
+      "https://careers.ganadalab.com/jobs/detail/11": {"html": "<html><head><title>백엔드 개발자 - 가나다랩</title><style>.a{}</style></head><body><p>가상 API 를 Go 로 만듭니다</p><script>track()</script></body></html>"},
+      "https://careers.ganadalab.com/jobs/detail/12": {"status": 404},
+      "https://careers.ganadalab.com/jobs/detail/13": {"html": "<html><head><title>채용 - 가나다랩</title></head></html>"},
+      "https://careers.ganadalab.com/jobs/detail/14": {"html": "<html><head><title>가나다랩</title></head></html>"}
+    },
+    "jobs": [
+      {"source": "html:ganadalab", "id": "11", "url": "https://careers.ganadalab.com/jobs/detail/11", "company": "가나다랩",
+       "title": "백엔드 개발자", "text_has": ["가상 API 를 Go 로 만듭니다"], "text_lacks": ["track()", ".a{}"]}
+    ],
+    "detail": {"11": {"has": ["가상 API 를 Go 로 만듭니다"]}},
+    "alive": [["https://careers.ganadalab.com/jobs/detail/11", true], ["https://careers.ganadalab.com/jobs/detail/12", false],
+              ["https://careers.ganadalab.com/jobs/detail/13", false], ["https://careers.ganadalab.com/jobs/detail/14", false]],
+    "handles": [["https://careers.ganadalab.com/jobs/detail/11", true], ["https://careers.ganadalab.com/about", false]]
+  },
+  {
+    "name": "사이트맵 목록(한 단계 아래) → 공고 주소만",
+    "cfg": {"name": "라바소", "careers_url": "https://www.rabaso.io/careers", "links": "https://www\\.rabaso\\.io/careers/[a-z0-9-]+",
+            "sitemap": "https://www.rabaso.io/sitemap.xml"},
+    "responses": {
+      "https://www.rabaso.io/careers": {"html": "<html><head><title>Careers | 라바소</title></head><body><div id=\"root\"></div></body></html>"},
+      "https://www.rabaso.io/sitemap.xml": {"html": "<?xml version=\"1.0\"?><sitemapindex><sitemap><loc>https://www.rabaso.io/sitemap-1.xml</loc></sitemap></sitemapindex>"},
+      "https://www.rabaso.io/sitemap-1.xml": {"html": "<urlset><url><loc>https://www.rabaso.io/careers/data-engineer</loc></url><url><loc>https://www.rabaso.io/blog/hello</loc></url></urlset>"},
+      "https://www.rabaso.io/careers/data-engineer": {"html": "<html><head><title>Data Engineer | 라바소</title></head><body><p>가상 데이터 파이프라인</p></body></html>"}
+    },
+    "jobs": [
+      {"source": "html:rabaso", "id": "data-engineer", "url": "https://www.rabaso.io/careers/data-engineer", "company": "라바소",
+       "title": "Data Engineer", "text_has": ["가상 데이터 파이프라인"]}
+    ]
+  },
+  {
+    "name": "공고 링크 없음",
+    "cfg": {"careers_url": "https://careers.ganadalab.com/jobs", "links": "/jobs/detail/\\d+"},
+    "responses": {"https://careers.ganadalab.com/jobs": {"html": "<html><body><div id=\"app\"></div></body></html>"}},
+    "error": "ShapeError"
+  }
+]}

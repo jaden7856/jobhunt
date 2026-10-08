@@ -1,0 +1,31 @@
+# 테스트용 sources.yaml (가상 회사). tests/support.py 가 임시 data/search/ 에 복사한다.
+company_aliases:
+  가나다랩: [Ganada Lab, GANADA]
+
+companies:
+  - name: 가나다랩
+    careers_url: https://careers.ganadalab.com/
+    api: https://boards-api.greenhouse.io/v1/boards/ganadalab/jobs
+  - name: 라바소
+    careers_url: https://careers.rabaso.co.kr
+    ats: ninehire
+    company_id: cmp-222
+  - name: 가나다랩 채용
+    careers_url: https://careers.ganadalab.com/jobs
+    links: /jobs/detail/\d+
+  - name: 가나다랩
+    careers_url: https://careers.ganadalab.io
+    jsonapi:
+      list: https://careers.ganadalab.io/api/jobs
+      items: data.list
+      id: jobId
+      title: name
+      url: https://careers.ganadalab.io/jobs/{jobId}
+      where: {status: OPEN}
+      text: content
+      closes: endDate
+      location: '{office.city} {office.district}'
+      total: data.total
+  - name: 라바소
+    careers_url: https://rabaso.wd3.myworkdayjobs.com/ko-KR/External
+    ats: workday

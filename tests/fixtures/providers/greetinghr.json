@@ -1,0 +1,58 @@
+{"cases": [
+  {
+    "name": "첫 화면 openings · 본문 · 마감",
+    "cfg": {"careers_url": "https://ganadalab.career.greetinghr.com/ko/home", "name": "가나다랩"},
+    "responses": {
+      "https://ganadalab.career.greetinghr.com/ko/home": {"next_data": {"props": {"pageProps": {"dehydratedState": {"queries": [
+        {"queryKey": ["career", "openings", {"page": 1}], "state": {"data": [
+          {"openingId": 111, "title": "백엔드 엔지니어", "dueDate": null, "openingJobPosition": {"openingJobPositions": [
+            {"workspacePlace": {"place": "본사", "location": "서울 성동구"}, "workspaceOccupation": {"occupation": "개발"}}]}},
+          {"openingId": 112, "title": "디자이너", "dueDate": "2026-11-30T23:59:59"}
+        ]}}]}}}}},
+      "https://ganadalab.career.greetinghr.com/ko/o/111": {"next_data": {"props": {"pageProps": {"dehydratedState": {"queries": [
+        {"queryKey": ["getOpeningById", 111], "state": {"data": {"success": true, "data": {"openingsInfo": {
+          "title": "백엔드 엔지니어", "status": "OPEN",
+          "detail": "<p>가상 커머스 백엔드를 Go 로 만듭니다.</p><p>자격요건: Go 3년 이상</p>"}}}}}]}}}}},
+      "https://ganadalab.career.greetinghr.com/ko/o/113": {"status": 404},
+      "https://ganadalab.career.greetinghr.com/ko/o/114": {"html": "<html><body>점검 중</body></html>"}
+    },
+    "jobs": [
+      {"source": "greetinghr:ganadalab", "id": "111", "url": "https://ganadalab.career.greetinghr.com/ko/o/111", "company": "가나다랩",
+       "title": "백엔드 엔지니어", "location": "본사 서울 성동구", "closes_at": "상시", "extra": {"occupation": "개발"}},
+      {"id": "112", "location": "", "closes_at": "2026-11-30", "extra": {"occupation": ""}}
+    ],
+    "detail": {"111": {"has": ["가상 커머스 백엔드를 Go 로 만듭니다.", "자격요건: Go 3년 이상"], "lacks": ["<p>"]}},
+    "alive": [["https://ganadalab.career.greetinghr.com/ko/o/111", true], ["https://ganadalab.career.greetinghr.com/ko/o/113", false],
+              ["https://ganadalab.career.greetinghr.com/ko/o/114", null]],
+    "handles": [["https://ganadalab.career.greetinghr.com/ko/o/111", true], ["https://career.ganadalab.co.kr/ko/o/5", true],
+                ["https://ganadalab.career.greetinghr.com/ko/home", false]]
+  },
+  {
+    "name": "회사 홈페이지의 greetinghr 링크 → 공고별 상세 (열린 것만)",
+    "cfg": {"careers_url": "https://www.rabaso.co.kr/careers", "ats": "greetinghr", "name": "라바소"},
+    "responses": {
+      "https://www.rabaso.co.kr/ko/home": {"status": 404},
+      "https://www.rabaso.co.kr/careers": {"html": "<html><body><a href=\"https://rabaso.career.greetinghr.com/ko/o/202\">B</a><a href=\"https://rabaso.career.greetinghr.com/ko/o/201\">A</a><a href=\"https://rabaso.career.greetinghr.com/ko/o/201\">A</a></body></html>"},
+      "https://www.rabaso.co.kr": {"html": "<html><body>가상 회사</body></html>"},
+      "https://rabaso.career.greetinghr.com/ko/o/201": {"next_data": {"props": {"pageProps": {"dehydratedState": {"queries": [
+        {"queryKey": ["getOpeningById", 201], "state": {"data": {"success": true, "data": {"openingsInfo": {
+          "title": "데이터 엔지니어", "status": "OPEN", "dueDate": "2026-12-01T00:00:00"}}}}}]}}}}},
+      "https://rabaso.career.greetinghr.com/ko/o/202": {"next_data": {"props": {"pageProps": {"dehydratedState": {"queries": [
+        {"queryKey": ["getOpeningById", 202], "state": {"data": {"success": true, "data": {"openingsInfo": {
+          "title": "마감 공고", "status": "CLOSED"}}}}}]}}}}}
+    },
+    "jobs": [
+      {"source": "greetinghr:rabaso", "id": "201", "url": "https://rabaso.career.greetinghr.com/ko/o/201", "company": "라바소",
+       "title": "데이터 엔지니어", "closes_at": "2026-12-01"}
+    ]
+  },
+  {
+    "name": "openings 도 공고 링크도 없음",
+    "cfg": {"careers_url": "https://ganadalab.career.greetinghr.com/ko/home"},
+    "responses": {
+      "https://ganadalab.career.greetinghr.com/ko/home": {"next_data": {"props": {"pageProps": {}}}},
+      "https://ganadalab.career.greetinghr.com": {"next_data": {"props": {}}}
+    },
+    "error": "ShapeError"
+  }
+]}

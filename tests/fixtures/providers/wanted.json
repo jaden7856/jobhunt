@@ -1,0 +1,38 @@
+{"cases": [
+  {
+    "name": "목록 두 쪽 · 본문 · 마감",
+    "cfg": {"job_ids": [872], "job_group_id": 518, "years": -1, "max_pages": 3},
+    "responses": {
+      "https://www.wanted.co.kr/api/chaos/navigation/v1/results?job_group_id=518&job_ids=872&country=kr&job_sort=job.latest_order&years=-1&locations=all&limit=100&offset=0": {"json": {
+        "data": [{"id": 1001, "position": "백엔드 개발자 (Go)", "company": {"name": "가나다랩"},
+                  "address": {"location": "서울", "district": "강남구"}, "annual_from": 3, "annual_to": 7}],
+        "links": {"next": "/api/chaos/navigation/v1/results?page=2"}}},
+      "https://www.wanted.co.kr/api/chaos/navigation/v1/results?page=2": {"json": {
+        "data": [{"id": 1002, "position": "서버 개발자", "company": {"name": "라바소"}, "address": null}],
+        "links": {"next": null}}},
+      "https://www.wanted.co.kr/api/v4/jobs/1001": {"json": {"job": {
+        "status": "active", "due_time": "2026-11-30", "annual_from": 3, "annual_to": 7,
+        "address": {"full_location": "서울 강남구 테헤란로 1"},
+        "detail": {"main_tasks": "결제 API 개발", "requirements": "Go 3년 이상", "preferred_points": "쿠버네티스 경험", "intro": "가상 회사 소개"}}}},
+      "https://www.wanted.co.kr/api/v4/jobs/1002": {"json": {"job": {"status": "close", "detail": {}}}}
+    },
+    "jobs": [
+      {"source": "wanted", "id": "1001", "url": "https://www.wanted.co.kr/wd/1001", "company": "가나다랩", "title": "백엔드 개발자 (Go)",
+       "location": "서울 강남구", "extra": {"career": [3, 7]}},
+      {"id": "1002", "company": "라바소", "location": ""}
+    ],
+    "detail": {"1001": {"has": ["## 주요업무\n결제 API 개발", "## 자격요건\nGo 3년 이상", "## 우대사항", "## 경력\n3~7년"],
+                        "job": {"closes_at": "2026-11-30", "location": "서울 강남구 테헤란로 1"}}},
+    "alive": [["https://www.wanted.co.kr/wd/1001", true], ["https://www.wanted.co.kr/wd/1002", false],
+              ["https://www.wanted.co.kr/company/5", null]],
+    "handles": [["https://www.wanted.co.kr/wd/1001", true], ["https://www.wanted.co.kr/company/5", false]]
+  },
+  {
+    "name": "목록 형식 변경",
+    "cfg": {"job_ids": [872], "max_pages": 1},
+    "responses": {
+      "https://www.wanted.co.kr/api/chaos/navigation/v1/results?job_group_id=518&job_ids=872&country=kr&job_sort=job.latest_order&years=-1&locations=all&limit=100&offset=0": {"json": {}}
+    },
+    "error": "ShapeError"
+  }
+]}

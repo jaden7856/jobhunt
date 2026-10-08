@@ -1,0 +1,36 @@
+{"cases": [
+  {
+    "name": "목록 · 우산 공고 하위 링크 · 마감",
+    "cfg": {},
+    "responses": {
+      "https://api-public.toss.im/api/v3/ipd-eggnog/career/jobs": {"json": {"success": [
+        {"id": 7001, "title": "Server Developer", "location": {"name": "서울"}, "first_published": "2026-09-01T00:00:00",
+         "metadata": [{"name": "Job Description", "value": "<p>가상 결제 서버를 개발합니다</p>"},
+                      {"name": "소속 자회사", "value": ["가상페이"]}]},
+        {"id": 7002, "title": "집중 채용", "location": null,
+         "metadata": [{"name": "Job Description", "value": "<p>포지션 A: https://grnh.se/abc123</p><p>포지션 B: job_id=7010</p>"}]}
+      ]}},
+      "https://toss.im/career/job-detail?job_id=7001": {"html": "<html><head><title>Server Developer</title></head></html>"},
+      "https://toss.im/career/job-detail?job_id=7003": {"html": "<html><head><title>토스 채용</title></head></html>"},
+      "https://toss.im/career/job-detail?job_id=7004": {"status": 404},
+      "https://toss.im/career/job-detail?job_id=7005": {"status": 503}
+    },
+    "jobs": [
+      {"source": "toss", "id": "7001", "url": "https://toss.im/career/job-detail?job_id=7001", "company": "가상페이",
+       "title": "Server Developer", "location": "서울", "posted_at": "2026-09-01", "text_has": ["가상 결제 서버를 개발합니다"],
+       "extra": {"children": []}},
+      {"id": "7002", "company": "토스", "location": "", "extra": {"children": ["grnh.se/abc123", "job_id=7010"]}}
+    ],
+    "detail": {"7001": {"lacks": ["하위 포지션"]},
+               "7002": {"has": ["## 하위 포지션 링크", "grnh.se/abc123"]}},
+    "alive": [["https://toss.im/career/job-detail?job_id=7001", true], ["https://toss.im/career/job-detail?job_id=7003", false],
+              ["https://toss.im/career/job-detail?job_id=7004", false], ["https://toss.im/career/job-detail?job_id=7005", null],
+              ["https://toss.im/career/job-detail?gh_jid=7001", true], ["https://toss.im/career", null]]
+  },
+  {
+    "name": "목록 형식 변경",
+    "cfg": {},
+    "responses": {"https://api-public.toss.im/api/v3/ipd-eggnog/career/jobs": {"json": {}}},
+    "error": "ShapeError"
+  }
+]}

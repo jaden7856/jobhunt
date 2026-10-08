@@ -30,7 +30,9 @@ def collect(cfg: dict) -> List[Job]:
             d = json.loads(body)
         except ValueError:
             raise ShapeError(f"네이버 채용 목록 JSON 아님: {host}")
-        for x in d.get("list") or []:
+        if not isinstance(d.get("list"), list):          # 공고가 없어도 "list": [] 가 온다 (2026-10-08 실측)
+            raise ShapeError(f"네이버 채용 목록에 list 없음: {host}")
+        for x in d["list"]:
             end = x.get("endYmd") or ""
             jobs.append(Job(f"naver:{host.split('.')[1]}", str(x["annoId"]), f"https://{host}/rcrt/view.do?annoId={x['annoId']}",
                             x.get("sysCompanyCdNm") or cfg.get("name") or host, re.sub(r"^\[[^\]]+\]\s*", "", x["annoSubject"]),

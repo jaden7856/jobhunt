@@ -314,6 +314,7 @@ references/
   interview_questions.md     How interviewers ask: question styles, follow-ups, answer shapes
 docs/ROADMAP.md              Design and phases
 examples/example.yaml        Fictional sample resume
+tests/                       Tests to run after changing the tool (offline, python3 -m unittest discover -s tests)
 assets/                      README preview images and sample PDF
 data/                        Your data (git-ignored; only structure and examples are committed)
   profile/ experience/ preferences/ portfolio/ search/ job_postings/ applications/ resumes/ output/ interview/

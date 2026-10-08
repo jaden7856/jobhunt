@@ -1,0 +1,32 @@
+{"cases": [
+  {
+    "name": "목록 두 쪽 · 마감·건너뛸 계열사 제외 · 공동체 공고 표시",
+    "cfg": {"max_pages": 5, "skip_companies": ["가상계열사"]},
+    "responses": {
+      "https://careers.kakao.com/public/api/job-list?part=TECHNOLOGY&company=ALL&page=1": {"json": {"totalPage": 2, "jobList": [
+        {"realId": "P-1001", "jobOfferTitle": "서버 개발자", "companyName": "카카오", "locationName": "판교", "endDate": null,
+         "workContentDesc": "<p>가상 메시징 서버</p>", "qualification": "<p>Java 3년 이상</p>", "closeFlag": false},
+        {"realId": "S-2002", "jobOfferTitle": "공동체 공고", "companyName": "가상뱅크", "endDate": "2026-11-20T00:00:00",
+         "workContentDesc": "", "qualification": " ", "closeFlag": false},
+        {"realId": "P-1009", "jobOfferTitle": "마감된 공고", "companyName": "카카오", "closeFlag": true}
+      ]}},
+      "https://careers.kakao.com/public/api/job-list?part=TECHNOLOGY&company=ALL&page=2": {"json": {"totalPage": 2, "jobList": [
+        {"realId": "P-1003", "jobOfferTitle": "계열사 공고", "companyName": "가상계열사", "closeFlag": false}
+      ]}}
+    },
+    "jobs": [
+      {"source": "kakao", "id": "P-1001", "url": "https://careers.kakao.com/jobs/P-1001", "company": "카카오", "title": "서버 개발자",
+       "location": "판교", "closes_at": "상시", "text_has": ["## 주요업무\n가상 메시징 서버", "## 자격요건\nJava 3년 이상"]},
+      {"id": "S-2002", "company": "가상뱅크", "closes_at": "2026-11-20", "text_has": ["공동체 공고 — 본문은"], "text_lacks": ["## 자격요건"]}
+    ],
+    "detail": {"P-1001": {"has": ["가상 메시징 서버"]}},
+    "alive": [["https://careers.kakao.com/jobs/P-1001", null]],
+    "handles": [["https://careers.kakao.com/jobs/P-1001", false]]
+  },
+  {
+    "name": "목록 형식 변경",
+    "cfg": {},
+    "responses": {"https://careers.kakao.com/public/api/job-list?part=TECHNOLOGY&company=ALL&page=1": {"json": {}}},
+    "error": "ShapeError"
+  }
+]}

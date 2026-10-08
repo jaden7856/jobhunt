@@ -1,0 +1,34 @@
+{"cases": [
+  {
+    "name": "검색 결과 · 본문",
+    "cfg": {"keywords": ["backend"]},
+    "responses": {
+      "https://www.saramin.co.kr/zf_user/search/recruit?searchword=backend&recruitPageCount=100&exp_cd=2&sort=reg_dt": {"html": "<div class=\"content\"><div class=\"item_recruit\" value=\"48000001\"><div class=\"area_job\"><h2 class=\"job_tit\"><a href=\"/zf_user/jobs/relay/view?rec_idx=48000001\" title=\"백엔드 개발자 (Java)\"><span>백엔드</span></a></h2><div class=\"job_date\"><span class=\"date\">상시채용</span></div><div class=\"job_condition\"><span><a href=\"#\">서울</a> <a href=\"#\">강남구</a></span><span>경력 3~8년</span><span>대졸↑</span></div></div><div class=\"area_corp\"><strong class=\"corp_name\"><a href=\"/zf_user/company-info\" title=\"가나다랩\"> (주)가나다랩 </a></strong></div></div><div class=\"item_recruit\" value=\"48000002\"><div class=\"area_job\"><h2 class=\"job_tit\"><a title=\"회사 이름 없는 공고\"></a></h2></div></div><div class=\"item_recruit\" value=\"48000003\"><div class=\"area_job\"><h2 class=\"job_tit\"><a title=\"서버 개발자\"></a></h2><div class=\"job_condition\"><span>경기 성남시</span><span>경력 5년↑</span></div></div><div class=\"area_corp\"><strong class=\"corp_name\"><a href=\"#\">라바소</a></strong></div></div></div>"},
+      "https://www.saramin.co.kr/zf_user/jobs/relay/view-detail?rec_idx=48000001&rec_seq=0": {"html": "<html><head><style>.a{color:red}</style></head><body><div>자격요건 Java 3년 이상</div><script>var tracking = 1;</script><noscript>켜 주세요</noscript></body></html>"}
+    },
+    "jobs": [
+      {"source": "saramin", "id": "48000001", "url": "https://www.saramin.co.kr/zf_user/jobs/relay/view?rec_idx=48000001",
+       "company": "(주)가나다랩", "title": "백엔드 개발자 (Java)", "location": "서울 강남구", "closes_at": "상시", "extra": {"career": [3, 8]}},
+      {"id": "48000003", "company": "라바소", "location": "경기 성남시", "closes_at": "", "extra": {"career": [5, null]}}
+    ],
+    "detail": {"48000001": {"has": ["자격요건 Java 3년 이상"], "lacks": ["tracking", "color:red", "켜 주세요"]}},
+    "alive": [["https://www.saramin.co.kr/zf_user/jobs/relay/view?rec_idx=48000001", null]],
+    "handles": [["https://www.saramin.co.kr/zf_user/jobs/relay/view?rec_idx=48000001", true]]
+  },
+  {
+    "name": "검색 결과 없음",
+    "cfg": {"keywords": ["backend"]},
+    "responses": {
+      "https://www.saramin.co.kr/zf_user/search/recruit?searchword=backend&recruitPageCount=100&exp_cd=2&sort=reg_dt": {"html": "<div class=\"info_no_result\">검색결과가 없습니다</div>"}
+    },
+    "jobs": []
+  },
+  {
+    "name": "검색 페이지 형식 변경",
+    "cfg": {"keywords": ["backend"]},
+    "responses": {
+      "https://www.saramin.co.kr/zf_user/search/recruit?searchword=backend&recruitPageCount=100&exp_cd=2&sort=reg_dt": {"html": "<html><body>점검 중</body></html>"}
+    },
+    "error": "ShapeError"
+  }
+]}

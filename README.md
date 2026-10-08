@@ -312,6 +312,7 @@ references/
   interview_questions.md     면접 질문 방식·꼬리질문 패턴·답변 구조
 docs/ROADMAP.md              설계와 단계
 examples/example.yaml        가상 인물 예시
+tests/                       도구를 고친 뒤 돌리는 테스트 (네트워크 없이, python3 -m unittest discover -s tests)
 assets/                      README 미리보기 이미지와 예시 PDF
 data/                        내 자료 (git 제외, 구조와 예시만 올라감)
   profile/ experience/ preferences/ portfolio/ search/ job_postings/ applications/ resumes/ output/ interview/
