@@ -294,6 +294,7 @@ install.sh                   One-line install (clone or update → scripts/setup
 AGENTS.md                    Working guide for every AI agent (CLAUDE.md imports it)
 LEGAL_DISCLAIMER.md          Acceptable use and disclaimer (Korean)
 CHANGELOG.md                 Change log, with data/ migration notes per version (Korean)
+CONTRIBUTING.md              Contributing guide: dev setup, checks, adding a collector (Korean)
 SKILL.md                     Skill entry point, routes requests to modes
 modes/                       Shared rules and per-mode procedures (onboard · scan · evaluate · tailor · cover · deep · interview · track · outcome)
 scripts/
@@ -341,6 +342,10 @@ Please read [`LEGAL_DISCLAIMER.md`](LEGAL_DISCLAIMER.md) (in Korean) before use.
 - **Stored only on your PC.** There is no server run by the author and no usage tracking. When you use an AI agent, the conversation and the files it reads go to the AI service you chose.
 - **AI can be wrong or make things up.** Scores are an opinion; check every resume and cover letter for accuracy before sending it. You submit applications yourself.
 - Provided "as is" under the MIT License, with no warranty for any outcome.
+
+## 🤝 Contributing
+
+To change or extend the tool, see [`CONTRIBUTING.md`](CONTRIBUTING.md) (Korean). If a site changed its response and collection stopped, report it with the [issue form](https://github.com/jojaden/jobhunt/issues/new/choose).
 
 ## 🙏 Acknowledgements
 

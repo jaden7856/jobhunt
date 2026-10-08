@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Guidance for any AI coding agent working in this repository — Codex, Claude Code, Grok, Gemini, Cursor, or another. This file is the single source; `CLAUDE.md` only imports it. Nothing here depends on one vendor.
+Guidance for any AI coding agent working in this repository — Codex, Claude Code, Grok, Gemini, Cursor, or another. This file is the single source; `CLAUDE.md` only imports it. Nothing here depends on one vendor. The human-facing contributor guide is `CONTRIBUTING.md` (Korean); keep its procedures consistent with this file.
 
 ## What this repository is
 
