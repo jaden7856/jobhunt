@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""개인 자료가 커밋·PR 에 들어가지 않게 막는다. 표준 라이브러리 (--staged 만 PyYAML 로 profile.yaml 을 읽는다).
+"""개인 자료가 커밋·PR 에 들어가지 않게 막는다. 표준 라이브러리 (--staged 는 profile.yaml 을 PyYAML 로, 없으면 간단히 직접 읽는다).
 
   python3 scripts/privacy_check.py            추적 중인 파일 중 data/ 허용 목록 밖의 파일 (CI)
   python3 scripts/privacy_check.py --staged   커밋하려는 파일: 위 검사 + 더하는 줄에 data/profile/profile.yaml 의
@@ -29,14 +29,38 @@ def bad_paths(paths):
     return [p for p in paths if p.startswith("data/") and not ALLOWED.match(p)]
 
 
+def _simple_yaml(text: str) -> dict:
+    """PyYAML 이 없을 때(훅이 다른 가상환경의 python3 로 돌 때): profile.yaml 의 '키: 값' 을 들여쓰기로 중첩해 읽는다."""
+    out, stack = {}, [(-1, None)]
+    for line in text.split("\n"):
+        m = re.match(r"^(\s*)([\w-]+):\s*(.*?)\s*$", re.sub(r"(^|\s)#.*$", "", line))   # 주석을 떼고
+        if not m:
+            continue
+        indent, key, val = len(m.group(1)), m.group(2), m.group(3)
+        while stack[-1][0] >= indent:
+            stack.pop()
+        node = out
+        for _, k in stack[1:]:
+            node = node.setdefault(k, {})
+        if val:
+            node[key] = val.strip("'\"")
+        else:
+            stack.append((indent, key))
+    return out
+
+
 def personal_values():
     """[(항목 이름, 정규식)]. profile.yaml 이 없으면 빈 목록."""
     path = os.path.join(ROOT, "data", "profile", "profile.yaml")
     if not os.path.exists(path):
         return []
-    import yaml
     with open(path, encoding="utf-8") as f:
-        prof = yaml.safe_load(f) or {}
+        text = f.read()
+    try:
+        import yaml
+        prof = yaml.safe_load(text) or {}
+    except ImportError:
+        prof = _simple_yaml(text)
     out = []
     for key, label in FIELDS:
         v = prof
