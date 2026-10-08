@@ -289,6 +289,7 @@ AI 에이전트가 공고를 한 줄씩 분류하면(해 본 일인지, 필수 �
 ```
 install.sh                   한 줄 설치 (clone·갱신 → scripts/setup.sh)
 AGENTS.md                    모든 AI 에이전트용 작업 안내 (CLAUDE.md 는 이 파일을 불러옴)
+LEGAL_DISCLAIMER.md          사용 범위와 면책
 SKILL.md                     스킬 진입점, 요청을 모드로 연결
 modes/                       공통 규칙과 모드별 절차 (onboard · scan · evaluate · tailor · cover · deep · interview · track · outcome)
 scripts/
@@ -325,6 +326,15 @@ data/                        내 자료 (git 제외, 구조와 예시만 올라�
 - `git add -f` 같은 실수도 막습니다. CI가 PR마다 `data/`의 추적 파일을 검사하고, 커밋 전 훅(`git config core.hooksPath .githooks`로 켬)은 커밋하는 내용에 `profile.yaml`의 이름·이메일·전화번호·학교가 있으면 멈춥니다 (`scripts/privacy_check.py`).
 - 이름·연락처는 코드에 없고, 빌드할 때 `data/profile/profile.yaml`에서 읽습니다.
 - 원티드·점핏·LinkedIn 게스트 API·기업 사이트 JSON은 비공식 엔드포인트라 개인 용도로 요청 간격을 두고 씁니다.
+
+## ⚖️ 사용 범위와 면책
+
+쓰기 전에 [`LEGAL_DISCLAIMER.md`](LEGAL_DISCLAIMER.md)를 읽어 주세요. 요약하면:
+
+- **개인 구직 용도로만.** 대량 수집, 수집한 공고의 재배포·판매는 범위 밖입니다. 각 사이트의 약관은 사용자가 확인합니다. 요청 간격을 두고, 봇 차단은 우회하지 않습니다.
+- **내 PC에만 저장.** 만든 사람이 운영하는 서버나 사용 기록 수집은 없습니다. AI 에이전트를 쓰면 대화와 읽은 파일은 내가 고른 AI 서비스로 갑니다.
+- **AI는 틀리거나 지어낼 수 있습니다.** 점수는 참고 의견이고, 이력서·자기소개서는 제출 전에 사실인지 직접 확인하세요. 지원서 제출은 사용자가 직접 합니다.
+- MIT 라이선스로 "있는 그대로" 제공되며, 결과에 대한 보증은 없습니다.
 
 ## 🙏 참고
 
