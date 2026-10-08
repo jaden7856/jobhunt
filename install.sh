@@ -34,6 +34,24 @@ need() {   # need <명령> <apt 패키지>: 없으면 apt 로 설치하거나 �
 
 is_jobhunt() { grep -q '^name: jobhunt' "$1/SKILL.md" 2>/dev/null; }
 
+changes() {   # changes <갱신 전 커밋>: 버전이 바뀌었으면 그 사이 CHANGELOG.md 에 더해진 줄을 보여 준다
+  local old="$1" new ver notes
+  new="$(git -C "$DIR" rev-parse HEAD)"
+  ver() { git -C "$DIR" describe --tags --always "$1" 2>/dev/null || echo "${1:0:7}"; }
+  if [ "$old" = "$new" ]; then
+    say "이미 최신: $(ver "$new")"
+    return
+  fi
+  say "갱신: $(ver "$old") → $(ver "$new")"
+  notes="$(git -C "$DIR" diff "$old" "$new" -- CHANGELOG.md | grep '^+' | grep -v '^+++' | cut -c2- | grep -v '^[[:space:]]*$' || true)"
+  if [ -n "$notes" ]; then
+    printf '%s\n' "$notes" | head -40 | sed 's/^/    /'
+    echo "  전체 기록: $DIR/CHANGELOG.md  (data/ 이전 항목이 있으면 따라 주세요)"
+  else
+    echo "  변경 기록에 더해진 항목 없음 (커밋 $(git -C "$DIR" rev-list --count "$old..$new")개)"
+  fi
+}
+
 main() {
   case "$(uname -s)" in
     Darwin) OS=mac ;;
@@ -53,6 +71,7 @@ main() {
   if [ -d "$DIR/.git" ]; then
     is_jobhunt "$DIR" || die "$DIR 는 다른 저장소입니다. JOBHUNT_DIR 로 다른 폴더를 지정하세요."
     say "이미 설치됨: $DIR — 도구만 갱신 (data/ 는 그대로)"
+    old="$(git -C "$DIR" rev-parse HEAD)"
     if [ -n "$REF" ]; then
       git -C "$DIR" fetch -q --tags origin
       git -C "$DIR" checkout -q "$REF" || die "$REF 로 바꾸지 못했습니다. $DIR 에서 git status 를 확인하세요."
@@ -60,6 +79,7 @@ main() {
     if git -C "$DIR" symbolic-ref -q HEAD >/dev/null; then   # 태그(분리된 HEAD)면 pull 하지 않는다
       git -C "$DIR" pull -q --ff-only || die "git pull 실패 (고친 파일이 있거나 기록이 갈라짐). $DIR 에서 git status 를 확인하세요."
     fi
+    changes "$old"
   elif [ -e "$DIR" ] && [ -n "$(ls -A "$DIR" 2>/dev/null)" ]; then
     die "$DIR 에 다른 파일이 있어 건드리지 않았습니다. 비우거나 JOBHUNT_DIR 로 다른 폴더를 지정하세요."
   else

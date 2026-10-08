@@ -153,7 +153,7 @@ Update:
 curl -fsSL https://raw.githubusercontent.com/jojaden/jobhunt/main/install.sh | bash   # or cd ~/jobhunt && git pull (data/ stays as is)
 ```
 
-Versions are tags such as `v1.0.0`; see [Releases](https://github.com/jojaden/jobhunt/releases) for what changed.
+Versions are tags such as `v1.0.0`. What changed is in [`CHANGELOG.md`](CHANGELOG.md) (Korean) and [Releases](https://github.com/jojaden/jobhunt/releases); updating with the install command prints the changes since your version. A version that changes a `data/` format says how to move existing files.
 
 Starting it in each agent:
 
@@ -293,6 +293,7 @@ The tool (`SKILL.md`, `modes/`, `scripts/`, `references/`) is versioned in git. 
 install.sh                   One-line install (clone or update → scripts/setup.sh)
 AGENTS.md                    Working guide for every AI agent (CLAUDE.md imports it)
 LEGAL_DISCLAIMER.md          Acceptable use and disclaimer (Korean)
+CHANGELOG.md                 Change log, with data/ migration notes per version (Korean)
 SKILL.md                     Skill entry point, routes requests to modes
 modes/                       Shared rules and per-mode procedures (onboard · scan · evaluate · tailor · cover · deep · interview · track · outcome)
 scripts/

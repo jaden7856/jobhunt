@@ -1,0 +1,31 @@
+# 변경 기록
+
+버전은 git 태그(`v1.0.1`)로 붙이고, 같은 내용을 [Releases](https://github.com/jojaden/jobhunt/releases)에 올립니다.
+`install.sh` 로 갱신하면 그 사이에 추가된 항목을 보여 줍니다.
+
+버전마다 **data/ 이전** 항목이 있습니다. 스크립트가 `data/` 파일의 제목·표 머리를 글자 그대로 찾기 때문에, 형식이 바뀌면 기존 자료를 옮기는 방법을 여기에 적습니다. 필요 없으면 "없음".
+
+## 다음 버전
+
+- 이력서 yaml 형식 검사: 모르는 키(오타)·타입·쓸 수 없는 값을 빌드 전에 위치와 함께 멈춤, 편집기 자동완성용 스키마 `references/resume.schema.json` (#13)
+- 판정 정답 세트 `examples/golden/` 와 `scripts/eval_golden.py`: 분류 규칙을 바꿨을 때 에이전트 판정의 줄·결론 일치율 (#14)
+- 이 변경 기록, `install.sh` 갱신 때 바뀐 점 안내 (#15)
+- **data/ 이전:** `data/resumes/*.yaml` 이 형식 검사에 걸리면 표시된 위치를 고친다 (예: `meta.posting:` 처럼 비워 둔 칸 중 기본값이 없는 칸, 키 오타). 첫 줄에 `# yaml-language-server: $schema=../../references/resume.schema.json` 을 넣으면 편집기가 미리 알려 준다
+
+## v1.0.1 — 2026-10-08
+
+- 한 줄 설치 `install.sh`: 받기·갱신부터 스킬 연결·빌드 환경까지, `JOBHUNT_REF` 로 버전 고정 (#1)
+- 네트워크 없이 도는 단위 테스트: 수집기 17개 고정 응답, 공급원 고르기, 현황표·pipeline.md 읽기·쓰기, 점수 계산 (#3)
+- 고침: 네이버·우아한형제들·나인하이어 수집기가 응답 형식이 바뀌어도 0건으로 넘어가던 것을 "응답 형식 변경"으로 보고. 나인하이어 마감 판정이 형식 변경을 "모두 마감"으로 읽을 수 있던 것 (#3)
+- CI: PR·main 마다 Ubuntu·macOS × Python 3.9·3.12 테스트, Ubuntu 설치와 예시 이력서 빌드 (#4)
+- 개인 자료 커밋 방지: CI 의 `data/` 검사, 커밋 전 훅 (`git config core.hooksPath .githooks`) (#5)
+- 사용 범위·면책 고지 `LEGAL_DISCLAIMER.md` (#6)
+- **data/ 이전:** 없음
+
+## v1.0.0 — 2026-10-08
+
+첫 정식 버전.
+
+- 공고 찾기: 원티드·점핏·LinkedIn·사람인, Greenhouse·Lever·greetinghr·나인하이어·Workday·Workable·Ashby·잡플렉스·라운드HR·SK Careers 기업, 자체 채용 사이트, 첫 화면에 목록이 없는 사이트
+- 회사 넓히기 `discover.py`, 맞춤도 평가 `score.py`, 맞춤 이력서 A4 PDF, 자기소개서 답변, 면접 준비, 지원 관리
+- 설치: `git clone` + `scripts/setup.sh` (macOS · Debian/Ubuntu · Windows WSL2)
