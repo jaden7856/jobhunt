@@ -257,6 +257,7 @@ AI 에이전트가 공고를 한 줄씩 분류하면(해 본 일인지, 필수 �
 
 | 항목 | 기준 | 수준 |
 |---|---|---|
+| 형식 | `references/resume.schema.json` — 모르는 키(오타), 타입, 쓸 수 없는 값. 빌드 전에 검사해 틀리면 빌드하지 않음 | 오류 |
 | 페이지 수 | `meta.target_pages` (기본 2~3) | 오류 |
 | 제목 홀로 남음 | 제목 뒤 같은 쪽 본문 3줄 미만 | 오류 |
 | 링크 | PDF 안 모든 링크 접속 | 열리지 않음=오류, 확인 불가=경고 |
@@ -306,7 +307,7 @@ scripts/
   privacy_check.py           개인 자료 커밋 방지 (CI, .githooks/pre-commit)
 references/
   sources.md                 채용 사이트별 수집 방법
-  yaml_schema.md             이력서 yaml 형식
+  yaml_schema.md · resume.schema.json   이력서 yaml 형식 (설명 · 검사와 편집기 자동완성용 스키마)
   writing_rules.md           문장 규칙과 점검 방법
   style_rules.yaml           금지어 · 번역투 · 기호 한도
   resume_guide.md            이력서 일반 규칙

@@ -1,0 +1,186 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jojaden/jobhunt/references/resume.schema.json",
+  "title": "jobhunt 이력서 yaml",
+  "description": "scripts/render.py 가 읽는 이력서 형식. 설명은 references/yaml_schema.md. 이름·연락처는 여기 말고 data/profile/profile.yaml 에.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "job": {"$ref": "#/$defs/opt_text", "description": "파일 이름 두 번째 칸. 비우면 header.role"},
+        "version": {"$ref": "#/$defs/opt_text", "description": "파일 이름 세 번째 칸 (예: 가나다_v1)"},
+        "position": {"$ref": "#/$defs/opt_text", "description": "지원 포지션 (메모)"},
+        "design": {"enum": ["A", "B", "C"], "description": "A 에디토리얼 / B 스위스 그리드(기본) / C 다크 마스트헤드"},
+        "target_pages": {
+          "type": ["integer", "array"], "items": {"type": "integer"}, "minItems": 2, "maxItems": 2,
+          "description": "목표 쪽수. 2 또는 [2, 3]"
+        },
+        "posting": {"type": ["string", "null"], "description": "공고 파일 경로 (선택)"},
+        "omit_sections": {"type": "array", "items": {"$ref": "#/$defs/section"}, "description": "뺄 섹션"}
+      }
+    },
+    "header": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "role": {"$ref": "#/$defs/opt_text", "description": "이름 아래 직무명 한 줄. 비우면 profile 의 role"}
+      }
+    },
+    "portfolio": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "items": {"type": "array", "items": {"$ref": "#/$defs/link_item"}},
+        "desc": {"$ref": "#/$defs/opt_text"}
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "lead": {"$ref": "#/$defs/opt_text", "description": "첫 문단 ('~합니다'체)"},
+        "bullets": {"type": "array", "items": {"$ref": "#/$defs/text"}, "description": "개조식 줄"}
+      }
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "items"],
+        "properties": {
+          "name": {"$ref": "#/$defs/text"},
+          "items": {"$ref": "#/$defs/text", "description": "Kotlin · Spring Boot · MySQL"}
+        }
+      }
+    },
+    "experience": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["company"],
+        "properties": {
+          "company": {"$ref": "#/$defs/text"},
+          "title": {"$ref": "#/$defs/text"},
+          "period": {"$ref": "#/$defs/text", "description": "2022.03 ~ 재직 중"},
+          "tenure": {"$ref": "#/$defs/opt_text", "description": "4년차. 비우면 괄호 없이 기간만"},
+          "intro": {"$ref": "#/$defs/opt_text"},
+          "timeline": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["period", "desc"],
+              "properties": {"period": {"$ref": "#/$defs/text"}, "desc": {"$ref": "#/$defs/text"}}
+            }
+          }
+        }
+      }
+    },
+    "projects": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["title"],
+        "properties": {
+          "title": {"$ref": "#/$defs/text"},
+          "period": {"$ref": "#/$defs/text"},
+          "role": {"$ref": "#/$defs/text"},
+          "techs": {"type": "array", "items": {"$ref": "#/$defs/text"}},
+          "summary": {"$ref": "#/$defs/text", "description": "요약 바 1~2줄"},
+          "rows": {"type": "array", "items": {"$ref": "#/$defs/row"}},
+          "links": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["title", "url"],
+              "properties": {"title": {"$ref": "#/$defs/text"}, "url": {"type": "string"}}
+            }
+          }
+        }
+      }
+    },
+    "other": {"type": "array", "items": {"$ref": "#/$defs/text"}},
+    "extra_sections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["title"],
+        "properties": {
+          "title": {"$ref": "#/$defs/text", "description": "영문 제목 (예: CERTIFICATES)"},
+          "title_ko": {"$ref": "#/$defs/text", "description": "디자인 C 의 한글 제목"},
+          "after": {"$ref": "#/$defs/section", "description": "이 섹션 뒤에 놓는다 (기본 other)"},
+          "items": {"type": "array", "items": {"$ref": "#/$defs/text"}},
+          "text": {"$ref": "#/$defs/text", "description": "items 대신 문단 하나"}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "text": {"type": ["string", "number"], "description": "**굵게** · `코드` · [글자](주소) · [확인 필요]"},
+    "opt_text": {"type": ["string", "number", "null"], "description": "비워 둘 수 있는 칸 (비우면 기본값)"},
+    "section": {"enum": ["summary", "skills", "experience", "projects", "other"]},
+    "link_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["url"],
+      "properties": {"label": {"$ref": "#/$defs/text"}, "url": {"type": "string"}}
+    },
+    "row": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "label + text·options·bullets·kpis 중 하나, 또는 sub·group 하나",
+      "properties": {
+        "label": {"$ref": "#/$defs/text"},
+        "text": {"type": ["string", "number", "array"], "items": {"$ref": "#/$defs/text"}, "description": "문단 또는 문단 목록"},
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["title"],
+            "properties": {"title": {"$ref": "#/$defs/text"}, "adopted": {"type": "boolean"}, "body": {"$ref": "#/$defs/text"}}
+          }
+        },
+        "bullets": {"type": "array", "items": {"$ref": "#/$defs/text"}},
+        "kpis": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["value"],
+            "properties": {"value": {"$ref": "#/$defs/text"}, "label": {"$ref": "#/$defs/text"}}
+          }
+        },
+        "sub": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["title"],
+          "properties": {"num": {"$ref": "#/$defs/text"}, "title": {"$ref": "#/$defs/text"}}
+        },
+        "group": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["title"],
+          "properties": {
+            "num": {"$ref": "#/$defs/text"},
+            "title": {"$ref": "#/$defs/text"},
+            "rows": {"type": "array", "items": {"$ref": "#/$defs/row"}}
+          }
+        }
+      },
+      "oneOf": [
+        {"required": ["text"]}, {"required": ["options"]}, {"required": ["bullets"]},
+        {"required": ["kpis"]}, {"required": ["sub"]}, {"required": ["group"]}
+      ]
+    }
+  }
+}

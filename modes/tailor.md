@@ -45,7 +45,7 @@ Ask each step 1–4 questions at a time (the host's choice UI if it has one, oth
 
 ### 4. Write and build
 
-1. Write the yaml following "Structure and design" and "Sentence rules" below. File: `data/resumes/<회사>_<포지션>.yaml`.
+1. Write the yaml following "Structure and design" and "Sentence rules" below. File: `data/resumes/<회사>_<포지션>.yaml`. First line: `# yaml-language-server: $schema=../../references/resume.schema.json`.
 2. Prefix every sentence filled by inference with `[확인 필요]`.
 3. Build:
    ```

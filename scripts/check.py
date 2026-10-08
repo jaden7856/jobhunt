@@ -4,6 +4,7 @@
   python3 scripts/check.py RESUME.yaml [PDF] [--offline]
 
 검사 항목
+  0. 형식 (references/resume.schema.json — 모르는 키, 타입, 쓸 수 없는 값). 틀리면 나머지 검사는 하지 않는다
   1. 목표 페이지 수 (meta.target_pages, 기본 [2, 3])
   2. 섹션·프로젝트 제목이 페이지 끝에 홀로 남았는지
   3. 링크 동작 (PDF 안의 모든 링크에 실제 접속)
@@ -13,6 +14,8 @@
 금지어·번역투 목록은 references/style_rules.yaml 에서 고친다.
 """
 import argparse
+import difflib
+import json
 import os
 import re
 import sys
@@ -30,6 +33,68 @@ RULES_PATH = os.path.join(ROOT, "references", "style_rules.yaml")
 def load_rules():
     with open(RULES_PATH, encoding="utf-8") as f:
         return yaml.safe_load(f)
+
+
+# ══════════════════════════════ 형식 (스키마) ══════════════════════════════
+SCHEMA_PATH = os.path.join(ROOT, "references", "resume.schema.json")
+_TYPES = {"string": str, "integer": int, "number": (int, float), "boolean": bool, "array": list, "object": dict, "null": type(None)}
+_TNAME = {"string": "글자", "integer": "정수", "number": "숫자", "boolean": "참거짓", "array": "목록", "object": "항목", "null": "빈 값"}
+_KIND = {str: "글자", int: "정수", float: "숫자", bool: "참거짓", list: "목록", dict: "항목", type(None): "빈 값"}
+
+
+def _type_ok(v, t):
+    if isinstance(v, bool) and t in ("integer", "number"):
+        return False
+    return isinstance(v, _TYPES[t])
+
+
+def _schema_errors(v, s, at, root):
+    """JSON Schema 중 resume.schema.json 이 쓰는 부분만 해석한다 (새 의존성 없이).
+    type · enum · properties · required · additionalProperties(false) · items · minItems · maxItems · oneOf · $ref(#/$defs/…)"""
+    if "$ref" in s:
+        s = root["$defs"][s["$ref"].rsplit("/", 1)[1]]
+    out = []
+    types = s.get("type")
+    if types:
+        types = [types] if isinstance(types, str) else types
+        if not any(_type_ok(v, t) for t in types):
+            return [(at, f"{' 또는 '.join(_TNAME[t] for t in types)}이어야 함 (지금 {_KIND.get(type(v), type(v).__name__)})")]
+    if "enum" in s and v not in s["enum"]:
+        out.append((at, f"쓸 수 없는 값 {v!r} (가능: {', '.join(map(str, s['enum']))})"))
+    if isinstance(v, dict):
+        props = s.get("properties", {})
+        for k in s.get("required", []):
+            if k not in v:
+                out.append((at, f"'{k}' 가 없음"))
+        for k, x in v.items():
+            where = f"{at}.{k}" if at else str(k)
+            if k in props:
+                out += _schema_errors(x, props[k], where, root)
+            elif s.get("additionalProperties") is False:
+                near = difflib.get_close_matches(str(k), props, n=1)
+                out.append((at or "(맨 위)", f"모르는 키 '{k}'" + (f" — '{near[0]}' 아닌가요?" if near else
+                                                                  f" (가능: {', '.join(props)})")))
+    if isinstance(v, list):
+        lo, hi = s.get("minItems", 0), s.get("maxItems", len(v))
+        if not lo <= len(v) <= hi:
+            want = f"{lo}개" if lo == hi else f"{hi}개 이하" if len(v) > hi else f"{lo}개 이상"
+            out.append((at, f"{want}여야 함 (지금 {len(v)}개)"))
+        if "items" in s:
+            for i, x in enumerate(v):
+                out += _schema_errors(x, s["items"], f"{at}[{i}]", root)
+    if "oneOf" in s:
+        if sum(1 for sub in s["oneOf"] if not _schema_errors(v, sub, at, root)) != 1:
+            keys = [k for sub in s["oneOf"] for k in sub.get("required", [])]
+            out.append((at, f"{' · '.join(keys)} 중 하나만 있어야 함"))
+    return out
+
+
+def schema_issues(resume):
+    """이력서 yaml 이 references/resume.schema.json 과 맞지 않는 곳. 키 오타는 조용히 빠지므로 빌드 전에 막는다."""
+    with open(SCHEMA_PATH, encoding="utf-8") as f:
+        schema = json.load(f)
+    return [dict(level="error", kind="형식", where=at or "(맨 위)", msg=msg, text="")
+            for at, msg in _schema_errors(resume, schema, "", schema)]
 
 
 # ══════════════════════════════ 텍스트 순회 ══════════════════════════════
@@ -228,6 +293,9 @@ def check_links(urls):
 
 
 def run_all(resume, pdf_path=None, offline=False):
+    issues = schema_issues(resume)
+    if issues:                        # 형식이 틀리면 다른 검사는 엉뚱한 곳에서 멈출 수 있다
+        return dict(issues=issues, links=[], pages=None, errors=issues, warns=[])
     issues = lint(resume)
     links, pages = [], None
     if pdf_path:
