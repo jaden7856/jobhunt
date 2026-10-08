@@ -17,7 +17,7 @@
       "https://www.wanted.co.kr/api/v4/jobs/1002": {"json": {"job": {"status": "close", "detail": {}}}}
     },
     "jobs": [
-      {"source": "wanted", "id": "1001", "url": "https://www.wanted.co.kr/wd/1001", "company": "가나다랩", "title": "백엔드 개발자 (Go)",
+      {"source": "wanted", "id": "1001", "url": "https://www.wanted.co.kr/wd/1001", "company": "가나다랩", "title": "일부러 틀린 제목",
        "location": "서울 강남구", "extra": {"career": [3, 7]}},
       {"id": "1002", "company": "라바소", "location": ""}
     ],
