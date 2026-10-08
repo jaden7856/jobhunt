@@ -1,0 +1,3 @@
+#!/bin/sh
+# 개인 자료 커밋 방지 (scripts/privacy_check.py). 켜기: git config core.hooksPath .githooks
+exec python3 "$(git rev-parse --show-toplevel)/scripts/privacy_check.py" --staged

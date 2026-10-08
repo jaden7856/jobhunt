@@ -304,6 +304,7 @@ scripts/
   check.py · check_links.py  Post-build checks, link reachability
   git_log.sh                 Extract your own commits from a local git repo
   setup.sh                   Install: skill link + Chromium, fonts, poppler (install.sh runs it after cloning)
+  privacy_check.py           Keeps personal data out of commits (CI, .githooks/pre-commit)
 references/
   sources.md                 Per-site collection methods
   yaml_schema.md             Resume YAML format
@@ -323,6 +324,7 @@ data/                        Your data (git-ignored; only structure and examples
 ## 🔒 Privacy
 
 - Real files under `data/` are excluded by `.gitignore`; only folder READMEs, `.gitkeep` and `*.example.*` files are committed.
+- Mistakes like `git add -f` are caught too. CI checks the tracked `data/` files on every PR, and the pre-commit hook (enable with `git config core.hooksPath .githooks`) stops a commit whose content includes the name, email, phone or school from `profile.yaml` (`scripts/privacy_check.py`).
 - Your name and contact info are never hard-coded. They're read from `data/profile/profile.yaml` at build time.
 - The Wanted, Jumpit, LinkedIn guest and career-site JSON endpoints are unofficial; they're used for personal purposes with a delay between requests.
 

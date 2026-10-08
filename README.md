@@ -302,6 +302,7 @@ scripts/
   check.py · check_links.py  빌드 후 검사, 링크 접속 확인
   git_log.sh                 로컬 git 저장소에서 내 커밋 로그 추출
   setup.sh                   설치: 스킬 연결 + Chromium, 폰트, poppler (install.sh 가 clone 뒤 실행)
+  privacy_check.py           개인 자료 커밋 방지 (CI, .githooks/pre-commit)
 references/
   sources.md                 채용 사이트별 수집 방법
   yaml_schema.md             이력서 yaml 형식
@@ -321,6 +322,7 @@ data/                        내 자료 (git 제외, 구조와 예시만 올라�
 ## 🔒 개인정보
 
 - `data/` 아래 실제 파일은 `.gitignore`로 빠지고, 폴더 README·`.gitkeep`·`*.example.*`만 올라갑니다.
+- `git add -f` 같은 실수도 막습니다. CI가 PR마다 `data/`의 추적 파일을 검사하고, 커밋 전 훅(`git config core.hooksPath .githooks`로 켬)은 커밋하는 내용에 `profile.yaml`의 이름·이메일·전화번호·학교가 있으면 멈춥니다 (`scripts/privacy_check.py`).
 - 이름·연락처는 코드에 없고, 빌드할 때 `data/profile/profile.yaml`에서 읽습니다.
 - 원티드·점핏·LinkedIn 게스트 API·기업 사이트 JSON은 비공식 엔드포인트라 개인 용도로 요청 간격을 두고 씁니다.
 
