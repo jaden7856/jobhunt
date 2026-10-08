@@ -1,4 +1,4 @@
-rule: "필수의 경력·도메인 자체가 없으면 gap: core. '또는 이에 준하는' 대체 문구가 있으면 alt: true (상한 3.4 → 3.6)"
+rule: "필수의 경력·도메인 자체가 없으면 gap: core. '또는 이에 준하는' 대체 문구가 있으면 alt: true (상한 3.4 → 3.6). 업종만 다른 같은 종류의 시스템(주문 이벤트)은 done"
 expect: 지원 고려
 url: https://careers.paha.example/jobs/505
 company: 파하증권
