@@ -1,0 +1,13 @@
+# ruff 린트 (개발용, 수집 스크립트 의존성이 아니다). CI 와 .githooks/pre-commit 이 쓴다.
+# 실수를 잡는 규칙만 고른다. 서식·줄 길이는 지금 코드 스타일을 바꾸지 않으려고 넣지 않는다.
+target-version = "py39"
+
+[lint]
+select = [
+  "F",    # pyflakes: 쓰지 않는 import·변수, 정의 안 된 이름, 자리 표시 없는 f-string
+  "E9",   # 문법 오류
+  "B",    # bugbear: 기본값으로 쓴 가변 객체, 반복 변수를 잡는 클로저 같은 흔한 실수
+]
+ignore = [
+  "B904", # except 안의 raise: 응답 오류를 ShapeError 로 바꿔 다시 던지는 것은 의도 (원인 연결 없이 메시지만)
+]

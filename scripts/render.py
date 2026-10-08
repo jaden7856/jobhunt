@@ -373,7 +373,7 @@ def header(profile, resume, design):
     pf_box = ""
     if pf_items:
         desc = f' {md(pf["desc"])}' if pf.get("desc") else ""
-        pf_box = (f'<div class="pf"><span class="tag">PORTFOLIO</span>'
+        pf_box = ('<div class="pf"><span class="tag">PORTFOLIO</span>'
                   + " · ".join(link_html) + desc + "</div>")
 
     if design == "C":

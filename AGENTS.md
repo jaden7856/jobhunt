@@ -32,9 +32,12 @@ Write instructions for the agent in neutral terms ("the agent", "the host"); nam
 
 ## Commands
 
-No linter or build step. Run the offline tests (`tests/`, stdlib `unittest`) after any change to `scripts/`, then the affected script itself. CI (`.github/workflows/test.yml`) runs them on every PR and push to main (Ubuntu and macOS × Python 3.9 and 3.12, plus shell syntax), and on Ubuntu installs through `setup.sh --no-skill` and builds `examples/example.yaml` in designs A, B, C. Python 3.9+, deps in `requirements.txt` (PyYAML, playwright, pdf2image, pdfplumber); `bash scripts/setup.sh --no-skill` installs them plus Chromium, Korean fonts (Pretendard, Noto CJK KR), and poppler. `install.sh` at the repo root is the one-line installer users run with `curl … | bash`: it clones (or fast-forwards) the repo into `JOBHUNT_DIR` (default `~/jobhunt`) and then runs `setup.sh`; releases are git tags (`v1.0.0`). Supported hosts: macOS (Homebrew), Debian/Ubuntu (apt), and Windows through WSL2 Ubuntu — on Windows the repo, the scripts, and the agent all run inside WSL (clone under `~`, not `/mnt/c`).
+No build step. Lint with ruff (`ruff.toml`: mistakes only, pyflakes · syntax · bugbear, no formatting rules; a dev tool, not a dependency of the scripts). Run the offline tests (`tests/`, stdlib `unittest`) after any change to `scripts/`, then the affected script itself. CI (`.github/workflows/test.yml`) runs them on every PR and push to main (Ubuntu and macOS × Python 3.9 and 3.12, plus shell syntax and ruff), and on Ubuntu installs through `setup.sh --no-skill` and builds `examples/example.yaml` in designs A, B, C. Python 3.9+, deps in `requirements.txt` (PyYAML, playwright, pdf2image, pdfplumber); `bash scripts/setup.sh --no-skill` installs them plus Chromium, Korean fonts (Pretendard, Noto CJK KR), and poppler. `install.sh` at the repo root is the one-line installer users run with `curl … | bash`: it clones (or fast-forwards) the repo into `JOBHUNT_DIR` (default `~/jobhunt`) and then runs `setup.sh`; releases are git tags (`v1.0.0`). Supported hosts: macOS (Homebrew), Debian/Ubuntu (apt), and Windows through WSL2 Ubuntu — on Windows the repo, the scripts, and the agent all run inside WSL (clone under `~`, not `/mnt/c`).
 
 ```bash
+# lint (pip install "ruff>=0.16,<0.17"; the pre-commit hook also runs it on staged .py files when ruff is installed)
+ruff check .
+
 # tests: no network, never touch data/ (tests/support.py points jobkit.P at a temp dir)
 python3 -m unittest discover -s tests
 python3 -m unittest discover -s tests -k wanted    # one provider
